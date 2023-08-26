@@ -16,7 +16,7 @@
     public class OperationResult<T> : OperationResult where T : class
     {
         public T Data { get; set; }
-        public static OperationResult<T> Failed<T> (string message) where T : class
+        public static OperationResult<T> Failed(string message)
         {
             return new OperationResult<T> { Success = false, Message = message };
         }

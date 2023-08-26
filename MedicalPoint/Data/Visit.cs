@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MedicalPoint.Data
 {
@@ -21,7 +22,6 @@ namespace MedicalPoint.Data
         public string Diagnosis { get; set; }
         [MaxLength(1000)]
         public string Notes { get; set; }
-        public DateTime? FollowDate { get; set; }
         [MaxLength(50)]
         public string VisitNumber { get; set; }
         public int? PreviousVisitId { get; set; }
@@ -31,6 +31,9 @@ namespace MedicalPoint.Data
         public DateTime VisitTime { get; set; }
         public DateTime? ExitTime { get; set; }
         public DateTime? FollowingVisitDate { get; set; }
+        [NotMapped]
+        public  bool IsFollowingVisit => PreviousVisitId != null;
+        public bool IsDeleted { get; set; }
         public ICollection<Visit> FollowingVisits { get; set; }
         public ICollection<VisitMedicine> Medicines { get; set; }
         public ICollection<VisitImage> Images { get; set; }

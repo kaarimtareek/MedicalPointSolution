@@ -31,6 +31,12 @@ namespace MedicalPoint.Common
             return _isPatientExist(context, id);
         }
 
+        public static bool PatientHasAlreadyActiveVisit(ApplicationDbContext context, int id)
+        {
+            return _isPatientHasAlreadyActiveVisit(context, id);
+        }
+
+
 
 
         #region Compiled Queries
@@ -44,6 +50,9 @@ namespace MedicalPoint.Common
 
         private static readonly Func<ApplicationDbContext, int, bool> _isPatientExist = EF.CompileQuery<ApplicationDbContext, int, bool>((context, id) => context.Patients.AsNoTracking().Any(x => x.Id == id));
 
+        private static readonly Func<ApplicationDbContext, int, bool> _isPatientHasAlreadyActiveVisit = EF.CompileQuery<ApplicationDbContext, int, bool>((context, id) => context.Visits.AsNoTracking().Any(x => x.PatientId == id && x.Status != Constants.ConstantVisitStatus.FINISHED && !x.IsDeleted));
+
+       
 
 
         #endregion

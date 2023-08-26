@@ -43,21 +43,21 @@ namespace MedicalPoint.Services
         {
             if (QueryValidator.IsPatientNameExist(_context, name))
             {
-                return OperationResult<Patient>.Failed<Patient>("Name Already exist");
+                return OperationResult<Patient>.Failed("Name Already exist");
             }
             if (!string.IsNullOrEmpty(militaryNumber) && QueryValidator.IsPatientMilitaryNumberExist(_context, militaryNumber))
             {
-                return OperationResult<Patient>.Failed<Patient>("Name Already exist");
+                return OperationResult<Patient>.Failed("Name Already exist");
             }
 
             if (!string.IsNullOrEmpty(generalNumber) && QueryValidator.IsPatientGeneralNumberExist(_context, generalNumber))
             {
-                return OperationResult<Patient>.Failed<Patient>("Name Already exist");
+                return OperationResult<Patient>.Failed("Name Already exist");
             }
 
             if (!string.IsNullOrEmpty(nationalNumber) && QueryValidator.IsPatientNationalNumberExist(_context, nationalNumber))
             {
-                return OperationResult<Patient>.Failed<Patient>("Name Already exist");
+                return OperationResult<Patient>.Failed("Name Already exist");
             }
             var patient = new Patient
             {
@@ -82,25 +82,25 @@ namespace MedicalPoint.Services
             var patient = QueryFinder.GetPatientById(_context, id);
             if (patient == null)
             {
-                return OperationResult<Patient>.Failed<Patient>("patient not found");
+                return OperationResult<Patient>.Failed("patient not found");
             }
             if (QueryValidator.IsPatientNameExist(_context, name, id))
             {
-                return OperationResult<Patient>.Failed<Patient>("Name Already exist");
+                return OperationResult<Patient>.Failed("Name Already exist");
             }
             if (!string.IsNullOrEmpty(militaryNumber) && QueryValidator.IsPatientMilitaryNumberExist(_context, militaryNumber, id))
             {
-                return OperationResult<Patient>.Failed<Patient>("Name Already exist");
+                return OperationResult<Patient>.Failed("Name Already exist");
             }
 
             if (!string.IsNullOrEmpty(generalNumber) && QueryValidator.IsPatientGeneralNumberExist(_context, generalNumber, id))
             {
-                return OperationResult<Patient>.Failed<Patient>("Name Already exist");
+                return OperationResult<Patient>.Failed("Name Already exist");
             }
 
             if (!string.IsNullOrEmpty(nationalNumber) && QueryValidator.IsPatientNationalNumberExist(_context, nationalNumber, id))
             {
-                return OperationResult<Patient>.Failed<Patient>("Name Already exist");
+                return OperationResult<Patient>.Failed("Name Already exist");
             }
             patient.Major = major;
             patient.SaryaNumber = sarayNumber;
