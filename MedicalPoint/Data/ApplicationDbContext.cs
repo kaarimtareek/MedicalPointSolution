@@ -18,6 +18,7 @@ namespace MedicalPoint.Data
         public DbSet<UnderObservationBedHistory> UnderObservationBedHistories { get; set; }
         public DbSet<UnderObservationDepartment> UnderObservationDepartments { get; set; }
         public DbSet<Visit> Visits { get; set; }
+        public DbSet<VisitHistory> VisitHistories { get; set; }
         public DbSet<VisitImage> VisitImages { get; set; }
         public DbSet<VisitMedicine> VisitMedicines { get; set; }
         public DbSet<VisitRest> VisitRests { get; set; }

@@ -2,14 +2,20 @@
 using MedicalPoint.Constants;
 using MedicalPoint.Data;
 
+using Microsoft.EntityFrameworkCore;
+
+using static Azure.Core.HttpHeader;
+
 namespace MedicalPoint.Services
 {
-    //TODO: add delete function
     public interface IVisitsService
     {
-        Task<OperationResult<Visit>> ChangeStatus(int visitId, string status, CancellationToken cancellationToken = default);
-        Task<OperationResult<Visit>> Create(int userId, DateTime? visitTime = null, int? clinicId = null, int? doctorId = null, string? type = null, int? previousVisitId = null, CancellationToken cancellationToken = default);
-        Task<OperationResult<Visit>> Edit(int visitId, string diagnosis, string notes, DateTime? exitTime = null, DateTime? visitTime = null, int? clinicId = null, int? doctorId = null, string? type = null, int? previousVisitId = null, DateTime? followDate = null, bool hasFollowingVisit = false, CancellationToken cancellationToken = default);
+        Task<OperationResult<Visit>> ChangeStatus(int visitId, int userId, string status, bool forceChange = false, CancellationToken cancellationToken = default);
+        Task<OperationResult<Visit>> Create(int userId, int patientId, DateTime? visitTime = null, int? clinicId = null, int? doctorId = null, string? type = null, int? previousVisitId = null, CancellationToken cancellationToken = default);
+        Task<OperationResult<Visit>> Delete(int visitId, int userId, CancellationToken cancellationToken = default);
+        Task<OperationResult<Visit>> Edit(int visitId, int userId, string diagnosis, string notes, DateTime? exitTime = null, DateTime? visitTime = null, int? clinicId = null, int? doctorId = null, string? type = null, int? previousVisitId = null, DateTime? followDate = null, bool hasFollowingVisit = false, CancellationToken cancellationToken = default);
+        Task<Visit> Get(int visitId, CancellationToken cancellationToken = default);
+        Task<List<Visit>> GetAll(int? doctorId = null, int? patientId = null, DateTime? from = null, DateTime? to = null, string? type = null, int? clinicId = null, CancellationToken cancellationToken = default);
     }
 
     public class VisitsService : IVisitsService
@@ -21,10 +27,10 @@ namespace MedicalPoint.Services
             _context = context;
         }
 
-        public async Task<OperationResult<Visit>> Create(int userId, DateTime? visitTime = null, int? clinicId = null, int? doctorId = null, string? type = null, int? previousVisitId = null, CancellationToken cancellationToken = default)
+        public async Task<OperationResult<Visit>> Create(int userId, int patientId, DateTime? visitTime = null, int? clinicId = null, int? doctorId = null, string? type = null, int? previousVisitId = null, CancellationToken cancellationToken = default)
         {
             //check if user has already active visit
-            if (QueryValidator.PatientHasAlreadyActiveVisit(_context, userId))
+            if (QueryValidator.PatientHasAlreadyActiveVisit(_context, patientId))
             {
                 return OperationResult<Visit>.Failed("");
             }
@@ -37,7 +43,7 @@ namespace MedicalPoint.Services
                 ClinicId = clinicId,
                 DoctorId = doctorId,
                 CreatedAt = DateTime.Now,
-                PatientId = userId,
+                PatientId = patientId,
                 PreviousVisitId = previousVisitId,
                 Status = ConstantVisitStatus.IN_RECIEPTION,
                 Type = type ?? string.Empty,
@@ -46,10 +52,27 @@ namespace MedicalPoint.Services
             };
             await _context.Visits.AddAsync(visit, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
+            var visitHistory = new VisitHistory
+            {
+                VisitId = visit.Id,
+                CreatedAt = DateTime.Now,
+                UserId = userId,
+                ClinicId = clinicId,
+                Type = type ?? string.Empty,
+                VisitTime = visitTime ?? DateTime.Now,
+                DoctorId = doctorId,
+                PreviousVisitId = previousVisitId,
+                PatientId = patientId,
+                Status = ConstantVisitStatus.IN_RECIEPTION,
+                VisitNumber = visitNumber
+
+            };
+            await _context.VisitHistories.AddAsync(visitHistory, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
             return OperationResult<Visit>.Succeeded(visit);
         }
 
-        public async Task<OperationResult<Visit>> Edit(int visitId, string diagnosis, string notes, DateTime? exitTime = null, DateTime? visitTime = null, int? clinicId = null, int? doctorId = null, string? type = null, int? previousVisitId = null, DateTime? followDate = null, bool hasFollowingVisit = false, CancellationToken cancellationToken = default)
+        public async Task<OperationResult<Visit>> Edit(int visitId, int userId, string diagnosis, string notes, DateTime? exitTime = null, DateTime? visitTime = null, int? clinicId = null, int? doctorId = null, string? type = null, int? previousVisitId = null, DateTime? followDate = null, bool hasFollowingVisit = false, CancellationToken cancellationToken = default)
         {
             //check if user has already active visit
             var visit = await _context.Visits.FindAsync(new object?[] { visitId }, cancellationToken: cancellationToken);
@@ -69,11 +92,30 @@ namespace MedicalPoint.Services
             visit.HasFollowingVisit = hasFollowingVisit;
             visit.DoctorId = doctorId;
 
+            var visitHistory = new VisitHistory
+            {
+                VisitId = visitId,
+                CreatedAt = DateTime.Now,
+                UserId = userId,
+                ClinicId = clinicId,
+                Type = type?? string.Empty,
+                VisitTime = visitTime,
+                Diagnosis = diagnosis,
+                Notes = notes,
+                ExitTime = exitTime,
+                DoctorId = doctorId,
+                HasFollowingVisit = hasFollowingVisit,
+                PreviousVisitId = previousVisitId,
+                FollowingVisitDate = followDate,
+                
+            };
+
+            await _context.VisitHistories.AddAsync(visitHistory, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
             return OperationResult<Visit>.Succeeded(visit);
         }
 
-        public async Task<OperationResult<Visit>> ChangeStatus(int visitId, string status, CancellationToken cancellationToken = default)
+        public async Task<OperationResult<Visit>> ChangeStatus(int visitId, int userId, string status, bool forceChange = false, CancellationToken cancellationToken = default)
         {
             //check if user has already active visit
             var visit = await _context.Visits.FindAsync(new object?[] { visitId }, cancellationToken: cancellationToken);
@@ -81,16 +123,89 @@ namespace MedicalPoint.Services
             {
                 return OperationResult<Visit>.Failed(nameof(Visit));
             }
-            if (!ConstantVisitStatus.CanChangeStatus(visit.Status, status))
+            if (!forceChange && !ConstantVisitStatus.CanChangeStatus(visit.Status, status))
             {
                 return OperationResult<Visit>.Failed(nameof(Visit));
             }
-
             visit.Status = status;
-
+            var visitHistory = new VisitHistory
+            {
+                VisitId = visitId,
+                CreatedAt = DateTime.Now,
+                UserId = userId,
+                 Status = status,
+            };
+            await _context.VisitHistories.AddAsync(visitHistory, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
             return OperationResult<Visit>.Succeeded(visit);
         }
 
+        public async Task<OperationResult<Visit>> Delete(int visitId, int userId, CancellationToken cancellationToken = default)
+        {
+            //check if user has already active visit
+            var visit = await _context.Visits.FindAsync(new object?[] { visitId }, cancellationToken: cancellationToken);
+            if (visit == null)
+            {
+                return OperationResult<Visit>.Failed(nameof(Visit));
+            }
+
+            visit.IsDeleted = true;
+            var visitHistory = new VisitHistory
+            {
+                 VisitId = visitId,
+                 IsDeleted = true,
+                 CreatedAt = DateTime.Now,
+                 UserId = userId
+            };
+
+            await _context.VisitHistories.AddAsync(visitHistory, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
+            return OperationResult<Visit>.Succeeded(visit);
+        }
+        public async Task<List<Visit>> GetAll(int? doctorId = null, int? patientId = null, DateTime? from = null, DateTime? to = null, string? type = null, int? clinicId = null, CancellationToken cancellationToken = default)
+        {
+            var query = _context.Visits.AsNoTracking().AsQueryable();
+
+            if (doctorId != null)
+            {
+                query = query.Where(x => x.DoctorId == doctorId);
+            }
+            if (patientId != null)
+            {
+                query = query.Where(x => x.PatientId == patientId);
+            }
+            if (from != null)
+            {
+                from = from.Value.Date;
+                query = query.Where(x => x.VisitTime >= from);
+            }
+            if (to != null)
+            {
+                to = to.Value.Date;
+                query = query.Where(x => x.VisitTime <= to);
+            }
+            if (type != null)
+            {
+                query.Where(x => x.Type == type);
+            }
+            if (clinicId != null)
+            {
+                query.Where(x => x.ClinicId == clinicId);
+            }
+            var result = await query.ToListAsync(cancellationToken);
+            return result;
+        }
+        public async Task<Visit> Get(int visitId, CancellationToken cancellationToken = default)
+        {
+            var visit = await _context.Visits.AsNoTracking()
+                .Include(x=> x.Clinic)
+                .Include(x=> x.Doctor)
+                .Include(x=> x.Patient)
+                .Include(x=> x.Medicines)
+                .Include(x=> x.PreviousVisit)
+                .Include(x=> x.Images)
+                .FirstOrDefaultAsync(x=> x.Id == visitId, cancellationToken);
+            return visit;
+        }
     }
 }

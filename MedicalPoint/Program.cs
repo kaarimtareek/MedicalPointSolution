@@ -1,4 +1,5 @@
 using MedicalPoint.Data;
+using MedicalPoint.Services;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -11,6 +12,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<IVisitsService, VisitsService>();
+builder.Services.AddScoped<IMedicinesService, MedicinesService>();
+builder.Services.AddScoped<IPatientsService, PatientsService>();
 builder.Services.AddRazorPages();
 
 var app = builder.Build();
