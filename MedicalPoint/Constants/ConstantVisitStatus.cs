@@ -2,10 +2,10 @@
 {
     public static class ConstantVisitStatus
     {
-        public static string IN_RECIEPTION = "في الاستقبال";
-        public static string IN_CLINIC = "في الكشف";
-        public static string TAKING_MEDICINE = "انتظار صرف الدواء";
-        public static string FINISHED = "انتهت";
+        public const string IN_RECIEPTION = "في الاستقبال";
+        public const string IN_CLINIC = "في الكشف";
+        public const string TAKING_MEDICINE = "انتظار صرف الدواء";
+        public const string FINISHED = "انتهت";
 
         public static bool CanChangeStatus(string oldStatus, string newStatus)
         {

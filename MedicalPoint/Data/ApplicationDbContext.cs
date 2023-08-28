@@ -10,6 +10,7 @@ namespace MedicalPoint.Data
         }
         public DbSet<Clinic> Clinics { get; set; }
         public DbSet<Degree> Degrees { get; set; }
+        public DbSet<LookupVisitRestType> LookupVisitRestTypes { get; set; }
         public DbSet<MedicalPointUser> Users { get; set; }
         public DbSet<Medicine> Medicines { get; set; }
         public DbSet<MedicineHistory> MedicineHistories { get; set; }

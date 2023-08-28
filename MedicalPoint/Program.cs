@@ -15,6 +15,8 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IVisitsService, VisitsService>();
 builder.Services.AddScoped<IMedicinesService, MedicinesService>();
 builder.Services.AddScoped<IPatientsService, PatientsService>();
+builder.Services.AddScoped<IClinicsServices, ClinicsServices>();
+builder.Services.AddScoped<IDegreesService, DegreesService>();
 builder.Services.AddRazorPages();
 
 var app = builder.Build();

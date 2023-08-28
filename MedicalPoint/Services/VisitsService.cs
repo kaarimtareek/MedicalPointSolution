@@ -36,7 +36,7 @@ namespace MedicalPoint.Services
             }
             var numberOfVisitsToday = QueryFinder.GetVisitsCountForDay(_context);
             var currentVisitNumber = ++numberOfVisitsToday;
-            string visitNumber = $"{DateTime.Today.ToString("yyyyMMdd")}{currentVisitNumber:D4}";
+            string visitNumber = $"{DateTime.Today:yyyyMMdd}{currentVisitNumber:D4}";
             //we can add checks for the existence of clinic & doctor but will skip it for simplicity 
             var visit = new Visit
             {
