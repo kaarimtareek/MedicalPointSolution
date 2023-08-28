@@ -1,0 +1,6 @@
+=========
+28-8-2023
+=========
+
+- Begin working on UI & adding more view models.
+- Work on the rest of the uncompleted services ( visit rest service, visit images service, etc... )
