@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+using MedicalPoint.Constants;
+
 namespace MedicalPoint.Data
 {
     public class Visit
@@ -37,6 +39,10 @@ namespace MedicalPoint.Data
         public ICollection<Visit> FollowingVisits { get; set; }
         public ICollection<VisitMedicine> Medicines { get; set; }
         public ICollection<VisitImage> Images { get; set; }
+        public bool CanEditVisit(bool forceChange = false)
+        {
+            return forceChange || Status == ConstantVisitStatus.FINISHED;
+        }
 
     }
 }

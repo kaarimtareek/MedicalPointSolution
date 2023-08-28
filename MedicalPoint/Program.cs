@@ -17,6 +17,7 @@ builder.Services.AddScoped<IMedicinesService, MedicinesService>();
 builder.Services.AddScoped<IPatientsService, PatientsService>();
 builder.Services.AddScoped<IClinicsServices, ClinicsServices>();
 builder.Services.AddScoped<IDegreesService, DegreesService>();
+builder.Services.AddScoped<IVisitMedicinesService, VisitMedicinesService>();
 builder.Services.AddRazorPages();
 
 var app = builder.Build();
