@@ -9,7 +9,7 @@ namespace MedicalPoint.Services
     {
         Task<OperationResult<Patient>> Add(string name, int degreeId, string militaryNumber = "", string nationalNumber = "", string generalNumber = "", string sarayNumber = "", string major = "", CancellationToken cancellationToken = default);
         Task<OperationResult<Patient>> Edit(int id, string name, int degreeId, string militaryNumber = "", string nationalNumber = "", string generalNumber = "", string sarayNumber = "", string major = "", CancellationToken cancellationToken = default);
-        Task<OperationResult<List<Patient>>> GetPatients(string searchValue = "", int? degree = null, CancellationToken cancellationToken = default);
+        Task<List<Patient>> GetPatients(string searchValue = "", int? degree = null, CancellationToken cancellationToken = default);
     }
 
     public class PatientsService : IPatientsService
@@ -21,7 +21,7 @@ namespace MedicalPoint.Services
             _context = context;
         }
 
-        public async Task<OperationResult<List<Patient>>> GetPatients(string searchValue = "", int? degree = null, CancellationToken cancellationToken = default)
+        public async Task<List<Patient>> GetPatients(string searchValue = "", int? degree = null, CancellationToken cancellationToken = default)
         {
             var query = _context.Patients.AsNoTracking().AsQueryable();
             if (!string.IsNullOrWhiteSpace(searchValue))
@@ -37,7 +37,7 @@ namespace MedicalPoint.Services
             }
             var patients = await query.ToListAsync(cancellationToken);
 
-            return OperationResult<List<Patient>>.Succeeded(patients);
+            return patients;
         }
         public async Task<OperationResult<Patient>> Add(string name, int degreeId, string militaryNumber = "", string nationalNumber = "", string generalNumber = "", string sarayNumber = "", string major = "", CancellationToken cancellationToken = default)
         {
