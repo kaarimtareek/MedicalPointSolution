@@ -6,8 +6,8 @@ namespace MedicalPoint.Data
     {
         public int Id { get; set; }
         [MaxLength(50)]
-        //Visit rest => rest in bedroom, rest in playground,  etc...
-        public string? Type { get; set; }
+        public int RestTypeId { get; set; }
+        public LookupVisitRestType RestType { get; set; }
         public int VisitId { get; set; }
         public int PatientId { get;set; }
         public int DoctorId { get;set; }

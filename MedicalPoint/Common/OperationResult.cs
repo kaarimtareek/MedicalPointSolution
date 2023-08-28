@@ -20,7 +20,7 @@
         {
             return new OperationResult<T> { Success = false, Message = message };
         }
-        public static OperationResult<T> Succeeded<T> (T data,string message = "") where T : class
+        public static OperationResult<T> Succeeded (T data,string message = "") 
         {
             return new OperationResult<T> { Success = true, Message = message, Data = data };
         }
