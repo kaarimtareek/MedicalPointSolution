@@ -20,6 +20,9 @@ namespace MedicalPoint.Data
         public string? GeneralNumber { get; set; }
         [MaxLength(50)]
         public string? Major { get; set; }
+
+        public int RegisteredUserId { get; set; }
+        public MedicalPointUser RegisteredUser { get; set; }
         public Degree Degree { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime LastUpdatedAt { get; set;}

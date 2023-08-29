@@ -4,6 +4,7 @@ using MedicalPoint.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MedicalPoint.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230829080824_seed_lookup_tables")]
+    partial class seed_lookup_tables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -308,9 +311,6 @@ namespace MedicalPoint.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int>("RegisteredUserId")
-                        .HasColumnType("int");
-
                     b.Property<string>("SaryaNumber")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
@@ -318,8 +318,6 @@ namespace MedicalPoint.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("DegreeId");
-
-                    b.HasIndex("RegisteredUserId");
 
                     b.ToTable("Patients");
                 });
@@ -355,8 +353,6 @@ namespace MedicalPoint.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("DepartmentId");
-
-                    b.HasIndex("PatientId");
 
                     b.ToTable("UnderObservationBeds");
                 });
@@ -569,8 +565,6 @@ namespace MedicalPoint.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("VisitId");
-
                     b.ToTable("VisitHistories");
                 });
 
@@ -581,10 +575,6 @@ namespace MedicalPoint.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<byte[]>("Content")
-                        .IsRequired()
-                        .HasColumnType("varbinary(max)");
 
                     b.Property<string>("Format")
                         .IsRequired()
@@ -720,15 +710,7 @@ namespace MedicalPoint.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MedicalPoint.Data.MedicalPointUser", "RegisteredUser")
-                        .WithMany()
-                        .HasForeignKey("RegisteredUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Degree");
-
-                    b.Navigation("RegisteredUser");
                 });
 
             modelBuilder.Entity("MedicalPoint.Data.UnderObservationBed", b =>
@@ -739,13 +721,7 @@ namespace MedicalPoint.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MedicalPoint.Data.Patient", "Patient")
-                        .WithMany()
-                        .HasForeignKey("PatientId");
-
                     b.Navigation("Department");
-
-                    b.Navigation("Patient");
                 });
 
             modelBuilder.Entity("MedicalPoint.Data.Visit", b =>
@@ -775,15 +751,6 @@ namespace MedicalPoint.Migrations
                     b.Navigation("Patient");
 
                     b.Navigation("PreviousVisit");
-                });
-
-            modelBuilder.Entity("MedicalPoint.Data.VisitHistory", b =>
-                {
-                    b.HasOne("MedicalPoint.Data.Visit", null)
-                        .WithMany("History")
-                        .HasForeignKey("VisitId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("MedicalPoint.Data.VisitImage", b =>
@@ -845,8 +812,6 @@ namespace MedicalPoint.Migrations
             modelBuilder.Entity("MedicalPoint.Data.Visit", b =>
                 {
                     b.Navigation("FollowingVisits");
-
-                    b.Navigation("History");
 
                     b.Navigation("Images");
 

@@ -23,7 +23,7 @@ namespace MedicalPoint.Services
 
         public async Task<List<Patient>> GetPatients(string searchValue = "", int? degree = null, CancellationToken cancellationToken = default)
         {
-            var query = _context.Patients.AsNoTracking().AsQueryable();
+            var query = _context.Patients.AsNoTracking().Include(x=> x.Degree).AsQueryable();
             if (!string.IsNullOrWhiteSpace(searchValue))
             {
                 query = query.Where(x => x.GeneralNumber.Contains(searchValue));

@@ -1,36 +1,29 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using MedicalPoint.Constants;
+using MedicalPoint.Data;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 using MedicalPoint.ViewModels.Patients;
-using MedicalPoint.ViewModels.Doctors;
-using MedicalPoint.ViewModels.Clinics;
 
 namespace MedicalPoint.ViewModels.Visits
 {
-    public class VisitViewModel
+    public class VisitsViewModel
     {
         public int Id { get; set; }
         public int? ClinicId { get; set; }
-        public ClinicViewModel Clinic { get; set; }
-
         public int PatientId { get; set; }
-        public PatientViewModel Patient { get; set; }
-        //TODO: add patient view model for more info about the patient
         public int? DoctorId { get; set; }
-        public DoctorViewModel Doctor { get; set; }
-        //TODO: should be another dto  ( DoctorViewModel for example )
         public string Status { get; set; }
         //Visit Type => Normal, Emergency
         public string Type { get; set; }
-        public bool HasFollowingVisit { get; set; }
         public string Diagnosis { get; set; }
-        public string Notes { get; set; }
         public string VisitNumber { get; set; }
         public int? PreviousVisitId { get; set; }
-        public VisitViewModel PreviousVisit { get; set; }
-        public DateTime CreatedAt { get; set; }
         public DateTime VisitTime { get; set; }
         public DateTime? ExitTime { get; set; }
         public DateTime? FollowingVisitDate { get; set; }
         [NotMapped]
         public bool IsFollowingVisit => PreviousVisitId != null;
+        public bool IsDeleted { get; set; }
     }
+    
 }

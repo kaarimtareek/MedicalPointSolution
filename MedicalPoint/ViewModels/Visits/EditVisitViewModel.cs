@@ -1,14 +1,8 @@
-﻿using MedicalPoint.Data;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-
-namespace MedicalPoint.ViewModels.Visits
+﻿namespace MedicalPoint.ViewModels.Visits
 {
-    public class AddVisitViewModel
+    public class EditVisitViewModel
     {
         public int? ClinicId { get; set; }
-       
-        public int PatientId { get; set; }
         public int? DoctorId { get; set; }
         public string Status { get; set; }
         public string Type { get; set; }
@@ -22,3 +16,4 @@ namespace MedicalPoint.ViewModels.Visits
         public DateTime? FollowingVisitDate { get; set; }
     }
 }
+
