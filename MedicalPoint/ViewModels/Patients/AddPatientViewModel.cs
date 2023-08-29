@@ -1,14 +1,18 @@
-﻿namespace MedicalPoint.ViewModels.Patients
+﻿using MedicalPoint.Data;
+using System.ComponentModel.DataAnnotations;
+
+namespace MedicalPoint.ViewModels.Patients
 {
     public class AddPatientViewModel
     {
-        public DateTime? VisitTime { get; set; }
-        public int PatientId { get; set;}
-        public int? ClinicId { get; set; }
-        public int? Degree { get; set; }
-        public string? VisitType { get;set; }
-        public string? Diagnosis { get; set; }
-        public string? Notes { get; set; }
+        [Required]
+        public string Name { get; set; }
+        public string MilitaryNumber { get; set; }
+        public string NationalNumber { get; set; }
+        public int DegreeId { get; set; }
+        public string? SaryaNumber { get; set; }
+        public string? GeneralNumber { get; set; }
+        public string? Major { get; set; }
 
     }
 }

@@ -13,6 +13,7 @@ namespace MedicalPoint.Data
 
         [MaxLength(100)]
         public string Format { get;set; }
+        public byte[] Content { get; set; }
         public bool IsDeleted { get; set; }
         public Visit Visit { get; set; }
     }

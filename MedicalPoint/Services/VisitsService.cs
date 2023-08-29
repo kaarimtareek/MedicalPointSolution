@@ -204,6 +204,7 @@ namespace MedicalPoint.Services
                 .Include(x=> x.Medicines)
                 .Include(x=> x.PreviousVisit)
                 .Include(x=> x.Images)
+                .Include(x=> x.History)
                 .FirstOrDefaultAsync(x=> x.Id == visitId, cancellationToken);
             return visit;
         }

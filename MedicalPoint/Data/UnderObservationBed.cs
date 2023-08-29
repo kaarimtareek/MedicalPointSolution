@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MedicalPoint.Data
 {
@@ -13,6 +14,9 @@ namespace MedicalPoint.Data
         [MaxLength(300)]
         public string Notes { get; set; }
         public DateTime? EnterDate { get; set; }
+        [NotMapped]
+        public bool IsAvailable => PatientId == null;
         public UnderObservationDepartment Department { get; set; }
+        public Patient Patient { get; set; }
     }
 }

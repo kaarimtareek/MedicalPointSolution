@@ -39,6 +39,7 @@ namespace MedicalPoint.Data
         public ICollection<Visit> FollowingVisits { get; set; }
         public ICollection<VisitMedicine> Medicines { get; set; }
         public ICollection<VisitImage> Images { get; set; }
+        public ICollection<VisitHistory> History { get; set; }
         public bool CanEditVisit(bool forceChange = false)
         {
             return forceChange || Status == ConstantVisitStatus.FINISHED;
