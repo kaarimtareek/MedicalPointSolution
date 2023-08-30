@@ -1,64 +1,138 @@
 ﻿@using MedicalPoint.ViewModels.Patients;
 @model AddPatientViewModel
-
 @{
-    ViewData["Title"] = "Create";
+    Layout = null;
+
 }
+<!DOCTYPE html>
+<html dir="rtl">
 
-<h1>Create</h1>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="~/userdesign/css/all.min.css">
+    <link rel="stylesheet" href="~/userdesign/css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/userdesign/css/style.css">
+    <title>تسجيل مريض</title>
+    <link rel="icon" href="~/userdesign/img/logo.png">
+</head>
 
-<h4>Patient</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
+<body class="background-with-color">
+
+    <nav class="navbar navbar-expand-lg navbar-light d-none d-lg-block ">
+        <div class="container ">
+            <div>
+                <button class="my-button ml-2">تسجيل الخروج <i class="fa-solid fa-right-from-bracket"></i></button>
+                <button class="my-button-blue">العودة للرئيسية <i class="fa-solid fa-house"></i></button>
             </div>
-            <div class="form-group">
-                <label asp-for="MilitaryNumber" class="control-label"></label>
-                <input asp-for="MilitaryNumber" class="form-control" />
-                <span asp-validation-for="MilitaryNumber" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="NationalNumber" class="control-label"></label>
-                <input asp-for="NationalNumber" class="form-control" />
-                <span asp-validation-for="NationalNumber" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DegreeId" class="control-label"></label>
-                <select asp-for="DegreeId" class ="form-control" asp-items="ViewBag.Degrees"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="SaryaNumber" class="control-label"></label>
-                <input asp-for="SaryaNumber" class="form-control" />
-                <span asp-validation-for="SaryaNumber" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="GeneralNumber" class="control-label"></label>
-                <input asp-for="GeneralNumber" class="form-control" />
-                <span asp-validation-for="GeneralNumber" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Major" class="control-label"></label>
-                <input asp-for="Major" class="form-control" />
-                <span asp-validation-for="Major" class="text-danger"></span>
-            </div>
-            
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+            <img src="img/logo.png" alt="logo">
+        </div>
+    </nav>
+    <div class="landing-three ">
+        <form method="post" asp-action="Create" >
+            <div class="container  fadeInUp-animation">
+                <div class="row  justify-content-center p-5">
+                    <div class="col-lg-12 text-center">
+                        <h1 id="choose">تسجيل بيانات مريض جديد <i class="fa-solid fa-user-pen"></i></h1>
+                    </div>
+
+                    <div class="row  justify-content-center">
+                        <div class="col-lg-4 text-center">
+                            <input asp-for=Name class="my-input" type="text" placeholder="إسم المريض" required>
+                        </div>
+                        <div class="col-lg-4 text-center">
+                            <input asp-for="MilitaryNumber" id="milNum" class="my-input" type="text" maxlength="13" placeholder="الرقم العسكري"
+                                   required>
+                        </div>
+                        <div class="col-lg-4 text-center">
+                            <input asp-for=NationalNumber  id="natNum" class="my-input" type="text" maxlength="14" placeholder="الرقم القومي"
+                                   required>
+                        </div>
+                    </div>
+
+                    <div class="row  justify-content-center">
+                        <div class="col-lg-4 text-center">
+                            <select id="my-select" class="form-select my-select" aria-label="Default select example" asp-for="DegreeId" class="form-control"  asp-items="ViewBag.Degrees">
+                                <option value="0" selected>الدرجة\الرتبة</option>
+
+                            </select>
+                        </div>
+                        <div class="col-lg-4 text-center">
+                            <input asp-for=SaryaNumber id="my-input" class="my-input" type="text" maxlength="2" placeholder="رقم السرية"
+                                   required>
+                        </div>
+                        <div class="col-lg-4 text-center">
+                            <input asp-for=GeneralNumber id="my-input" class="my-input" type="text" maxlength="5" placeholder="الرقم العام"
+                                   required>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 text-center">
+                        <button type="submit" value="Create" class="my-button  mt-3">
+                            حفظ البيانات <i class="fa-solid fa-floppy-disk"></i>
+                        </button>
+                    </div>
+                </div>
+
+
             </div>
         </form>
     </div>
-</div>
+    </div>
+</body>
+<script>
+    // change inputs status
+    const el = document.getElementById('my-select');
+    const input = document.querySelectorAll('[id="my-input"]');
+    document.getElementById('natNum').disabled = true;
+    document.getElementById('natNum').style = "opacity:0.5";
+    document.getElementById('milNum').disabled = true;
+    document.getElementById('milNum').style = "opacity:0.5";
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+    for (i = 0; i < input.length; i++) {
+        input[i].disabled = true;
+        input[i].style = "opacity:0.5";
+    }
+    el.addEventListener('change', function handleChange(event) {
+        if (event.target.value === '1') {
+            for (i = 0; i < input.length; i++) {
+                input[i].disabled = false;
+                input[i].style = "opacity:1";
+            }
+            document.getElementById('natNum').disabled = true;
+            document.getElementById('natNum').style = "opacity:0.5";
+        } else if (event.target.value === '4') {
+            for (i = 0; i < input.length; i++) {
+                input[i].disabled = true;
+                input[i].style = "opacity:0.5";
+            }
+            document.getElementById('milNum').disabled = true;
+            document.getElementById('milNum').style = "opacity:0.5";
+            document.getElementById('natNum').disabled = false;
+            document.getElementById('natNum').style = "opacity:1";
+        }
+        else if (event.target.value === '0') {
+            for (i = 0; i < input.length; i++) {
+                input[i].disabled = true;
+                input[i].style = "opacity:0.5";
+            }
+            document.getElementById('milNum').disabled = true;
+            document.getElementById('milNum').style = "opacity:0.5";
+            document.getElementById('natNum').disabled = true;
+            document.getElementById('natNum').style = "opacity:0.5";
+        }
+        else {
+            for (i = 0; i < input.length; i++) {
+                input[i].disabled = true;
+                input[i].style = "opacity:0.5";
+                document.getElementById('milNum').disabled = false;
+                document.getElementById('milNum').style = "opacity:1";
+                document.getElementById('natNum').disabled = true;
+                document.getElementById('natNum').style = "opacity:0.5";
+            }
+        }
+    });</script>
+<script src="~/userdesign/js/all.min.js"></script>
+<script src="~/userdesign/js/bootstrap.bundle.min.js"></script>
+<!-- <script src="js/bootstrap.bundle.min.js.map"></script> -->
 
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+</html>

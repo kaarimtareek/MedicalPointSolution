@@ -14,6 +14,7 @@ namespace MedicalPoint.ViewModels.Patients
         public string? GeneralNumber { get; set; }
         public string? Major { get; set; }
         public string Degree { get; set; }
+        public string RegisteredUserName { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime LastUpdatedAt { get; set; }
         public DateTime? LastVisitAt { get; set; }

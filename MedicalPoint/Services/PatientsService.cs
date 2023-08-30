@@ -7,7 +7,7 @@ namespace MedicalPoint.Services
 {
     public interface IPatientsService
     {
-        Task<OperationResult<Patient>> Add(string name, int degreeId, string militaryNumber = "", string nationalNumber = "", string generalNumber = "", string sarayNumber = "", string major = "", CancellationToken cancellationToken = default);
+        Task<OperationResult<Patient>> Add(string name, int degreeId, string militaryNumber = "", string nationalNumber = "", string generalNumber = "", string sarayNumber = "", string major = "", int? userId = null, CancellationToken cancellationToken = default);
         Task<OperationResult<Patient>> Edit(int id, string name, int degreeId, string militaryNumber = "", string nationalNumber = "", string generalNumber = "", string sarayNumber = "", string major = "", CancellationToken cancellationToken = default);
         Task<List<Patient>> GetPatients(string searchValue = "", int? degree = null, CancellationToken cancellationToken = default);
     }
@@ -23,7 +23,10 @@ namespace MedicalPoint.Services
 
         public async Task<List<Patient>> GetPatients(string searchValue = "", int? degree = null, CancellationToken cancellationToken = default)
         {
-            var query = _context.Patients.AsNoTracking().Include(x=> x.Degree).AsQueryable();
+            var query = _context.Patients.AsNoTracking()
+                .Include(x=> x.Degree)
+                .Include(x=> x.RegisteredUser)
+                .AsQueryable();
             if (!string.IsNullOrWhiteSpace(searchValue))
             {
                 query = query.Where(x => x.GeneralNumber.Contains(searchValue));
@@ -39,8 +42,13 @@ namespace MedicalPoint.Services
 
             return patients;
         }
-        public async Task<OperationResult<Patient>> Add(string name, int degreeId, string militaryNumber = "", string nationalNumber = "", string generalNumber = "", string sarayNumber = "", string major = "", CancellationToken cancellationToken = default)
+        public async Task<OperationResult<Patient>> Add(string name, int degreeId, string militaryNumber = "", string nationalNumber = "", string generalNumber = "", string sarayNumber = "", string major = "", int? userId = null, CancellationToken cancellationToken = default)
         {
+            if(userId ==null)
+            {
+                return OperationResult<Patient>.Failed("Name Already exist");
+
+            }
             if (QueryValidator.IsPatientNameExist(_context, name))
             {
                 return OperationResult<Patient>.Failed("Name Already exist");
@@ -61,15 +69,16 @@ namespace MedicalPoint.Services
             }
             var patient = new Patient
             {
-                MilitaryNumber = militaryNumber,
+                MilitaryNumber = militaryNumber ?? "",
                 CreatedAt = DateTime.Now,
                 DegreeId = degreeId,
-                GeneralNumber = generalNumber,
+                GeneralNumber = generalNumber??"",
                 LastUpdatedAt = DateTime.Now,
-                Major = major,
-                SaryaNumber = sarayNumber,
+                Major = major ?? "",
+                SaryaNumber = sarayNumber??"",
                 Name = name,
-                NationalNumber = nationalNumber,
+                NationalNumber = nationalNumber ?? "",
+                RegisteredUserId = userId.Value
             };
 
             await _context.Patients.AddAsync(patient, cancellationToken);

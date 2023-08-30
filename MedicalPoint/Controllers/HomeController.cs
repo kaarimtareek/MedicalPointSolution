@@ -18,8 +18,7 @@ namespace MedicalPoint.Controllers
 
         public IActionResult Index()
         {
-            var userfromcookieE = HttpContext.User;
-            int x = 0;
+
             return View();
         }
       

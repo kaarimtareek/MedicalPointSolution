@@ -1,6 +1,6 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
-   
+    Layout = null;
 }
 
 <!DOCTYPE html>
@@ -48,7 +48,7 @@
                     
                 }
                 <div class="col-lg-2 text-center">
-                    <a href="تسجيل دخول الاستقبال.html"> <img src="~/UserDesign/img/استقبال.png" class="avatar" alt=""></a>
+                    <a asp-action="LoginRecieptionist" asp-controller="Account"> <img src="~/UserDesign/img/استقبال.png" class="avatar" alt=""></a>
                     <p>إستقبال المرضى</p>
                 </div>
                 <div class="col-lg-2 text-center">
