@@ -20,6 +20,8 @@ builder.Services.AddScoped<IDegreesService, DegreesService>();
 builder.Services.AddScoped<IVisitMedicinesService, VisitMedicinesService>();
 builder.Services.AddScoped<IVisitImagesService, VisitImagesService>();
 builder.Services.AddScoped<IVisitRestsService, VisitRestsService>();
+builder.Services.AddScoped<IUnderObservationBedsService, UnderObservationBedsService>();
+builder.Services.AddScoped<IMedicalPointUsersService, MedicalPointUsersService>();
 builder.Services.AddRazorPages();
 
 var app = builder.Build();

@@ -9,6 +9,14 @@ namespace MedicalPoint.Common
         {
             return _getPatientById(context, id);
         }
+        public static MedicalPointUser GetUserByEmail(ApplicationDbContext context, string email)
+        {
+            return _getUserByEmail(context, email);
+        }
+        public static MedicalPointUser GetUserById(ApplicationDbContext context, int id)
+        {
+            return _getUserById(context, id);
+        }
         public static Visit GetVisitById(ApplicationDbContext context, int id)
         {
             return _getVisitById(context, id);
@@ -31,6 +39,9 @@ namespace MedicalPoint.Common
         }
 
         private static readonly Func<ApplicationDbContext, int, Patient> _getPatientById = EF.CompileQuery<ApplicationDbContext, int, Patient>((context, id) => context.Patients.AsNoTracking().FirstOrDefault(x => x.Id == id));
+        private static readonly Func<ApplicationDbContext, int, MedicalPointUser> _getUserById = EF.CompileQuery<ApplicationDbContext, int, MedicalPointUser>((context, id) => context.Users.AsNoTracking().FirstOrDefault(x => x.Id == id));
+
+        private static readonly Func<ApplicationDbContext, string, MedicalPointUser> _getUserByEmail = EF.CompileQuery<ApplicationDbContext, string, MedicalPointUser>((context, email) => context.Users.AsNoTracking().FirstOrDefault(x => x.Email == email));
 
         private static readonly Func<ApplicationDbContext, int, Visit> _getVisitById = EF.CompileQuery<ApplicationDbContext, int, Visit>((context, id) => context.Visits.AsNoTracking().FirstOrDefault(x => x.Id == id));
          private static readonly Func<ApplicationDbContext, int, VisitImage> _getVisitImageById = EF.CompileQuery<ApplicationDbContext, int, VisitImage>((context, id) => context.VisitImages.AsNoTracking().FirstOrDefault(x => x.Id == id && !x.IsDeleted));
