@@ -74,9 +74,9 @@
                                     <td>@patient.GeneralNumber</td>
                                     <td>@patient.Major</td>
                                     <td>@patient.RegisteredUserName</td>
-                                    <td><a  asp-action="GetById" asp-controller="Patients" asp-route-id ="@patient.Id" id="link-green">تفاصيل المريض  <i class="fa-regular fa-file"></i></a></td>
+                                    <td><a  asp-action="Detials" asp-controller="Patients" asp-route-id ="@patient.Id" id="link-green">تفاصيل المريض  <i class="fa-regular fa-file"></i></a></td>
                                     <td><a href="" id="link-green">كشف جديد  <i class="fa-solid fa-plus"></i></a></td>
-                                    <td><a href="" id="link">تعديل  <i class="fa-solid fa-pen-to-square"></i></a></td>
+                                    <td><a  asp-action="Edit" asp-controller="Patients" asp-route-id ="@patient.Id" id="link-green">تعديل<i class="fa-regular fa-file"></i></a></td>
                                 </tr>
                                 
                             }
@@ -93,7 +93,7 @@
 
         </div>
     </div>
-    </div>
+ 
 
 
 

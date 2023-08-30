@@ -1,5 +1,6 @@
-﻿using System.Security.Claims;
-
+﻿using System.Net;
+using System.Security.Claims;
+using MedicalPoint.Data;
 using MedicalPoint.Services;
 using MedicalPoint.ViewModels.Patients;
 
@@ -64,6 +65,93 @@ namespace MedicalPoint.Controllers
             var result = await _patientsService.Add(viewModel.Name, viewModel.DegreeId, viewModel.MilitaryNumber, viewModel.NationalNumber, viewModel.GeneralNumber, viewModel.SaryaNumber, viewModel.Major, userId);
             if(!result.Success)
             { 
+                return View();
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult>Detials(int id )
+        {
+            
+            var patient = await _patientsService.GetById(id);
+
+
+            ViewBag.Id = patient.Id;
+            if(patient==null)
+            {
+                return NotFound();
+            }
+            //Creating the View model
+            var viewModel =  new PatientViewModel
+            {
+                
+                Name                = patient.Name,    
+                Id                  = id,
+                CreatedAt           =patient.CreatedAt,
+                 Major              = patient.Major,
+                 SaryaNumber        = patient.SaryaNumber,
+                 MilitaryNumber     = patient.MilitaryNumber,
+                 LastUpdatedAt      = patient.LastUpdatedAt,
+                 LastVisitAt        = patient.LastVisitAt,
+                 DegreeId           = patient.DegreeId,
+                 NationalNumber     =patient.NationalNumber,
+                 GeneralNumber      =patient.GeneralNumber,
+                 
+
+            };
+            return View(viewModel);
+        }
+        [HttpGet]
+        public async Task< IActionResult> Edit(int id)
+    
+        {
+            var patient = await _patientsService.GetById(id);
+            if(patient==null)
+            {
+                return  NotFound();
+            }
+
+            var degrees = _degreesService.GetAll();
+            ViewBag.Degrees = degrees.ConvertAll(x => new SelectListItem
+            {
+                Text = x.Name,
+                Value = x.Id.ToString(),
+            });
+            var viewModel = new PatientViewModel
+            {
+
+                Name = patient.Name,
+                Id = id,
+                Major = patient.Major,
+                SaryaNumber = patient.SaryaNumber,
+                MilitaryNumber = patient.MilitaryNumber,
+                LastUpdatedAt = patient.LastUpdatedAt,
+                LastVisitAt = patient.LastVisitAt,
+                DegreeId = patient.DegreeId,
+                NationalNumber = patient.NationalNumber,
+                GeneralNumber = patient.GeneralNumber,
+
+
+            };
+            return View(viewModel);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> Edit([FromForm] EditPatientViewModel viewModel)
+        {
+            var userIdStr = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (userIdStr == null)
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+            int userId = int.Parse(userIdStr);
+
+            
+            var result = await _patientsService.Edit(  viewModel.Id, viewModel.Name, viewModel.DegreeId,viewModel.MilitaryNumber, viewModel.NationalNumber, viewModel.GeneralNumber, viewModel.SaryaNumber, viewModel.Major,userId);
+           
+            if (!result.Success)
+            {
                 return View();
             }
             return RedirectToAction(nameof(Index));
