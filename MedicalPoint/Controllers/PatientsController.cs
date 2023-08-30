@@ -1,4 +1,6 @@
-﻿using MedicalPoint.Services;
+﻿using System.Security.Claims;
+
+using MedicalPoint.Services;
 using MedicalPoint.ViewModels.Patients;
 
 using Microsoft.AspNetCore.Authorization;
@@ -36,6 +38,7 @@ namespace MedicalPoint.Controllers
                 NationalNumber = x.NationalNumber,
                 SaryaNumber = x.SaryaNumber,
                 Degree = x.Degree?.Name ?? string.Empty,
+                RegisteredUserName = x.RegisteredUser?.FullName ?? string.Empty,
             });
             return View(viewModel);
         }
@@ -52,7 +55,13 @@ namespace MedicalPoint.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromForm] AddPatientViewModel viewModel)
         {
-            var result = await _patientsService.Add(viewModel.Name, viewModel.DegreeId, viewModel.MilitaryNumber, viewModel.NationalNumber, viewModel.GeneralNumber, viewModel.SaryaNumber, viewModel.Major);
+            var userIdStr = HttpContext.User.Claims.FirstOrDefault(x=> x.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (userIdStr == null)
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+            int userId = int.Parse(userIdStr);
+            var result = await _patientsService.Add(viewModel.Name, viewModel.DegreeId, viewModel.MilitaryNumber, viewModel.NationalNumber, viewModel.GeneralNumber, viewModel.SaryaNumber, viewModel.Major, userId);
             if(!result.Success)
             { 
                 return View();

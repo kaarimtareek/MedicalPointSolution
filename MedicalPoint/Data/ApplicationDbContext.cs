@@ -51,6 +51,11 @@ namespace MedicalPoint.Data
                     Id = 3,
                     Name = "نقيب"
                 },
+                new Degree
+                {
+                    Id = 4,
+                    Name = "مدني"
+                },
             };
             modelBuilder.Entity<Degree>().HasData(degrees);
 
@@ -95,6 +100,5 @@ namespace MedicalPoint.Data
         public DbSet<VisitImage> VisitImages { get; set; }
         public DbSet<VisitMedicine> VisitMedicines { get; set; }
         public DbSet<VisitRest> VisitRests { get; set; }
-        public DbSet<MedicalPoint.ViewModels.Users.UserViewModel> UserViewModel { get; set; } = default!;
     }
 }
