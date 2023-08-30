@@ -1,11 +1,13 @@
 ﻿using MedicalPoint.Services;
 using MedicalPoint.ViewModels.Patients;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace MedicalPoint.Controllers
 {
+    [Authorize]
     public class PatientsController : Controller
     {
         private readonly IPatientsService _patientsService;

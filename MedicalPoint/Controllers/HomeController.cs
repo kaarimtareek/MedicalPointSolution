@@ -2,6 +2,7 @@
 
 using MedicalPoint.Models;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MedicalPoint.Controllers
@@ -17,14 +18,11 @@ namespace MedicalPoint.Controllers
 
         public IActionResult Index()
         {
+            var userfromcookieE = HttpContext.User;
+            int x = 0;
             return View();
         }
-
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
+      
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

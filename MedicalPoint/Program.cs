@@ -1,7 +1,10 @@
 using MedicalPoint.Data;
 using MedicalPoint.Services;
 
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +13,30 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+        .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme,
+    options =>
+    {
+        options.LoginPath = "/Home/Index";
+        options.LogoutPath = "/Account/Logout";
+        options.AccessDeniedPath = "/Account/AccessDenied";
+    });
+
+//builder.Services.AddAuthorization(options =>
+//{
+//    options.AddPolicy("ContentsEditor", policy =>
+//    {
+//        policy.AddAuthenticationSchemes("Cookie, Bearer");
+//        policy.RequireAuthenticatedUser();
+//        policy.RequireRole("Admin");
+//        policy.RequireClaim("editor", "contents");
+//    });
+//    options.add
+//});
+
+builder.Services.AddHttpContextAccessor();
+
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IVisitsService, VisitsService>();
@@ -37,6 +64,8 @@ else
 }
 app.UseStaticFiles();
 
+app.UseAuthentication();
+
 app.UseRouting();
 
 app.UseAuthorization();
@@ -44,6 +73,6 @@ app.MapRazorPages();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Patients}/{action=Index}/{id?}");
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
