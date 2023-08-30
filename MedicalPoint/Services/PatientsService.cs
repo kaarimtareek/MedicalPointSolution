@@ -10,6 +10,7 @@ namespace MedicalPoint.Services
         Task<OperationResult<Patient>> Add(string name, int degreeId, string militaryNumber = "", string nationalNumber = "", string generalNumber = "", string sarayNumber = "", string major = "", CancellationToken cancellationToken = default);
         Task<OperationResult<Patient>> Edit(int id, string name, int degreeId, string militaryNumber = "", string nationalNumber = "", string generalNumber = "", string sarayNumber = "", string major = "", CancellationToken cancellationToken = default);
         Task<List<Patient>> GetPatients(string searchValue = "", int? degree = null, CancellationToken cancellationToken = default);
+        Task<Patient> Get(int id, CancellationToken cancellationToken = default);
     }
 
     public class PatientsService : IPatientsService
@@ -38,6 +39,17 @@ namespace MedicalPoint.Services
             var patients = await query.ToListAsync(cancellationToken);
 
             return patients;
+        }
+       public async Task<Patient> Get(int id, CancellationToken cancellationToken = default)
+        {
+            var patient = await _context.Patients.AsNoTracking()
+                .Include(x=> x.Degree)
+                .Include(x=>x.RegisteredUser)
+                .Include(x=>x.Visits)
+                .FirstOrDefaultAsync(x=>x.Id== id, cancellationToken);
+            
+
+            return patient;
         }
         public async Task<OperationResult<Patient>> Add(string name, int degreeId, string militaryNumber = "", string nationalNumber = "", string generalNumber = "", string sarayNumber = "", string major = "", CancellationToken cancellationToken = default)
         {

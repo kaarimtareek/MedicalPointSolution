@@ -1,8 +1,10 @@
-﻿using MedicalPoint.Services;
+﻿using MedicalPoint.Common;
+using MedicalPoint.Services;
 using MedicalPoint.ViewModels.Patients;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace MedicalPoint.Controllers
 {
@@ -11,6 +13,7 @@ namespace MedicalPoint.Controllers
         private readonly IPatientsService _patientsService;
         private readonly IDegreesService _degreesService;
 
+        
         public PatientsController(IPatientsService patientsService, IDegreesService degreesService)
         {
             _patientsService = patientsService;
@@ -56,6 +59,15 @@ namespace MedicalPoint.Controllers
                 return View();
             }
             return RedirectToAction(nameof(Index));
+        }
+        public async Task<IActionResult> Details(int id)
+        {
+            var patients = await _patientsService.Get(id);
+            if (patients == null)
+            {
+                return NotFound();
+            }
+            return View(patients);
         }
     }
 }

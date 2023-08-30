@@ -10,6 +10,9 @@ namespace MedicalPoint.ViewModels.Patients
         public string MilitaryNumber { get; set; }
         public string NationalNumber { get; set; }
         public int DegreeId { get; set; }
+        public int UserId { get; set; }
+        public MedicalPointUser User { get; set; }
+
         public string? SaryaNumber { get; set; }
         public string? GeneralNumber { get; set; }
         public string? Major { get; set; }

@@ -1,0 +1,102 @@
+﻿@using MedicalPoint.ViewModels.Visits;
+@model IEnumerable<VisitsViewModel>
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="~/UserDesign/css/all.min.css">
+    <link rel="stylesheet" href="~/UserDesign/css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/UserDesign/css/bootstrap.min.css.map">
+    <link rel="stylesheet" href="~/UserDesign/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="~/UserDesign/css/style.css">
+    <script defer src="~/UserDesign/js/jquery-3.7.0.js"></script>
+    <script defer src="~/UserDesign/js/jquery.dataTables.min.js"></script>
+    <script defer src="~/UserDesign/js/dataTables.bootstrap5.min.js"></script>
+    <script defer src="~/UserDesign/js/table.js"></script>
+    <title>بيانات المرضى كشوفات</title>
+    <link rel="icon" href="~/UserDesign/img/logo.png">
+</head>
+
+<body class="background-with-color">
+ 
+    <nav class="navbar navbar-expand-lg navbar-light  d-none d-lg-block sticky-top" id="bg">
+        <div class="container">
+            <div> <button class="my-button">تسجيل الخروج <i class="fa-solid fa-right-from-bracket"></i></button>
+                <a class="my-button-green" asp-controller="Patients" asp-action="Create">إضافة كشف جديد <i class="fa-solid fa-user"></i></a>
+                <a class="my-button-green" asp-controller="Patients" asp-action="Index">بيانات المرضى <i class="fa-solid fa-user"></i></a>
+                <a class="my-button-blue"  id="printConfirm">طباعة البيانات <i class="fa-solid fa-print"></i></a>
+                <a class="my-button-blue"  asp-controller="Patients" asp-action="Index">العودة للرئيسية <i class="fa-solid fa-house"></i></a>
+
+                
+            </div>
+            <img src="~/UserDesign/img/logo.png" alt="logo">
+        </div>
+    </nav>
+    <div class="landing-three ">
+
+        <div class="container fadeInUp-animation ">
+            <div class="row  justify-content-center">
+                <div class="col-lg-12 text-center">
+                    <p id="nametwo">بيانات المرضى كشوفات <i class="fa-solid fa-user-group"></i></p id="name">
+                    <table id="example" class="table table-striped" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>مسلسل</th>
+                                <th>الدرجة / الرتبة</th>
+                                <th>اسم المريض</th>
+                                <th>العيادة</th>
+                                <th>رقم الكشف</th>
+                                <th>نوع الكشف</th>
+                                <th>اسم الطبيب</th>
+                                <th>حالة الكشف</th>
+                                <th>تفاصيل المريض</th>
+                                <th>تفاصيل الكشف</th>
+                         
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach(var item in Model )
+                            {
+                            <tr>
+                                <td></td>
+                                <td>@item.Degree.Name</td>
+                                <td>@item.Patient.Name</td>
+                                <td>@item.Clinic.Name</td>
+                                <td>@item.VisitNumber</td>
+                                <td>@item.Type</td>
+                                <td>@item.User.FullName</td> 
+                                <td>@item.Status</td>
+                             
+                                <td><a asp-route-id="@item.Id" asp-action="Details" id="link-green">تفاصيل المريض  <i class="fa-regular fa-file"></i></a></td>
+                                <td><a href="" id="link-green">تفاصيل الكشف  <i class="fa-regular fa-file"></i></a></td>
+              
+                            </tr>
+                         }
+                        </tbody>
+          
+                      
+                    </table>
+
+
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+    </div>
+
+
+
+
+</body>
+<script src="~/UserDesign/js/all.min.js"></script>
+<script src="~/UserDesign/js/bootstrap.bundle.min.js"></script>
+<script src="~/UserDesign/js/print.js"></script>
+
+</html>

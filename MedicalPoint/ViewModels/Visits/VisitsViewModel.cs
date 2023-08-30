@@ -10,9 +10,17 @@ namespace MedicalPoint.ViewModels.Visits
     {
         public int Id { get; set; }
         public int? ClinicId { get; set; }
+        public Clinic Clinic { get; set; }
+
+        public int? DegreeId { get; set; }
+        public Degree Degree { get; set; }
+
         public int PatientId { get; set; }
+        public Patient Patient { get; set; }
         public int? DoctorId { get; set; }
+        public MedicalPointUser User { get; set; }  
         public string Status { get; set; }
+
         //Visit Type => Normal, Emergency
         public string Type { get; set; }
         public string Diagnosis { get; set; }
