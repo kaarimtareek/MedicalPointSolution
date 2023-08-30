@@ -1,11 +1,13 @@
 ﻿using System.Security.Claims;
 
+using MedicalPoint.Constants;
 using MedicalPoint.Data;
 using MedicalPoint.Services;
 using MedicalPoint.ViewModels.Users;
 
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -21,6 +23,29 @@ namespace MedicalPoint.Controllers
             _medicalPointUsersService = medicalPointUsersService;
             _degreesService = degreesService;
         }
+        [Authorize]
+        public async Task<IActionResult> Index()
+        {
+            var userIdString = HttpContext.User.Claims.FirstOrDefault(x=> x.Type == ClaimTypes.NameIdentifier)?.Value;
+            if(string.IsNullOrEmpty(userIdString))
+            {
+                return RedirectToAction("Index","Home");
+            }
+            var userId = int.Parse(userIdString);
+            var user = await _medicalPointUsersService.Get(userId);
+            var userViewMode = new UserViewModel
+            {
+                AccountType = user.AccoutType,
+                Email = user.Email,
+                Id = user.Id,
+                MilitaryNumber = user.MilitaryNumber,
+                Name = user.FullName,
+                PhoneNumber = user.PhoneNumber,
+                DegreeName = user.Degree.Name,
+            };
+         
+            return View(userViewMode);
+        }
         public IActionResult Login()
         {
             return View();
@@ -33,12 +58,17 @@ namespace MedicalPoint.Controllers
                 Text = x.Name,
                 Value = x.Id.ToString(),
             });
+            ViewBag.AccountTypes = ConstantUserType.Types.Select(x => new SelectListItem
+            {
+                Text = x,
+                Value = x
+            });
             return View();
         }
         [HttpPost]
         public async Task<IActionResult> Create([FromForm] AddUserViewModel viewModel, CancellationToken cancellationToken)
         {
-            var result = await _medicalPointUsersService.Create(viewModel.Email, viewModel.Password, "SuperAdmin", viewModel.FullName, viewModel.DegreeId, viewModel.MilitaryNumber, viewModel.PhoneNumber, cancellationToken);
+            var result = await _medicalPointUsersService.Create(viewModel.Email, viewModel.Password, viewModel.AccountType, viewModel.FullName, viewModel.DegreeId, viewModel.MilitaryNumber, viewModel.PhoneNumber, cancellationToken);
             if(!result.Success)
             {
                 return View();
@@ -70,6 +100,7 @@ namespace MedicalPoint.Controllers
             }
             var identity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme);
             identity.AddClaim(new Claim(ClaimTypes.Name, user.FullName));
+            identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()));
             identity.AddClaim(new Claim(ClaimTypes.Email, user.Email));
             identity.AddClaim(new Claim(ClaimTypes.Role, user.AccoutType));
             var authProperties = new AuthenticationProperties
