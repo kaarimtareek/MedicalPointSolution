@@ -41,30 +41,30 @@
             <div class="row justify-content-center">
                 @if (this.Context.User.Identity.IsAuthenticated)
                 {
-                    <div class="col-lg-2 text-center">
-                        <a  asp-controller="Account" asp-action="Index"> <img src="~/UserDesign/img/استقبال.png" class="avatar" alt=""></a>
-                        <p>بياناتي</p>
-                    </div>
-                    
+                <div class="col-lg-2 text-center">
+                    <a asp-controller="Account" asp-action="Index"> <img src="~/UserDesign/img/استقبال.png" class="avatar" alt=""></a>
+                    <p>بياناتي</p>
+                </div>
+
                 }
                 <div class="col-lg-2 text-center">
-                    <a asp-action="LoginRecieptionist" asp-controller="Account"> <img src="~/UserDesign/img/استقبال.png" class="avatar" alt=""></a>
+                    <a asp-action="LoginRegist" asp-controller="Account"> <img src="~/UserDesign/img/استقبال.png" class="avatar" alt=""></a>
                     <p>إستقبال المرضى</p>
                 </div>
                 <div class="col-lg-2 text-center">
-                    <a asp-action="Login" asp-controller="Account"><img src="~/UserDesign/img/طبيب.png" class="avatar" alt=""></a>
+                    <a asp-action="Logindoctor" asp-controller="Account"><img src="~/UserDesign/img/طبيب.png" class="avatar" alt=""></a>
                     <p>كشف الطبيب</p>
                 </div>
                 <div class="col-lg-2 text-center">
-                    <a href="تسجيل دخول الصيدلية.html"> <img src="~/UserDesign/img/صيدلية.png" class="avatar" alt=""></a>
+                    <a asp-action="LoginPharmacy" asp-controller="Account"> <img src="~/UserDesign/img/صيدلية.png" class="avatar" alt=""></a>
                     <p>الصيدلية</p>
                 </div>
                 <div class="col-lg-2 text-center">
-                    <a href="تسجيل دخول قائد النقطة.html"> <img src="~/UserDesign/img/4.png" class="avatar" alt=""></a>
+                    <a asp-action="LoginSuperAdmin" asp-controller="Account"> <img src="~/UserDesign/img/4.png" class="avatar" alt=""></a>
                     <p>قائد النقطة الطبية</p>
                 </div>
                 <div class="col-lg-2 text-center">
-                    <a href="تسجيل دخول الإعدادات.html"> <img src="~/UserDesign/img/اعدادات.png" class="avatar" alt=""></a>
+                    <a asp-action="LoginAdmin" asp-controller="Account"> <img src="~/UserDesign/img/اعدادات.png" class="avatar" alt=""></a>
                     <p>إعدادات النظام</p>
                 </div>
             </div>
