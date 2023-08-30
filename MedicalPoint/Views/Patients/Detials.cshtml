@@ -1,0 +1,88 @@
+﻿@model MedicalPoint.ViewModels.Patients.PatientViewModel
+
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="~/UserDesign/css/all.min.css">
+    <link rel="stylesheet" href="~/UserDesign/css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/UserDesign/css/style.css">
+    <title>بيانات المريض </title>
+    <link rel="icon" href="~/UserDesign/img/logo.png">
+</head>
+<body class="background-with-color">
+    <nav class="navbar navbar-expand-lg navbar-light ">
+        <div class="container">
+            <div>
+                <button class="my-button ml-2">تسجيل الخروج <i class="fa-solid fa-right-from-bracket"></i></button>
+                <button class="my-button-blue">العودة للرئيسية <i class="fa-solid fa-house"></i></button>
+            </div>
+            <img src="~/UserDesign/img/logo.png" alt="logo">
+        </div>
+    </nav>
+    <div class="landing-three ">
+        <div class="container fadeInUp-animation ">
+            <div class="row  justify-content-center">
+                <div class="col-lg-6 text-center pt-5 ">
+                    <p id="nametwo">بيانات المريض <i class="fa-solid fa-user"></i></p>
+
+                    <table class="table  table-striped">
+                        <tbody>
+                            <tr>
+                                <th>الدرجة / الرتبة</th>
+                                <td>@Html.DisplayFor(model=> model.Degree)</td>
+                            </tr>
+                            <tr>
+                                <th>الإسم</th>
+                                <td>@Html.DisplayFor(model=> model.Name)</td>
+                            </tr>
+                            <tr>
+                                <th>الرقم العسكري</th>
+                                <td> @Html.DisplayFor(model=> model.MilitaryNumber)</td>
+                            </tr>
+                            <tr>
+                                <th>الرقم القومي</th>
+                                <td> @Html.DisplayFor(model=> model.NationalNumber)</td>
+                            </tr>
+                            <tr>
+                                <th>الرقم العام</th>
+                                <td>@Html.DisplayFor(model=> model.GeneralNumber) </td>
+                            </tr>
+                            <tr>
+                                <th>رقم السرية</th>
+                                <td>@Html.DisplayFor(model=> model.SaryaNumber)</td>
+                            </tr>
+                            <tr>
+                                <th>المؤهل</th>
+                                <td> @Html.DisplayFor(model=> model.Major)</td>
+                            </tr>
+
+
+                        </tbody>
+                    </table>
+
+
+
+                    <div>
+
+                        <a asp-controller="Patients" asp-action="Edit" asp-route-id="@ViewBag.Id" class="my-button mt-2 mb-2">تعديل <i class="fa-solid fa-pen-to-square"></i></a>
+                        <a class="my-button-blue mt-2 mb-2">
+                            زيارات المريض <i class="fa-solid fa-right-from-bracket"></i>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+<script src="~/UserDesign/js/all.min.js"></script>
+<script src="~/UserDesign/js/bootstrap.bundle.min.js"></script>
+<!-- <script src="js/bootstrap.bundle.min.js.map"></script> -->
+
+</html>

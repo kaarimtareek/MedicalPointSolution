@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MedicalPoint.ViewModels.Users;
+using MedicalPoint.ViewModels.Patients;
 
 namespace MedicalPoint.Data
 {
@@ -100,5 +101,6 @@ namespace MedicalPoint.Data
         public DbSet<VisitImage> VisitImages { get; set; }
         public DbSet<VisitMedicine> VisitMedicines { get; set; }
         public DbSet<VisitRest> VisitRests { get; set; }
+        public DbSet<MedicalPoint.ViewModels.Patients.PatientViewModel> PatientViewModel { get; set; } = default!;
     }
 }
