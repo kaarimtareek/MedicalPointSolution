@@ -14,7 +14,7 @@ namespace MedicalPoint.Services
         Task<OperationResult<MedicalPointUser>> ChangePassword(int userId, string oldPassword, string newPassword, CancellationToken cancellationToken = default);
         Task<OperationResult<MedicalPointUser>> Create(string email, string password, string accountType, string name, int degree, string militaryNumber, string? phonenumber, CancellationToken cancellationToken = default);
         Task<OperationResult<MedicalPointUser>> Edit(int userId, string email, string name, int degree, string militaryNumber, string? phonenumber, bool isActive, CancellationToken cancellationToken = default);
-        Task<OperationResult<MedicalPointUser>> Login(string email, string password, string accountType);
+        Task<OperationResult<MedicalPointUser>> Login(string email, string password);
     }
 
     public class MedicalPointUsersService : IMedicalPointUsersService
@@ -26,7 +26,7 @@ namespace MedicalPoint.Services
         {
             _context = context;
         }
-        public async Task<OperationResult<MedicalPointUser>> Login(string email, string password, string accountType)
+        public async Task<OperationResult<MedicalPointUser>> Login(string email, string password)
         {
             var user = QueryFinder.GetUserByEmail(_context, email);
             if (user == null || !VerifyHashedPassword(password, user.Password, user.Salt))
@@ -37,11 +37,11 @@ namespace MedicalPoint.Services
             {
                 return OperationResult<MedicalPointUser>.Failed("");
             }
-            if (user.AccoutType != accountType)
-            {
-                return OperationResult<MedicalPointUser>.Failed("");
+            //if (user.AccoutType != accountType)
+            //{
+            //    return OperationResult<MedicalPointUser>.Failed("");
 
-            }
+            //}
             return OperationResult<MedicalPointUser>.Succeeded(user);
 
         }
