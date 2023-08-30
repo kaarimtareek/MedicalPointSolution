@@ -1,0 +1,218 @@
+﻿@using MedicalPoint.ViewModels.Visits;
+@model VisitViewModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="~/userDesign/css/all.min.css">
+    <link rel="stylesheet" href="~/userDesign/css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/userDesign/css/style.css">
+    <title>بيانات الكشف</title>
+    <link rel="icon" href="~/userDesign/img/logo.png">
+
+</head>
+
+<body class="background-with-color">
+    <nav class="navbar navbar-expand-lg navbar-light ">
+        <div class="container">
+            <div>
+                <button class="my-button ml-2">تسجيل الخروج <i class="fa-solid fa-right-from-bracket"></i></button>
+                <button class="my-button-blue">العودة للرئيسية <i class="fa-solid fa-house"></i></button>
+            </div>
+            <img src="~/userDesign/img/logo.png" alt="logo">
+        </div>
+    </nav>
+    <div class="landing-three ">
+        <div class="container fadeInUp-animation ">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center p-1 ">
+                    <p id="nametwo">بيانات مريض الكشف <i class="fa-solid fa-user"></i></p>
+
+                    <table class="table  table-striped">
+                        <tbody>
+                            <tr>
+                                <th>الدرجة / الرتبة</th>
+                                <td>@Model.Patient.Degree</td>
+                            </tr>
+                            <tr>
+                                <th>اسم المريض</th>
+                                <td>@Model.Patient.Name</td>
+                            </tr>
+                            <tr>
+                                <th>العيادة</th>
+                                <td>@Model.Clinic.Name</td>
+                            </tr>
+                            <tr>
+                                <th>رقم الكشف</th>
+                                <td>@Model.VisitNumber</td>
+                            </tr>
+                            <tr>
+                                <th>نوع الكشف</th>
+                                <td>@Model.Type</td>
+                            </tr>
+                            <tr>
+                                <th>اسم الطبيب</th>
+                                <td>@Model.Doctor.FullName</td>
+                            </tr>
+
+
+                        </tbody>
+                    </table>
+
+
+
+                </div>
+                
+              
+            </div>
+            <div class="row mb-5 justify-content-center">
+                <div class="col-lg-8 text-center  p-1">
+                    <p id="nametwo">مرفقات المريض <i class="fa-solid fa-image"></i></p>
+
+                    <div class="beds-container">
+                        <div class="beds p-0" style="    grid-gap: 5px !important;">
+                            <a id="paitant-image" href="~/userDesign/img/scaner.jpg">
+                                <img id="paitant-image-source"
+                                     src="~/userDesign/img/scaner.jpg"
+                                class="w-100 shadow-1-strong rounded " alt="Yosemite National Park" />
+                        </a>
+                            <a id="paitant-image" href="~/userDesign/img/data.jpg">
+                            <img id="paitant-image-source"
+                                     src="~/userDesign/img/data.jpg"
+                                class="w-100 shadow-1-strong rounded " alt="Yosemite National Park" />
+                                
+                        </a>
+                            <a id="paitant-image" href="~/userDesign/img/scaner.jpg">
+                                <img id="paitant-image-source"
+                                     src="~/userDesign/img/scaner.jpg"
+                                    class="w-100 shadow-1-strong rounded " alt="Yosemite National Park" />
+                            </a>
+                            <a id="paitant-image" href="~/userDesign/img/scaner.jpg">
+                                <img id="paitant-image-source"
+                                     src="~/userDesign/img/scaner.jpg"
+                                class="w-100 shadow-1-strong rounded " alt="Yosemite National Park" />
+                        </a>
+                          <div  style="background-color: white; border-radius: 10px; padding: 10px;">
+                            <p id="nametwo"> إضافة صورة <i class="fa-solid fa-image"></i></p>
+                            <input  style="width: 100%;" type="file" name="" id="">
+                          </div>
+
+                        </div>
+
+                    </div>
+                </div>
+               
+
+
+               
+
+            </div>
+            <div class="row justify-content-center  ">
+                <div class="col-lg-8 text-center p-1">
+                    <p id="nametwo">كتابة التشخيص والعلاج <i class="fa-solid fa-user"></i></p>
+                    <textarea class="form-control mb-2" id="exampleFormControlTextarea1" rows="2"
+                    placeholder="كتابة تشخيص المريض" style="font-weight: bold;"></textarea>
+                    <table class="table  table-striped">
+                        <thead>
+                            <tr>
+                                <th>مسلسل</th>
+                                <th>إسم العلاج</th>
+                                <th>المخزون</th>
+                                <th>الكمية</th>
+                                <th>خيارات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                                <tr>
+                                    <td></td>
+                                    <td>
+                                        <select class="form-select ">
+                                            <option selected>العلاج</option>
+
+                                            <option value="1">بانادول</option>
+                                            <option value="2">كونجستال</option>
+
+
+                                        </select>
+                                    </td>
+                                    <td></td>
+                                    <td>
+                                        <input type="number" required placeholder="الكمية">
+                                    </td>
+                                    <td><button type="button" class="table-button-blue">إضافة <i
+                                                class="fa-solid fa-plus"></i></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td>
+                                        <select class="form-select ">
+                                            <option selected>العلاج</option>
+
+                                            <option value="1">بانادول</option>
+                                            <option value="2">كونجستال</option>
+
+
+                                        </select>
+                                    </td>
+                                    <td></td>
+                                    <td>
+                                        <input type="number" required placeholder="الكمية">
+                                    </td>
+                                    <td>
+                                        <div id="edit-div">
+                                            <button type="button" class="table-button-blue"
+                                                onclick="activateSave()">تعديل <i
+                                                    class="fa-solid fa-pen-to-square"></i></button>
+                                            <button type="button" class="table-button-red">حذف <i
+                                                    class="fa-solid fa-trash"></i></button>
+                                        </div>
+                                        <div id="save-div">
+                                            <button type="button" class="table-button-blue" onclick="activateEdit()">حفظ
+                                                <i class="fa-solid fa-pen-to-square"></i></button>
+                                            <button type="button" class="table-button-red">الغاء <i
+                                                    class="fa-solid fa-xmark"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-lg-4 text-center">
+                    <button class="my-button custom-button mt-2 mb-2"><i class="fa-solid fa-forward-step"></i>
+                        التالي</button>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+</body>
+
+<script src="~/userDesign/js/all.min.js"></script>
+<script src="~/userDesign/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    const save_div = document.getElementById('save-div');
+    save_div.style.display = "none";
+    const edit_div = document.getElementById('edit-div');
+    function activateSave() {
+        save_div.style.display = "";
+        edit_div.style.display = "none";
+    }
+    function activateEdit() {
+        save_div.style.display = "none";
+        edit_div.style.display = "";
+    }
+</script>
+<!-- <script src="js/bootstrap.bundle.min.js.map"></script> -->
+
+</html>

@@ -164,7 +164,11 @@ namespace MedicalPoint.Services
         }
         public async Task<List<Visit>> GetAll(int? doctorId = null, int? patientId = null, DateTime? from = null, DateTime? to = null, string? type = null, int? clinicId = null, CancellationToken cancellationToken = default)
         {
-            var query = _context.Visits.AsNoTracking().AsQueryable();
+            var query = _context.Visits
+                .Include(x=> x.Doctor)
+                .Include(x=> x.Patient)
+                    .ThenInclude(x=> x.Degree)
+                .AsNoTracking().AsQueryable();
 
             if (doctorId != null)
             {
@@ -201,6 +205,7 @@ namespace MedicalPoint.Services
                 .Include(x=> x.Clinic)
                 .Include(x=> x.Doctor)
                 .Include(x=> x.Patient)
+                    .ThenInclude(x=> x.Degree)
                 .Include(x=> x.Medicines)
                 .Include(x=> x.PreviousVisit)
                 .Include(x=> x.Images)
