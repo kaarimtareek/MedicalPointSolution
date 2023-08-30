@@ -14,6 +14,8 @@ namespace MedicalPoint.Data
         public Patient Patient { get; set; }
         public int? DoctorId { get; set; }
         public MedicalPointUser Doctor { get;set; }
+        public int RegisteredUserId { get; set; }
+        public MedicalPointUser RegisteredUser { get; set; }
         [MaxLength(100)]
         public string Status { get; set;}
         //Visit Type => Normal, Emergency

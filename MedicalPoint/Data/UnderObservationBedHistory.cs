@@ -16,5 +16,7 @@ namespace MedicalPoint.Data
         [MaxLength(300)]
         public string Notes { get; set; }
         public DateTime ActionDate { get; set; }
+        public DateTime? EnterDate { get; set; }
+        public UnderObservationBed Bed { get; set; }
     }
 }

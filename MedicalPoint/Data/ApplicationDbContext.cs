@@ -11,6 +11,8 @@ namespace MedicalPoint.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<MedicalPointUser>().HasOne(x=> x.Degree).WithMany().OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<Visit>().HasOne(x => x.RegisteredUser).WithMany().OnDelete(DeleteBehavior.NoAction);
             List<Clinic> clinics = new List<Clinic>
             {
                 new Clinic
