@@ -15,5 +15,6 @@ namespace MedicalPoint.ViewModels.Users
         public string MilitaryNumber { get; set; }
         [Required]
         public int DegreeId { get; set; }
+        public string AccountType { get; set; }
     }
 }

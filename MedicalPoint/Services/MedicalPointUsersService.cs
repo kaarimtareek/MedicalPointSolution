@@ -14,6 +14,7 @@ namespace MedicalPoint.Services
         Task<OperationResult<MedicalPointUser>> ChangePassword(int userId, string oldPassword, string newPassword, CancellationToken cancellationToken = default);
         Task<OperationResult<MedicalPointUser>> Create(string email, string password, string accountType, string name, int degree, string militaryNumber, string? phonenumber, CancellationToken cancellationToken = default);
         Task<OperationResult<MedicalPointUser>> Edit(int userId, string email, string name, int degree, string militaryNumber, string? phonenumber, bool isActive, CancellationToken cancellationToken = default);
+        Task<MedicalPointUser> Get(int id);
         Task<OperationResult<MedicalPointUser>> Login(string email, string password);
     }
 
@@ -25,6 +26,16 @@ namespace MedicalPoint.Services
         public MedicalPointUsersService(ApplicationDbContext context)
         {
             _context = context;
+        }
+        public async Task<MedicalPointUser> Get(int id)
+        {
+            var user = await _context.Users
+                .AsNoTracking()
+                .Include(x=> x.Degree)
+                .FirstOrDefaultAsync(x => x.Id == id);  
+
+            return user;
+
         }
         public async Task<OperationResult<MedicalPointUser>> Login(string email, string password)
         {
@@ -45,6 +56,7 @@ namespace MedicalPoint.Services
             return OperationResult<MedicalPointUser>.Succeeded(user);
 
         }
+
         public async Task<OperationResult<MedicalPointUser>> Create(string email, string password, string accountType, string name, int degree, string militaryNumber, string? phonenumber, CancellationToken cancellationToken = default)
         {
             //check if military number, email or phonenumber already exist
