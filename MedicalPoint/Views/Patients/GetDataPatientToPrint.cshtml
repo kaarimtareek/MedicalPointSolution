@@ -35,7 +35,8 @@
                     <p id="nametwo">طباعة بيانات المرضى <i class="fa-solid fa-user-group"></i></p id="name">
                     <table class="table  table-striped">
                         <thead>
-                            <th>مسلسل</th>
+                      
+                            <th>الدرجة / الرتبة</th>
                             <th>الإسم</th>
                             <th>الرقم العسكري</th>
                             <th>الرقم القومي</th>
@@ -49,15 +50,15 @@
                             @foreach(var item in Model)
                             {
                             <tr>
-                                <td></td>
-                                <td>@item.Name</td>
-                                <td>@item.MilitaryNumber</td>
-                                <td>@item.NationalNumber</td>
-                                <td>@item.Degree</td>
-                                <td>@item.SaryaNumber</td>
-                                <td>@item.GeneralNumber</td>
-                                <td>@item.Major</td>
-                                <td>@item.RegisteredUserName</td>
+                                
+                                <th>@item.Degree</th>
+                                <th>@item.Name</th>
+                                <th>@item.MilitaryNumber</th>
+                                <th>@item.NationalNumber</th>
+                                <th>@item.SaryaNumber</th>
+                                <th>@item.GeneralNumber</th>
+                                <th>@item.Major</th>
+                                <th>@item.RegisteredUserName</th>
                             </tr>
                             }
                         </tbody>

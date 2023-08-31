@@ -76,9 +76,7 @@ namespace MedicalPoint.Controllers
         {
             
             var patient = await _patientsService.GetById(id);
-            var visitid = await _visitsService.Get(id);
-            // get visit id 
-            ViewBag.VisitId = visitid;
+            
             //get patient id 
             ViewBag.Id = patient.Id;
             if(patient==null)
