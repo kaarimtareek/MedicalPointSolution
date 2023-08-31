@@ -1,4 +1,4 @@
-
+﻿
 :root {
     --red-color: #d42324;
     --gray-color: #747474;
@@ -647,28 +647,82 @@ td {
 }
 
 
-.visit-image-style:hover {
-    transform: scale(1.02);
-    opacity: 0.8;
-    cursor: pointer;
-}
+    .visit-image-style:hover {
+        transform: scale(1.02);
+        opacity: 0.8;
+        cursor: pointer;
+    }
 
 
 .image-container {
     position: relative;
 }
-.overlay-image {
 
-position:absolute;
-right:0;
-z-index:10;
+.overlay-image {
+    position: absolute;
+    right: 0;
+    z-index: 10;
 }
+
 .delete-image-button {
     display: none;
     background-color: #ffffff00;
     color: var(--red-color);
     font-size: 22px;
 }
+
 .image-container:hover .delete-image-button {
     display: block;
+}
+/* اقسام الملاحظة */
+.my-card {
+    padding: 1rem;
+    height: 40vh;
+    font-weight: bold;
+    transition: .3s transform cubic-bezier(.155, 1.105, .295, 1.12), .3s box-shadow, .3s -webkit-transform cubic-bezier(.155, 1.105, .295, 1.12);
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.card-overlay {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(255, 255, 255, 0.322);
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.my-card:hover {
+    transform: scale(1.02);
+    opacity: 0.5;
+    cursor: pointer;
+}
+
+    .my-card:hover .card-overlay {
+        display: flex;
+    }
+
+#roomOne {
+    background-image: url('../img/roomOne.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+#roomTwo {
+    background-image: url('../img/roomTwo.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+#input-table-edit {
+    padding: 5px;
+    border-radius: 10px;
+    background-color: var(--cold-color);
 }

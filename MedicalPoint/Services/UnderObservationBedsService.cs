@@ -8,10 +8,12 @@ namespace MedicalPoint.Services
 {
     public interface IUnderObservationBedsService
     {
+        Task<OperationResult<UnderObservationBed>> AddBedToDepartment(int departmentId, CancellationToken cancellationToken = default);
         Task<OperationResult<UnderObservationBed>> AddPatientToBed(int bedId, int visitId, int patientId, int doctorId, string notes, DateTime? enterDate, CancellationToken cancellationToken = default);
         Task<OperationResult<UnderObservationBed>> Edit(int bedId, int doctorId, string notes, DateTime? enterDate, CancellationToken cancellationToken = default);
         Task<UnderObservationBed> Get(int id, CancellationToken cancellationToken = default);
         Task<List<UnderObservationBed>> GetAll(int departmentId, CancellationToken cancellationToken = default);
+        Task<List<UnderObservationBed>> GetAllAvailable(int departmentId, CancellationToken cancellationToken = default);
         Task<OperationResult<UnderObservationBed>> RemovePatientFromBed(int bedId, int doctorId, CancellationToken cancellationToken = default);
     }
 
@@ -28,12 +30,22 @@ namespace MedicalPoint.Services
             var result = await _context.UnderObservationBeds.AsNoTracking().Where(x => x.DepartmentId == departmentId).ToListAsync(cancellationToken);
             return result;
         }
+        
+        public async Task<List<UnderObservationBed>> GetAllAvailable(int departmentId, CancellationToken cancellationToken = default)
+        {
+            var result = await _context.UnderObservationBeds.AsNoTracking().Where(x => x.DepartmentId == departmentId && x.IsActive && x.PatientId == null).ToListAsync(cancellationToken);
+            return result;
+        }
 
         public async Task<UnderObservationBed> Get(int id, CancellationToken cancellationToken = default)
         {
             var result = await _context.UnderObservationBeds
                 .AsNoTracking()
                 .Include(x => x.History)
+                .Include(x => x.Patient)
+                    .ThenInclude(x => x.Degree)
+                .Include(x=> x.Doctor)
+                    .ThenInclude(x=> x.Degree)
                 .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
             return result;
         }
@@ -100,6 +112,31 @@ namespace MedicalPoint.Services
             bed.VisitId = null;
             bed.Notes = null;
 
+            await _context.UnderObservationBedHistories.AddAsync(bedHistory, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
+            await RefreshAavailableBedCount(bed.DepartmentId);
+
+            return OperationResult<UnderObservationBed>.Succeeded(bed);
+        }
+        public async Task<OperationResult<UnderObservationBed>> AddBedToDepartment(int departmentId, CancellationToken cancellationToken = default)
+        {
+            var bedsCount = await _context.UnderObservationBeds.CountAsync(x=> x.DepartmentId == departmentId);
+            var bed = new UnderObservationBed
+            {
+                IsActive = true,
+                DepartmentId = departmentId,
+                BedNumber = bedsCount +1,
+                Notes =""
+            };
+            var bedHistory = new UnderObservationBedHistory
+            {
+                Notes = bed.Notes,
+                ActionDate = DateTime.Now,
+                ActionType = ConstantObservationBedActionType.CREATE,
+                Bed = bed
+            };
+            
+            await _context.UnderObservationBeds.AddAsync(bed, cancellationToken);
             await _context.UnderObservationBedHistories.AddAsync(bedHistory, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
             await RefreshAavailableBedCount(bed.DepartmentId);

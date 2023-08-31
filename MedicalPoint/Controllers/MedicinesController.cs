@@ -27,8 +27,6 @@ namespace MedicalPoint.Controllers
                 LastUpdatedAt = x.LastUpdatedAt,
                Quantity = x.Quantity,   
                MinimumQuantityThreshold = x.MinimumQuantityThreshold,
-               History=x.History,
-               IsDeleted = x.IsDeleted,
 
             });
             return View(viewModel);
