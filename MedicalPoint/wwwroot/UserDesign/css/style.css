@@ -484,6 +484,21 @@ td {
     .print {
         display: none;
     }
+
+    #example_length {
+        display: none !important;
+    }
+    #example_filter {
+        display: none !important;
+    }
+    #example_info {
+        display: none !important;
+    }
+    #example_paginate {
+        display: none !important;
+    }
+
+
 }
 
 .paitant-data {

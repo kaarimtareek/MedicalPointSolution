@@ -1,4 +1,5 @@
 ﻿using MedicalPoint.Common;
+using MedicalPoint.Data;
 using MedicalPoint.Services;
 using MedicalPoint.ViewModels.Medicines;
 using MedicalPoint.ViewModels.Patients;
@@ -54,6 +55,136 @@ namespace MedicalPoint.Controllers
             }
             return RedirectToAction(nameof(Index), "Medicines");
         }
+
+
+
+        public async Task<IActionResult> AddNewQuantaty([FromForm] AddMedicinesViewModel viewModel)
+        {
+            var userId = HttpContext.GetUserId();
+            if (userId == null)
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+
+            var result = await _mediicinesService.AddQauntaty(userId.Value,  viewModel.Quantity);
+            if (!result.Success)
+            {
+                return View();
+            }
+            return RedirectToAction(nameof(Index), "Medicines");
+        }
+
+
+
+
+
+
+
+
+        public async Task<IActionResult> Detials(int id)
+        {
+
+            var medicine = await _mediicinesService.Get(id);
+
+            //get medicine id 
+            ViewBag.Id = medicine.Id;
+
+            if (medicine == null)
+            {
+                return NotFound();
+            }
+            //Creating the View model
+            var viewModel = new GetAllMediciensViewModel
+            {
+
+                Name = medicine.Name,
+                Id = id,
+                CreatedAt = medicine.CreatedAt,
+                LastUpdatedAt = medicine.LastUpdatedAt,
+            Quantity = medicine.Quantity,
+               MinimumQuantityThreshold = medicine.MinimumQuantityThreshold,
+               IsDeleted = medicine.IsDeleted,
+            };
+            return View(viewModel);
+        }
+
+
+
+
+
+        // delete Element Medicines 
+        public async Task<IActionResult> Delete(int id)
+        {
+
+            var medicine = await _mediicinesService.Get(id);
+
+            if (medicine == null)
+            {
+                return NotFound();
+            }
+            await _mediicinesService.Delete(id);
+           
+            return RedirectToAction("Index","Medicines");
+        }
+
+
+
+        // edit medicine with Super Admin
+
+        public async Task<IActionResult> Edit(int id)
+
+        {
+            var medicines = await _mediicinesService.Get(id);
+            if (medicines == null)
+            {
+                return NotFound();
+            }
+
+           
+            var viewModel = new GetAllMediciensViewModel
+            {
+
+               
+                Name = medicines.Name,
+                Id = id,
+                CreatedAt = medicines.CreatedAt,
+                LastUpdatedAt = medicines.LastUpdatedAt,
+                Quantity = medicines.Quantity,
+                MinimumQuantityThreshold = medicines.MinimumQuantityThreshold,
+                IsDeleted = medicines.IsDeleted,
+
+
+            };
+            return View(viewModel);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> Edit([FromForm]GetAllMediciensViewModel viewModel)
+        {
+            var userId = HttpContext.GetUserId();
+            if (userId == null)
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+            var result = await _mediicinesService.Edit(userId.Value, viewModel.Id,viewModel.Name, viewModel.Quantity, viewModel.MinimumQuantityThreshold);
+
+            if (!result.Success)
+            {
+                return View();
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
+
+
+
+
+
+
+
+
+
 
     }
 

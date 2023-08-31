@@ -1,0 +1,82 @@
+﻿@model MedicalPoint.ViewModels.Medicines.GetAllMediciensViewModel
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="~/UserDesign/css/all.min.css">
+    <link rel="stylesheet" href="~/UserDesign/css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/UserDesign/css/style.css">
+    <title>تفاصيل الدواء</title>
+    <link rel="icon" href="~/UserDesign/img/logo.png">
+</head>
+<body class="background-with-color">
+    <nav class="navbar navbar-expand-lg navbar-light ">
+        <div class="container">
+            <div>
+                <a asp-controller="Account" asp-action="Logout" class="my-button ml-2">تسجيل الخروج <i class="fa-solid fa-right-from-bracket"></i></a>
+                <a asp-controller="Medicines" asp-action="Index"  class="my-button-blue">العودة للرئيسية <i class="fa-solid fa-house"></i></a>
+            </div>
+            <img src="~/UserDesign/img/logo.png" alt="logo">
+        </div>
+    </nav>
+    <div class="landing-three ">
+        <div class="container fadeInUp-animation ">
+            <div class="row  justify-content-center">
+                <div class="col-lg-6 text-center pt-5 ">
+                    <p id="nametwo">تفاصيل الدواء <i class="fa-solid fa-prescription-bottle-medical"></i></p>
+
+                     <table class="table  table-striped">
+                        <tbody>
+                            <tr>
+                                <th>اسم الدواء</th>
+                                <td>@Html.DisplayFor(model=>model.Name)</td>
+                            </tr>
+                            <tr>
+                                <th>تاريخ الاضافة</th>
+                                <td>@Html.DisplayFor(model=>model.CreatedAt)</td>
+                            </tr>
+                            <tr>
+                                <th>الكمية الموجودة</th>
+                                <td>@Html.DisplayFor(model=>model.Quantity)</td>
+                            </tr>
+
+                            <tr>
+                                <th>الحد الادنى للاكتفاء</th>
+                                <td>@Html.DisplayFor(model=>model.MinimumQuantityThreshold)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+
+ 
+                    <div>
+                        <a class="my-button-blue mt-2 mb-2" asp-action="Edit" asp-controller="Medicines" asp-route-id="@ViewBag.Id">
+                            تعديل <i class="fa-solid fa-pen-to-square"></i>
+                        </a>
+                        <a class="my-button mt-2 mb-2" asp-action="Details" asp-controller="Medicines" asp-route-id="@ViewBag.Id">
+                            حذف <i class="fa-solid fa-trash"></i>
+                        </a>
+                        <a class="my-button-green mt-2 mb-2" asp-action="Index" asp-controller="Medicines" >
+                            عودة <i class="fa-solid fa-right-from-bracket"></i>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</body>
+<script src="~/UserDesign/js/all.min.js"></script>
+<script src="~/UserDesign/js/bootstrap.bundle.min.js"></script>
+<!-- <script src="js/bootstrap.bundle.min.js.map"></script> -->
+
+</html>
