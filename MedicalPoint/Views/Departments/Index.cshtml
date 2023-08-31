@@ -1,0 +1,107 @@
+﻿@using MedicalPoint.ViewModels.Departments;
+@model List<DepartmentsViewModel>
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="~/UserDesign/css/all.min.css">
+    <link rel="stylesheet" href="~/UserDesign/css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/UserDesign/css/style.css">
+    <title>أقسام الملاحظة</title>
+    <link rel="icon" href="img/logo.png">
+</head>
+
+
+<body class="background-with-color">
+
+    <nav class="navbar navbar-expand-lg navbar-light d-none d-lg-block ">
+        <div class="container ">
+            <div>
+                <a asp-action="Logout" asp-controller="Account" class="my-button ml-2">تسجيل الخروج <i class="fa-solid fa-right-from-bracket"></i></a>
+               
+            </div>
+            <img src="~/UserDesign/img/logo.png" alt="logo">
+        </div>
+    </nav>
+    <div class="landing-three ">
+        <div class="container  fadeInUp-animation">
+            <div class="row  justify-content-center p-5">
+                <div class="col-lg-12 text-center">
+                    <h1 id="choose">أقسام الملاحظة</h1>
+                </div>
+                <div class="beds-container">
+                    <div class="beds">
+                        @for(int i =0;i<Model.Count;i++)
+                    {
+                         var department = Model[i];
+                            string idText = "nametwo";
+                        string idImg = i % 2 == 0 ? "roomTwo" : "roomOne";
+                            <div class=" text-center">
+                                <p id="@idText"> @department.Name</p>
+                                <a asp-action="Details" asp-route-id="@department.Id">
+                                    <div class="card my-card" id="@idImg">
+                                        <div class="card-overlay">
+                                            <div class="row justify-content-center">
+                                                <div class="col-lg-12">
+                                                    <p id="@idText"> عدد السرائر الموجودة : @department.BedsCount </p>
+                                                </div>
+                                                <div class="col-lg-12">
+                                                    <p id="@idText">  عدد السرائر المتاحة : @department.AvailableBedsCount</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                    }
+                        
+                        <div class=" text-center ">
+                            <p id="nametwo">إضافة قسم</p>
+                            <a asp-action="Create" asp-controller="Departments">
+                                <div class="card my-card"><i class="fa-solid fa-plus" style="font-size: 28px;"></i></div>
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+
+
+
+
+
+
+
+
+
+            </div>
+        </div>
+
+    </div>
+
+</body>
+<script src="~/UserDesign/js/all.min.js"></script>
+<script src="~/UserDesign/js/bootstrap.bundle.min.js"></script>
+
+<!-- <script src="js/bootstrap.bundle.min.js.map"></script> -->
+
+</html>
+
+
+
+
+@*@for(int i =0;i<Model.Count;i++)
+                    {
+                         var department = Model[i];
+                        string idText = i % 2 == 0 ? "nametwo" : "nameOne";
+                        string idImg = i % 2 == 0 ? "roomTwo" : "roomOne";
+                        <div class="text-center">
+                            <p id="@idText"> @department.Name</p>
+                           <p id="@idText">  عدد السرائر الموجودة : @department.BedsCount </p>
+                            <p id="@idText">  عدد السرائر المتاحة : @department.AvailableBedsCount </p>
+                            <a asp-action="Details" asp-route-id="@department.Id"> <div class="card my-card" id="@idImg"></a>
+                        </div>
+                    }*@

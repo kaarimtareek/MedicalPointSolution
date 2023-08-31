@@ -25,7 +25,7 @@ namespace MedicalPoint.Services
         }
         public async Task<List<VisitMedicine>> GetMedicinesForVisit(int visitId, CancellationToken cancellationToken = default)
         {
-            var result = await _context.VisitMedicines.AsNoTracking().Where(x => x.VisitId == visitId).ToListAsync(cancellationToken);
+            var result = await _context.VisitMedicines.Include(x=> x.Medicine).AsNoTracking().Where(x => x.VisitId == visitId).ToListAsync(cancellationToken);
             return result;
         }
         public async Task<OperationResult<VisitMedicine>> Add(int userId, int visitId, int medicineId, int quantity, string? notes, CancellationToken cancellationToken = default)
@@ -41,11 +41,29 @@ namespace MedicalPoint.Services
             {
                 return OperationResult<VisitMedicine>.Failed("");
             }
+            if(string.IsNullOrEmpty(visit.Diagnosis))
+            {
+                return OperationResult<VisitMedicine>.Failed("");
+            }
             if (await _context.VisitMedicines.AnyAsync(x => x.VisitId == visitId && x.MedicineId == medicineId, cancellationToken))
             {
                 return OperationResult<VisitMedicine>.Failed("");
             }
             visit.DoctorId ??= userId;
+            if(visit.Status == ConstantVisitStatus.IN_RECIEPTION  || visit.Status == ConstantVisitStatus.IN_CLINIC_DIAGNOSIS)
+            {
+                visit.Status = ConstantVisitStatus.IN_CLINIC_MEDICINES;
+            }
+            var visitHistory = new VisitHistory
+            {
+                Status = visit.Status,
+                VisitId = visitId,
+                CreatedAt = DateTime.Now,
+                UserId = userId,
+                Diagnosis = "",
+                Notes = "",
+                VisitNumber="",
+            };
             var visitMedicine = new VisitMedicine
             {
                 CreatedAt = DateTime.Now,
@@ -55,6 +73,7 @@ namespace MedicalPoint.Services
                 VisitId = visitId,
             };
             await _context.VisitMedicines.AddAsync(visitMedicine, cancellationToken);
+            await _context.VisitHistories.AddAsync(visitHistory, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
             return OperationResult<VisitMedicine>.Succeeded(visitMedicine, "");
         }

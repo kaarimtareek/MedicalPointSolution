@@ -49,6 +49,7 @@ builder.Services.AddScoped<IVisitImagesService, VisitImagesService>();
 builder.Services.AddScoped<IVisitRestsService, VisitRestsService>();
 builder.Services.AddScoped<IUnderObservationBedsService, UnderObservationBedsService>();
 builder.Services.AddScoped<IMedicalPointUsersService, MedicalPointUsersService>();
+builder.Services.AddScoped<IDepartmentsService, DepartmentsService>();
 builder.Services.AddRazorPages();
 
 var app = builder.Build();

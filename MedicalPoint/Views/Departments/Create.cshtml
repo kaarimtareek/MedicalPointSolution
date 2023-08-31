@@ -1,0 +1,60 @@
+﻿@using MedicalPoint.ViewModels.Departments;
+@model AddDepartmentViewModel
+
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="~/UserDesign/css/all.min.css">
+    <link rel="stylesheet" href="~/UserDesign/css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/UserDesign/css/bootstrap.min.css.map">
+    <link rel="stylesheet" href="~/UserDesign/css/style.css">
+    <title>اضافة قسم</title>
+    <link rel="icon" href="~/UserDesign/img/logo.png">
+</head>
+<body class="background-with-color">
+    <nav class="navbar navbar-expand-lg navbar-light d-none d-lg-block ">
+        <div class="container ">
+            <div>
+                <button class="my-button ml-2">تسجيل الخروج <i class="fa-solid fa-right-from-bracket"></i></button>
+                <button class="my-button-blue">العودة للرئيسية <i class="fa-solid fa-house"></i></button>
+            </div>
+            <img src="~/UserDesign/img/logo.png" alt="logo">
+        </div>
+    </nav>
+    <div class="landing-three ">
+        <div class="container  fadeInUp-animation">
+            <div class="row justify-content-center ">
+                <form asp-action="Create">
+                    <div class="col-lg-12 text-center ">
+                        <img height="200px" src="~/UserDesign/img/bed.png" alt="">
+                        <p id="name">إضافة قسم</p>
+                    </div>
+                    <div class="row justify-content-center">
+                        <div class="col-lg-12 text-center ">
+                            <input asp-for="Name" class="my-input customewidth" type="text" placeholder="إسم القسم" required>
+                        </div>
+                        <div class="col-lg-12 text-center ">
+                            <input class="my-input customewidth" asp-for="BedsCount" type="number"  placeholder="عدد السرائر" required>
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-lg-12 text-center ">
+                        <button type="submit" class="my-button  mt-3">إضافة القسم <i class="fa-solid fa-floppy-disk"></i></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="~/UserDesign/js/all.min.js"></script>
+<script src="~/UserDesign/js/bootstrap.bundle.min.js"></script>
+<!-- <script src="js/bootstrap.bundle.min.js.map"></script> -->
+
+</html>

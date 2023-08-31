@@ -31,7 +31,7 @@
     <div class="landing-three ">
         <div class="container fadeInUp-animation ">
             <div class="row justify-content-center">
-                <div class="col-lg-8 text-center p-1 ">
+                <div class="col-lg-6 text-center p-1 ">
                     <p id="nametwo">بيانات كشف المريض <i class="fa-solid fa-user"></i></p>
 
                     <table class="table  table-striped">
@@ -75,62 +75,70 @@
 
 
                 </div>
-                
-              
-            </div>
-            <div class="row mb-5 justify-content-center">
-                <div class="col-lg-8 text-center  p-1">
+                <div class="col-lg-6 text-center  p-1">
                     <p id="nametwo">مرفقات المريض <i class="fa-solid fa-image"></i></p>
 
                     <div class="beds-container">
                         <div class="beds p-0" style="    grid-gap: 5px !important;">
-                            @foreach(var image in Model.Images)
+                            @foreach (var image in Model.Images)
                             {
 
-                                        <form id="formDeleteImage-@image.Id" method="post" asp-action="DeleteVisitImage" asp-controller="Visits" asp-route-id="@image.Id" >
-                              <div class="image-container">
-                                    <div class="overlay-image">
+                                <form id="formDeleteImage-@image.Id" method="post" asp-action="DeleteVisitImage" asp-controller="Visits" asp-route-id="@image.Id">
+                                    <div class="image-container">
+                                        <div class="overlay-image">
                                             <input type="number" form="formDeleteImage-@image.Id" style="display:none" name="visitId" value="@Model.Id" />
-                                        <button type="submit" form="formDeleteImage-@image.Id" class="delete-image-button"><i class="fa-solid fa-trash "></i></button>
-                                  </div>
-                                    <img id="visit-image-@image.Id" onclick="window.opens('data:@image.ContentType;base64,@Convert.ToBase64String(@image.Content)','_blank')"
-                                         src="data:@image.ContentType;base64,@Convert.ToBase64String(@image.Content)"
-                                         class="w-100 shadow-1-strong rounded visit-image-style " alt="صور تحاليل واشعة" />
-                              </div>
-                                    
-                                        </form>
-                                
+                                            <button type="submit" form="formDeleteImage-@image.Id" class="delete-image-button"><i class="fa-solid fa-trash "></i></button>
+                                        </div>
+                                        <img id="visit-image-@image.Id" onclick="window.opens('data:@image.ContentType;base64,@Convert.ToBase64String(@image.Content)','_blank')"
+                                             src="data:@image.ContentType;base64,@Convert.ToBase64String(@image.Content)"
+                                             class="w-100 shadow-1-strong rounded visit-image-style " alt="صور تحاليل واشعة" />
+                                    </div>
+
+                                </form>
+
                             }
                             <div>
-                          <div  style="background-color: white; border-radius: 10px; padding: 10px;">
-                            <p id="nametwo"> إضافة صورة <i class="fa-solid fa-image"></i></p>
-                           
-                                <form  enctype="multipart/form-data"  id="formUploadVisitImage" method="post" asp-action="UploadVisitImage" asp-controller="Visits" asp-route-id=@Model.Id>
+                                <div style="background-color: white; border-radius: 10px; padding: 10px;">
+                                    <p id="nametwo"> إضافة صورة <i class="fa-solid fa-image"></i></p>
 
-                                    <input style="width: 100%;" type="file" name="image"  form="formUploadVisitImage">
+                                    <form enctype="multipart/form-data" id="formUploadVisitImage" method="post" asp-action="UploadVisitImage" asp-controller="Visits" asp-route-id=@Model.Id>
 
-                                    <input value="@Model.Id" type="number" style="display:none; !important" name="id" hidden form="formUploadVisitImage" />
-                                </form>
-                          </div>
-                            <input type="submit" value="رفع الصورة" asp-action="UploadVisitImage" asp-controller="Visits" class="my-button-blue mt-4" form="formUploadVisitImage" asp-route-id=@Model.Id />
+                                        <input style="width: 100%;" type="file" name="image" form="formUploadVisitImage">
+
+                                        <input value="@Model.Id" type="number" style="display:none; !important" name="id" hidden form="formUploadVisitImage" />
+                                    </form>
+                                    <input type="submit" value="رفع الصورة" asp-action="UploadVisitImage" asp-controller="Visits" class="my-button-blue mt-4" form="formUploadVisitImage" asp-route-id=@Model.Id />
+                                </div>
 
                             </div>
                         </div>
 
                     </div>
                 </div>
-               
 
 
-               
 
             </div>
+           
 
-            <div class="row justify-content-center" style="display:@this.Context.User.Claims.Any(x=> x.Value == ConstantUserType.SUPER_ADMIN || x.Value == ConstantUserType.Doctor )? block: none">
-                    <div class="col-lg-8 text-center p-1">
-                        <p id="nametwo">كتابة التشخيص والعلاج <i class="fa-solid fa-user"></i></p>
-                        <input value="@Model.Diagnosis" class="form-control mb-2" id="exampleFormControlTextarea1" rows="2"
-                        placeholder="كتابة تشخيص المريض" style="font-weight: bold;"/>
+            <div class="row justify-content-center mt-4" style="display:@this.Context.User.Claims.Any(x=> x.Value == ConstantUserType.SUPER_ADMIN || x.Value == ConstantUserType.Doctor )? block: none">
+                    <div class="col-lg-6 text-center p-1">
+
+                    <form id="formWriteDiagnosis" method="post" asp-action="WriteDiagnosis" asp-controller="Visits"></form>
+                    <p id="nametwo">كتابة التشخيص <i class="fa-solid fa-user"></i></p>
+
+                    <input type="text" hidden value="@Model.Id" name="VisitId" form="formWriteDiagnosis" />
+
+                    <input value="@Model.Diagnosis" form="formWriteDiagnosis" name="Diagnosis" class="form-control mb-2"
+                           placeholder="كتابة تشخيص المريض" style="font-weight: bold; height:4rem" />
+
+                    <input type="submit" class="my-button-blue mt-2 mb-4" form="formWriteDiagnosis" value="حفظ التشخيص" />
+                    <!-- end of diagnosis-->
+                    </div>
+
+                    <div class="col-lg-6 text-center p-1 mt-2">
+                    <p id="nametwo">كتابة العلاج <i class="fa-solid fa-prescription-bottle-medical "></i></p>
+
                         <table class="table  table-striped">
                             <thead>
                                 <tr>
@@ -175,13 +183,14 @@
                             </tbody>
                         </table>
                     </div>
+
                 </div>
             
             <div class="row justify-content-center">
                 <div class="col-lg-4 text-center">
-                    <button class="my-button custom-button mt-2 mb-2">
-                        حفظ البيانات <i class="fa-solid fa-floppy-disk"></i>
-                    </button>
+                    <a asp-action="FinishVisitDiagnosis" asp-route-id="@Model.Id" asp-controller="Visits" class="my-button custom-button mt-2 mb-2">
+                        انهاء الكشف <i class="fa-solid fa-floppy-disk"></i>
+                    </a>
                 </div>
             </div>
             

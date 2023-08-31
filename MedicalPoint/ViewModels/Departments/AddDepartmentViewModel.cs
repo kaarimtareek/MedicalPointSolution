@@ -6,5 +6,6 @@ namespace MedicalPoint.ViewModels.Departments
     {
         [Required]
         public string Name { get; set; }
+        public int BedsCount { get; set; }
     }
 }

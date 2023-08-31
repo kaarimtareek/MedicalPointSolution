@@ -14,8 +14,6 @@ namespace MedicalPoint.ViewModels.Medicines
         public DateTime CreatedAt { get; set; }
         public DateTime LastUpdatedAt { get; set; }
         public int? MinimumQuantityThreshold { get; set; }
-        public bool IsDeleted { get; set; }
-        [NotMapped]
        
     }
 }

@@ -23,6 +23,7 @@ namespace MedicalPoint.Data
         public bool CanRemovePatient => !IsAvailable && IsActive;
         public UnderObservationDepartment Department { get; set; }
         public Patient Patient { get; set; }
+        public MedicalPointUser Doctor { get; set; }
         public ICollection<UnderObservationBedHistory> History { get; set; }
     }
 }

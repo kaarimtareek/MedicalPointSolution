@@ -7,3 +7,13 @@
 
 SuperAdmin@test.com
 Admin123
+
+=========
+31-8-2023
+=========
+
+- in case of writing diagnosis, change the status of the visit to with doctor.
+- in case of writing medicines, change the status of the visit to with the pharmacy.
+- add buttons in the patient details & table to add him in bed.
+- need ajax to select the department fisrt then choose the bed number, and get only the available beds & the departments that has available beds count > 0.
+- work on medicines index buttons.

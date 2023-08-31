@@ -17,6 +17,7 @@ namespace MedicalPoint.Services
         Task<OperationResult<Visit>> Edit(int visitId, int userId,  string notes, DateTime? exitTime = null, DateTime? visitTime = null, int? clinicId = null, int? doctorId = null, string? type = null, int? previousVisitId = null, DateTime? followDate = null, bool hasFollowingVisit = false, CancellationToken cancellationToken = default);
         Task<Visit> Get(int visitId, CancellationToken cancellationToken = default);
         Task<List<Visit>> GetAll(int? doctorId = null, int? patientId = null, DateTime? from = null, DateTime? to = null, string? type = null, int? clinicId = null, CancellationToken cancellationToken = default);
+        Task<OperationResult<Visit>> WriteDiagnosis(int visitId, int userId, string diagnosis, bool forceChange = false, CancellationToken cancellationToken = default);
     }
 
     public class VisitsService : IVisitsService
@@ -168,12 +169,17 @@ namespace MedicalPoint.Services
                 return OperationResult<Visit>.Failed(nameof(Visit));
             }
             visit.Diagnosis = diagnosis;
+            visit.DoctorId = userId;
+            if(visit.Status == ConstantVisitStatus.IN_RECIEPTION)
+            {
+                visit.Status = ConstantVisitStatus.IN_CLINIC_DIAGNOSIS;
+            }
             var visitHistory = new VisitHistory
             {
                 VisitId = visitId,
                 CreatedAt = DateTime.Now,
                 UserId = userId,
-                 Status = "",
+                 Status = visit.Status,
                 Diagnosis =  diagnosis,
                 Notes = "",
                 Type = "",

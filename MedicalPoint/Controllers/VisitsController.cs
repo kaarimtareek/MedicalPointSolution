@@ -175,6 +175,17 @@ namespace MedicalPoint.Controllers
 
             return View(viewModel);
         }
+        public async Task<IActionResult> FinishVisitDiagnosis(int id)
+        {
+            var userId = HttpContext.GetUserId();
+            if(userId == null)
+            {
+                return NotFound();
+            }
+            var result = await _visitsService.ChangeStatus(id, userId.Value, ConstantVisitStatus.TAKING_MEDICINE);
+
+            return RedirectToAction("Details", new { id });
+        }
         [HttpPost]
         public async Task<IActionResult> Create([FromForm] AddVisitViewModel viewModel)
         {
@@ -190,6 +201,22 @@ namespace MedicalPoint.Controllers
                 return RedirectToAction("Create",new { patientId= viewModel.PatientId });
             }
             return RedirectToAction(nameof(Index));
+        }
+        [HttpPost]
+        public async Task<IActionResult> WriteDiagnosis([FromForm] WriteVisitDiagnosisViewModel viewModel)
+        {
+            var userId = HttpContext.GetUserId();
+            if(userId == null)
+            {
+                return NotFound();
+            }
+            var result = await _visitsService.WriteDiagnosis( viewModel.VisitId, userId.Value, viewModel.Diagnosis);
+           
+           if(!result.Success) 
+            {
+                return RedirectToAction("Details",new { id= viewModel.VisitId });
+            }
+            return RedirectToAction("Details", new { id = viewModel.VisitId });
         }
         [HttpPost]
         public async Task<IActionResult> UploadVisitImage([FromForm] int id)
