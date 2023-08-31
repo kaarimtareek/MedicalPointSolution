@@ -43,9 +43,9 @@
                         </select>
                     </div>
                     <div class="col-lg-4 text-center">
-                        <select asp-for=Type id="my-select" class="form-select my-select">
+                        <select asp-for=Type id="my-select" class="form-select my-select" asp-items="ViewBag.VisitTypes">
                             <option value="0" selected>النوع</option>
-                            <option value="طوارئ">طوارئ</option>
+                            
                         </select>
                     </div>
                     <div class="col-lg-4 text-center">

@@ -1,4 +1,5 @@
 ﻿using MedicalPoint.Common;
+using MedicalPoint.Constants;
 using MedicalPoint.Data;
 using MedicalPoint.Services;
 using MedicalPoint.ViewModels.Doctors;
@@ -26,9 +27,9 @@ namespace MedicalPoint.Controllers
             _clinicsServices = clinicsServices;
             _visitImagesService = visitImagesService;
         }
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(DateTime? date)
         {
-            var visits = await _visitsService.GetAll();
+            var visits = await _visitsService.GetAll(null, null, date, date.HasValue? date.Value.AddDays(1): null);
             var viewModel = visits.ConvertAll(x => new VisitsViewModel
             {
                 ClinicId = x.Id,
@@ -47,6 +48,7 @@ namespace MedicalPoint.Controllers
                 ClinicName = x.Clinic?.Name??"",
                 DoctorName = x.Doctor?.FullName??"",
                 PatientName = x.Patient?.Name??"",
+                PatientDegree = x.Patient?.Degree?.Name,
             });
             return View(viewModel);
         }
@@ -130,6 +132,11 @@ namespace MedicalPoint.Controllers
                 Text = x.Name,
                 Value = x.Id.ToString(),
             });
+            ViewBag.VisitTypes = ConstantVisitType.ALL.Select(x => new SelectListItem
+            {
+                Text = x,
+                Value = x,
+            });
             var patientViewModel = new PatientViewModel
             {
                 Id = patientId,
@@ -155,7 +162,7 @@ namespace MedicalPoint.Controllers
            
            if(!result.Success) 
             {
-                return RedirectToAction("Create", viewModel.PatientId);
+                return RedirectToAction("Create",new { patientId= viewModel.PatientId });
             }
             return RedirectToAction(nameof(Index));
         }
@@ -185,10 +192,10 @@ namespace MedicalPoint.Controllers
             {
                 return RedirectToAction("Details", new { id });
             }
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Details", new { id });
         }
         [HttpPost]
-        public async Task<IActionResult> DeleteVisitImage( int id )
+        public async Task<IActionResult> DeleteVisitImage( int id , [FromForm] int visitId)
         {
 
             var userId = HttpContext.GetUserId();
@@ -198,12 +205,11 @@ namespace MedicalPoint.Controllers
             }
            
             var result = await _visitImagesService.Remove(id);
-           
            if(!result.Success) 
             {
-                return RedirectToAction("Details", new { id });
+                return RedirectToAction("Details", new {id= visitId });
             }
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Details", new { id = visitId });
         }
     }
 }

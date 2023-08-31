@@ -144,6 +144,10 @@ namespace MedicalPoint.Controllers
 
         public async Task<IActionResult> Logindoctor([FromForm] string email, [FromForm] string password)
         {
+            if (HttpContext.User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Visits");
+            }
             var result = await _medicalPointUsersService.Login(email, password);
             if (!result.Success)
             {
@@ -159,13 +163,9 @@ namespace MedicalPoint.Controllers
             identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()));
             identity.AddClaim(new Claim(ClaimTypes.Email, user.Email));
             identity.AddClaim(new Claim(ClaimTypes.Role, user.AccoutType));
-            var authProperties = new AuthenticationProperties
-            {
-                AllowRefresh = true,
-                
-            };
+            
             var principal = new ClaimsPrincipal(identity);
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, authProperties);
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
             var userfromcookieE = HttpContext.User;
             return RedirectToAction("Index", "Visits");
 
@@ -173,6 +173,10 @@ namespace MedicalPoint.Controllers
 
         public async Task<IActionResult> LoginPharmacy([FromForm] string email, [FromForm] string password)
         {
+            if (HttpContext.User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Medicines");
+            }
             var result = await _medicalPointUsersService.Login(email, password);
             if (!result.Success)
             {
@@ -188,13 +192,9 @@ namespace MedicalPoint.Controllers
             identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()));
             identity.AddClaim(new Claim(ClaimTypes.Email, user.Email));
             identity.AddClaim(new Claim(ClaimTypes.Role, user.AccoutType));
-            var authProperties = new AuthenticationProperties
-            {
-                AllowRefresh = true,
-              
-            };
+           
             var principal = new ClaimsPrincipal(identity);
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, authProperties);
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
             var userfromcookieE = HttpContext.User;
             return RedirectToAction("Index", "Home");
 
@@ -202,6 +202,10 @@ namespace MedicalPoint.Controllers
 
         public async Task<IActionResult> LoginSuperAdmin([FromForm] string email, [FromForm] string password)
         {
+            if (HttpContext.User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Admin");
+            }
             var result = await _medicalPointUsersService.Login(email, password);
             if (!result.Success)
             {
@@ -217,31 +221,9 @@ namespace MedicalPoint.Controllers
             identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()));
             identity.AddClaim(new Claim(ClaimTypes.Email, user.Email));
             identity.AddClaim(new Claim(ClaimTypes.Role, user.AccoutType));
-            var authProperties = new AuthenticationProperties
-            {
-                AllowRefresh = true,
-                // Refreshing the authentication session should be allowed.
-
-                //ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(10),
-                // The time at which the authentication ticket expires. A 
-                // value set here overrides the ExpireTimeSpan option of 
-                // CookieAuthenticationOptions set with AddCookie.
-
-                IsPersistent = true,
-                // Whether the authentication session is persisted across 
-                // multiple requests. When used with cookies, controls
-                // whether the cookie's lifetime is absolute (matching the
-                // lifetime of the authentication ticket) or session-based.
-
-                //IssuedUtc = <DateTimeOffset>,
-                // The time at which the authentication ticket was issued.
-
-                //RedirectUri = <string>
-                // The full path or absolute URI to be used as an http 
-                // redirect response value.
-            };
+            
             var principal = new ClaimsPrincipal(identity);
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, authProperties);
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
             var userfromcookieE = HttpContext.User;
             return RedirectToAction("Index", "Home");
 
@@ -249,6 +231,10 @@ namespace MedicalPoint.Controllers
         [HttpPost]
         public async Task<IActionResult> LoginRegist([FromForm] string email, [FromForm] string password)
         {
+            if (HttpContext.User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Patients");
+            }
             var result = await _medicalPointUsersService.Login(email, password);
             if (!result.Success)
             {
@@ -264,13 +250,9 @@ namespace MedicalPoint.Controllers
             identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()));
             identity.AddClaim(new Claim(ClaimTypes.Email, user.Email));
             identity.AddClaim(new Claim(ClaimTypes.Role, user.AccoutType));
-            var authProperties = new AuthenticationProperties
-            {
-                AllowRefresh = true,
-              
-            };
+           
             var principal = new ClaimsPrincipal(identity);
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, authProperties);
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
             var userfromcookieE = HttpContext.User;
             return RedirectToAction("Index", "Patients");
 
@@ -292,31 +274,9 @@ namespace MedicalPoint.Controllers
             identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()));
             identity.AddClaim(new Claim(ClaimTypes.Email, user.Email));
             identity.AddClaim(new Claim(ClaimTypes.Role, user.AccoutType));
-            var authProperties = new AuthenticationProperties
-            {
-                AllowRefresh = true,
-                // Refreshing the authentication session should be allowed.
-
-                //ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(10),
-                // The time at which the authentication ticket expires. A 
-                // value set here overrides the ExpireTimeSpan option of 
-                // CookieAuthenticationOptions set with AddCookie.
-
-                IsPersistent = true,
-                // Whether the authentication session is persisted across 
-                // multiple requests. When used with cookies, controls
-                // whether the cookie's lifetime is absolute (matching the
-                // lifetime of the authentication ticket) or session-based.
-
-                //IssuedUtc = <DateTimeOffset>,
-                // The time at which the authentication ticket was issued.
-
-                //RedirectUri = <string>
-                // The full path or absolute URI to be used as an http 
-                // redirect response value.
-            };
+            
             var principal = new ClaimsPrincipal(identity);
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, authProperties);
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
             var userfromcookieE = HttpContext.User;
             return RedirectToAction("Index", "Home");
 
