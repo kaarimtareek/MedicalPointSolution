@@ -34,7 +34,7 @@
 *@
                 
             </div>
-            <img src="img/logo.png" alt="logo">
+            <img src="~/UserDesign/img/logo.png" alt="logo">
         </div>
     </nav>
     <div class="landing-three ">
@@ -72,7 +72,7 @@
                                     <td>@visits.DoctorName</td>
                                     <td>@visits.Status</td>
                              
-                                    <td><a asp-action="GetById" asp-controller="Patients" asp-route-id="@visits.PatientId" id="link-green">تفاصيل المريض  <i class="fa-regular fa-file"></i></a></td>
+                                    <td><a asp-action="Detials" asp-controller="Patients" asp-route-id="@visits.PatientId" id="link-green">تفاصيل المريض  <i class="fa-regular fa-file"></i></a></td>
                                     <td><a asp-action="Details" asp-controller="Visits" asp-route-id="@visits.Id" id="link-green">تفاصيل الكشف  <i class="fa-regular fa-file"></i></a></td>
               
                                 </tr>

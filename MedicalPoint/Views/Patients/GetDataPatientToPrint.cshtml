@@ -1,0 +1,76 @@
+﻿@using MedicalPoint.ViewModels.Patients;
+@{
+    Layout = null;
+
+}
+@model List<PatientViewModel>
+
+    <!DOCTYPE html>
+<html dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="~/UserDesign/css/all.min.css">
+    <link rel="stylesheet" href="~/UserDesign/css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/UserDesign/css/bootstrap.min.css.map">
+    <link rel="stylesheet" href="~/UserDesign/css/style.css">
+    <title>طباعة</title>
+    <link rel="icon" href="~/UserDesign/img/logo.png">
+</head>
+
+<body class="background-with-color">
+    <nav class="navbar navbar-expand-lg navbar-light print sticky-top ">
+        <div class="container">
+            <div>
+                <button class="my-button mr-2 custom-button" onclick="window.print()">طباعة البيانات <i class="fa-solid fa-print"></i></button>
+            </div>
+            <img src="~/UserDesign/img/logo.png" alt="logo">
+        </div>
+    </nav>
+    <div class="landing-three ">
+        <div class="container  fadeInUp-animation">
+            <div class="row ">
+                <div class="col-lg-12 text-center ">
+                    <p id="nametwo">طباعة بيانات المرضى <i class="fa-solid fa-user-group"></i></p id="name">
+                    <table class="table  table-striped">
+                        <thead>
+                      
+                            <th>الدرجة / الرتبة</th>
+                            <th>الإسم</th>
+                            <th>الرقم العسكري</th>
+                            <th>الرقم القومي</th>
+                            <th>الدرجة / الرتبة</th>
+                            <th>رقم السرية </th>
+                            <th>الرقم العام</th>
+                            <th>المؤهل</th>
+                            <th>اسم المسجل</th>
+                        </thead>
+                        <tbody>
+                            @foreach(var item in Model)
+                            {
+                            <tr>
+                                
+                                <th>@item.Degree</th>
+                                <th>@item.Name</th>
+                                <th>@item.MilitaryNumber</th>
+                                <th>@item.NationalNumber</th>
+                                <th>@item.SaryaNumber</th>
+                                <th>@item.GeneralNumber</th>
+                                <th>@item.Major</th>
+                                <th>@item.RegisteredUserName</th>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="~/UserDesign/js/all.min.js"></script>
+<script src="~/UserDesign/js/bootstrap.bundle.min.js"></script>
+<script src="~/UserDesign/js/fullscreen.js"></script>
+<!-- <script src="js/bootstrap.bundle.min.js.map"></script> -->
+
+</html>

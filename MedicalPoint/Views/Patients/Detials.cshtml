@@ -71,8 +71,11 @@
                     <div>
 
                         <a asp-controller="Patients" asp-action="Edit" asp-route-id="@ViewBag.Id" class="my-button mt-2 mb-2">تعديل <i class="fa-solid fa-pen-to-square"></i></a>
-                        <a class="my-button-blue mt-2 mb-2">
-                            زيارات المريض <i class="fa-solid fa-right-from-bracket"></i>
+                        <a class="my-button-blue mt-2 mb-2" asp-controller="Visits" asp-action="Details" asp-route-id="@ViewBag.VisitId ">
+                            كشوفات المريض <i class="fa-solid fa-list-check"></i>
+                        </a>
+                        <a class="my-button-blue mt-2 mb-2" asp-controller="Visits" asp-action="Create" asp-route-id="@ViewBag.Id ">
+                            كشف جديد  <i class="fa-solid fa-plus"></i>
                         </a>
                     </div>
                 </div>
