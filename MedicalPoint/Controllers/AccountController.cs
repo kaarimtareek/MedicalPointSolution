@@ -196,7 +196,7 @@ namespace MedicalPoint.Controllers
             var principal = new ClaimsPrincipal(identity);
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
             var userfromcookieE = HttpContext.User;
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "Medicines");
 
         }
 

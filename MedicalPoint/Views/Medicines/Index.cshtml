@@ -45,7 +45,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <form action="">
+                            
                                 @foreach(var item in Model)
                                 {
                                 <tr>
@@ -59,17 +59,26 @@
                                     <td>@item.Quantity</td>
 
                                     <td>
-                                        <button onclick="activeDiv({buttonId:'add-medicine-button-@item.Id',divId:'add-medicine-@item.Id'})" id="add-medicine-button-@item.Id" type="button" class="table-button-blue">إضافة كمية جديدة <i class="fa-solid fa-plus"></i></button>
-                                        <div id="add-medicine-@item.Id" style="display:none;">
-                                        <input type="number" placeholder="الكمية">
-                                            <button onclick="activeButton({buttonId:'add-medicine-button-@item.Id',divId:'add-medicine-@item.Id'})" class="table-button-red">حفظ <i class="fa-solid fa-floppy-disk"></i></button>
-                                            <button onclick="activeButton({buttonId:'add-medicine-button',divId:'add-medicine'})" class="table-button-red">الغاء <i class="fa-solid fa-xmark"></i></button>
+                                        
+                                        <button   onclick="activeDiv({buttonId:'add-medicine-button-@item.Id',divId:'add-medicine-@item.Id'})" id="add-medicine-button-@item.Id" type="button" class="table-button-blue">إضافة كمية جديدة <i class="fa-solid fa-plus"></i></button>
+                                    <form id="formAddQuantity-@item.Id" method="post" asp-action="AddQuantity" asp-controller="Medicines" >
+
+                                            <div id="add-medicine-@item.Id" style="display:none;">
+
+                                            <input hidden type="text" value="@item.Id" name="MedicineId" form="formAddQuantity-@item.Id" />
+
+                                            <input name="Quantity" form="formAddQuantity-@item.Id" type="number" placeholder="الكمية">
+
+                                            <button type="submit" form="formAddQuantity-@item.Id" class="table-button-red">  <i class="fa-solid fa-floppy-disk"></i> حفظ</button>
+
+                                            <button type="button" onclick="activeButton({buttonId:'add-medicine-button-@item.Id',divId:'add-medicine-@item.Id'})" class="table-button-red">الغاء <i class="fa-solid fa-xmark"></i></button>
                                     </div>
+                                            </form>
                                     </td>
                                     <td>
 
 <div>
-                                            <a title="تفاصيل" style="cursor:pointer; font-size:22px; color:var(--green-color)"  asp-controller="Medicines" asp-action="Detials"  asp-route-id="@item.Id">   <i class="fa-solid fa-circle-info"></i> </a>
+                                            <a title="تفاصيل" style="cursor:pointer; font-size:22px; color:var(--green-color)"  asp-controller="Medicines" asp-action="Details"  asp-route-id="@item.Id">   <i class="fa-solid fa-circle-info"></i> </a>
                                             <a title="حذف" style="cursor:pointer; font-size:22px; color:var(--red-color)"       asp-controller="Medicines" asp-action="Delete" asp-route-id="@item.Id">   <i class="fa-solid fa-trash"></i> </a>
                                             <a title="تعديل" style="cursor:pointer; font-size:22px; color:var(--blue-color)"    asp-controller="Medicines" asp-action="Edit" asp-route-id="@item.Id">  <i class="fa-solid fa-pen-to-square"></i> </a>
 
@@ -78,7 +87,7 @@
                                     
                                 </tr>
                                 }
-                             </form>
+                             
                         </tbody>
                     </table>
                 </div>

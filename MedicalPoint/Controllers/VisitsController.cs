@@ -20,13 +20,15 @@ namespace MedicalPoint.Controllers
         private readonly IPatientsService _patientsService;
         private readonly IClinicsServices _clinicsServices;
         private readonly IVisitImagesService _visitImagesService;
+        private readonly IVisitMedicinesService _visitMedicinesService;
 
-        public VisitsController(IVisitsService visitsService, IPatientsService patientsService, IClinicsServices clinicsServices, IVisitImagesService visitImagesService)
+        public VisitsController(IVisitsService visitsService, IPatientsService patientsService, IClinicsServices clinicsServices, IVisitImagesService visitImagesService, IVisitMedicinesService visitMedicinesService)
         {
             _visitsService = visitsService;
             _patientsService = patientsService;
             _clinicsServices = clinicsServices;
             _visitImagesService = visitImagesService;
+            _visitMedicinesService = visitMedicinesService;
         }
         public async Task<IActionResult> Index(DateTime? date)
         {
@@ -144,6 +146,11 @@ namespace MedicalPoint.Controllers
 
                 }).ToList()
             };
+            ViewBag.AvailableMedicines =(await _visitMedicinesService.GetAvailableMedicinesForVisit(id)).Select(x=> new SelectListItem
+            {
+                Text = x.Name,
+                Value = x.Id.ToString(),
+            });
             return View(viewModel);
         }
         public async Task<IActionResult> Create(int patientId)
@@ -265,7 +272,22 @@ namespace MedicalPoint.Controllers
             return RedirectToAction("Details", new { id = visitId });
         }
 
+        [HttpPost]
+        public async Task<IActionResult> AddVisitMedicine([FromForm]int VisitId, [FromForm] int MedicineId, [FromForm] int Quantity)
+        {
+            var userId = HttpContext.GetUserId();
+            if (userId == null)
+            {
+                return NotFound();
+            }
+            var result = await _visitMedicinesService.Add(userId.Value, VisitId, MedicineId, Quantity, "");
 
+            if (!result.Success)
+            {
+                return RedirectToAction("Details", new { id = VisitId });
+            }
+            return RedirectToAction("Details", new { id = VisitId });
+        }
 
         public async Task<IActionResult> PatientVisits(int patientId)
         {

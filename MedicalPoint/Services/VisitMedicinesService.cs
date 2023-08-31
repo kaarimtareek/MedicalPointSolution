@@ -11,6 +11,7 @@ namespace MedicalPoint.Services
     {
         Task<OperationResult<VisitMedicine>> Add(int userId, int visitId, int medicineId, int quantity, string? notes, CancellationToken cancellationToken = default);
         Task<OperationResult<VisitMedicine>> Edit(int userId, int visitMedicineId, int quantity, string? notes, bool forceChange = false, CancellationToken cancellationToken = default);
+        Task<List<Medicine>> GetAvailableMedicinesForVisit(int visitId, CancellationToken cancellationToken = default);
         Task<List<VisitMedicine>> GetMedicinesForVisit(int visitId, CancellationToken cancellationToken = default);
         Task<OperationResult<VisitMedicine>> Remove(int userId, int visitMedicineId, bool forceChange = false, CancellationToken cancellationToken = default);
     }
@@ -27,6 +28,12 @@ namespace MedicalPoint.Services
         {
             var result = await _context.VisitMedicines.Include(x=> x.Medicine).AsNoTracking().Where(x => x.VisitId == visitId).ToListAsync(cancellationToken);
             return result;
+        }
+        public async Task<List<Medicine>> GetAvailableMedicinesForVisit(int visitId, CancellationToken cancellationToken = default)
+        {
+            var visitMedicinesIds = await _context.VisitMedicines.Include(x=> x.Medicine).AsNoTracking().Where(x => x.VisitId == visitId).Select(x=> x.Id).ToListAsync(cancellationToken);
+            var availableMedicines = await _context.Medicines.AsNoTracking().Where(x => !visitMedicinesIds.Contains(x.Id) && x.Quantity > 0 && !x.IsDeleted).ToListAsync();
+            return availableMedicines;
         }
         public async Task<OperationResult<VisitMedicine>> Add(int userId, int visitId, int medicineId, int quantity, string? notes, CancellationToken cancellationToken = default)
         {
@@ -60,6 +67,7 @@ namespace MedicalPoint.Services
                 VisitId = visitId,
                 CreatedAt = DateTime.Now,
                 UserId = userId,
+                Type = "",
                 Diagnosis = "",
                 Notes = "",
                 VisitNumber="",
