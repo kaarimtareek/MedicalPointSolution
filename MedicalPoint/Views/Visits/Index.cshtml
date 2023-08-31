@@ -76,17 +76,15 @@
                                             @if(visits.DoctorName==string.Empty)
                                             {
                                                 <span style="color:red"> لم يتم الكشف  </span>
-                                                           
                                             }
-
-                                                                    else
+                                            else
                                             {
                                                 @visits.DoctorName
                                             }
                                         </td>
                                     <td>@visits.Status</td>
                              
-                                    <td class="print"><a asp-action="Detials" asp-controller="Patients" asp-route-id="@visits.PatientId" id="link-green">تفاصيل المريض  <i class="fa-regular fa-file"></i></a></td>
+                                    <td class="print"><a asp-action="Details" asp-controller="Patients" asp-route-id="@visits.PatientId" id="link-green">تفاصيل المريض  <i class="fa-regular fa-file"></i></a></td>
                                     <td class="print"><a asp-action="Details" asp-controller="Visits" asp-route-id="@visits.Id" id="link-green">تفاصيل الكشف  <i class="fa-regular fa-file"></i></a></td>
               
                                 </tr>

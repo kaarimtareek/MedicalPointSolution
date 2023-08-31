@@ -170,8 +170,8 @@
                                                     <button type="button" class="table-button-red">حذف <i
                                                             class="fa-solid fa-trash"></i></button>
                                                 </div>
-                                                <div id="save-medicine-@medicine.Id">
-                                                    <button type="button" class="table-button-blue" onclick="activateEdit()">حفظ
+                                                <div id="save-medicine-@medicine.Id" style="display:none">
+                                                    <button type="button" class="table-button-blue"  onclick="activateEdit()">حفظ
                                                         <i class="fa-solid fa-pen-to-square"></i></button>
                                                     <button type="button" class="table-button-red">الغاء <i
                                                             class="fa-solid fa-xmark"></i></button>
@@ -180,14 +180,34 @@
                                         </tr>
                                 
                                 }
+                            <tr>
+                                <td></td>
+                                <td>
+                                    <form id="formAddVisitMedicine" method="post" asp-action="AddVisitMedicine" asp-controller="Visits"></form>
+                                    <select name="MedicineId" form="formAddVisitMedicine" class="form-select " asp-items="ViewBag.AvailableMedicines">
+                                        <option selected>العلاج</option>
+
+                                    </select>
+                                </td>
+                                <td id="add-visit-medicine-quantity-label"></td>
+                                <td>
+                                    <input type="number" value="@Model.Id" name="VisitId" form="formAddVisitMedicine" hidden />
+                                    <input type="number" name="Quantity" form="formAddVisitMedicine" required placeholder="الكمية">
+                                </td>
+                                <td>
+                                    <button type="submit" form="formAddVisitMedicine" class="table-button-blue">
+                                        إضافة <i class="fa-solid fa-plus"></i></i>
+                                    </button>
+                                </td>
+                            </tr>
                             </tbody>
                         </table>
                     </div>
 
                 </div>
             
-            <div class="row justify-content-center">
-                <div class="col-lg-4 text-center">
+            <div class="row justify-content-center ">
+                <div class="col-lg-4 text-center mb-4">
                     <a asp-action="FinishVisitDiagnosis" asp-route-id="@Model.Id" asp-controller="Visits" class="my-button custom-button mt-2 mb-2">
                         انهاء الكشف <i class="fa-solid fa-floppy-disk"></i>
                     </a>

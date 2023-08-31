@@ -3,23 +3,26 @@ using MedicalPoint.Data;
 using MedicalPoint.Services;
 using MedicalPoint.ViewModels.Medicines;
 using MedicalPoint.ViewModels.Patients;
+
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
 namespace MedicalPoint.Controllers
 {
+    [Authorize]
     public class MedicinesController : Controller
     {
-        private readonly IMedicinesService _mediicinesService;
+        private readonly IMedicinesService _medicinesService;
 
         public MedicinesController(IMedicinesService mediicinesService)
         {
-            _mediicinesService = mediicinesService;
+            _medicinesService = mediicinesService;
 
         }
         public async Task< IActionResult> Index() 
         {
-            var medicines = await _mediicinesService.GetAll();
+            var medicines = await _medicinesService.GetAll();
             var viewModel = medicines.ConvertAll(x => new GetAllMediciensViewModel
             {
                 CreatedAt = x.CreatedAt,
@@ -48,7 +51,7 @@ namespace MedicalPoint.Controllers
                 return RedirectToAction("AccessDenied", "Account");
             }
             
-            var result = await _mediicinesService.Add(userId.Value, viewModel.Name, viewModel.Quantity,viewModel.MinimumQuantityThreshold);
+            var result = await _medicinesService.Add(userId.Value, viewModel.Name, viewModel.Quantity,viewModel.MinimumQuantityThreshold);
             if (!result.Success)
             {
                 return View();
@@ -56,9 +59,8 @@ namespace MedicalPoint.Controllers
             return RedirectToAction(nameof(Index), "Medicines");
         }
 
-
-
-        public async Task<IActionResult> AddQuantity([FromForm] AddMedicineQuantityViewModel viewModel)
+        [HttpPost]
+        public async Task<IActionResult> AddQuantity([FromForm] int MedicineId, [FromForm] int Quantity)
         {
             var userId = HttpContext.GetUserId();
             if (userId == null)
@@ -66,7 +68,7 @@ namespace MedicalPoint.Controllers
                 return RedirectToAction("AccessDenied", "Account");
             }
 
-            var result = await _mediicinesService.AddQauntity(userId.Value, viewModel.MedicineId,  viewModel.Quantity);
+            var result = await _medicinesService.AddQauntity(userId.Value, MedicineId,  Quantity);
             if (!result.Success)
             {
                 return View();
@@ -74,27 +76,19 @@ namespace MedicalPoint.Controllers
             return RedirectToAction(nameof(Index), "Medicines");
         }
 
-
-
-
-
-
-
-
         public async Task<IActionResult> Details(int id)
         {
 
-            var medicine = await _mediicinesService.Get(id);
+            var medicine = await _medicinesService.Get(id);
 
-            //get medicine id 
-            ViewBag.Id = medicine.Id;
+            
 
             if (medicine == null)
             {
                 return NotFound();
             }
             //Creating the View model
-            var viewModel = new GetAllMediciensViewModel
+            var viewModel = new MedicineViewModel
             {
 
                 Name = medicine.Name,
@@ -103,20 +97,30 @@ namespace MedicalPoint.Controllers
                 LastUpdatedAt = medicine.LastUpdatedAt,
             Quantity = medicine.Quantity,
                MinimumQuantityThreshold = medicine.MinimumQuantityThreshold,
+               History = medicine.History.Select(x=> new MedicineHistoryViewModel
+               {
+
+                   ActionType = x.ActionType,
+                   CreatedAt = x.CreatedAt,
+                   Id = x.Id,
+                   MedicineId = x.Id,
+                   MedicineName = x.MedicineName,
+                   MedicineQuantity = x.MedicineQuantity,
+                   MinimumQuantityThreshold = x.MinimumQuantityThreshold,
+                   UserId = x.UserId,
+                   UserName = x.User?.FullName?? string.Empty,
+               }).ToList()
               
             };
             return View(viewModel);
         }
 
 
-
-
-
         // delete Element Medicines 
         public async Task<IActionResult> Delete(int id)
         {
 
-            var medicine = await _mediicinesService.Get(id);
+            var medicine = await _medicinesService.Get(id);
             var userId = HttpContext.GetUserId();
             if(userId == null)
             {
@@ -126,7 +130,7 @@ namespace MedicalPoint.Controllers
             {
                 return NotFound();
             }
-            await _mediicinesService.Delete(userId.Value, id);
+            await _medicinesService.Delete(userId.Value, id);
            
             return RedirectToAction("Index","Medicines");
         }
@@ -138,7 +142,7 @@ namespace MedicalPoint.Controllers
         public async Task<IActionResult> Edit(int id)
 
         {
-            var medicines = await _mediicinesService.Get(id);
+            var medicines = await _medicinesService.Get(id);
             if (medicines == null)
             {
                 return NotFound();
@@ -170,7 +174,7 @@ namespace MedicalPoint.Controllers
             {
                 return RedirectToAction("AccessDenied", "Account");
             }
-            var result = await _mediicinesService.Edit(userId.Value, viewModel.Id,viewModel.Name, viewModel.Quantity, viewModel.MinimumQuantityThreshold);
+            var result = await _medicinesService.Edit(userId.Value, viewModel.Id,viewModel.Name, viewModel.Quantity, viewModel.MinimumQuantityThreshold);
 
             if (!result.Success)
             {
@@ -178,16 +182,6 @@ namespace MedicalPoint.Controllers
             }
             return RedirectToAction(nameof(Index));
         }
-
-
-
-
-
-
-
-
-
-
 
     }
 

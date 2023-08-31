@@ -47,7 +47,10 @@ namespace MedicalPoint.Services
 
         public async Task<Medicine> Get(int medicineId, CancellationToken cancellationToken = default)
         {
-            var result = await _context.Medicines.Include(x => x.History).AsNoTracking().FirstOrDefaultAsync(x => x.Id == medicineId, cancellationToken);
+            var result = await _context.Medicines
+                .Include(x => x.History)
+                    .ThenInclude(x=> x.User)
+                .AsNoTracking().FirstOrDefaultAsync(x => x.Id == medicineId, cancellationToken);
 
             return result;
         }
@@ -123,14 +126,13 @@ namespace MedicalPoint.Services
             medicine.Quantity += quantity;
             var medicineHistory = new MedicineHistory
             {
-               
-                Medicine = medicine,
                 MedicineQuantity = quantity,
                 UserId = userId,
                 ActionType = ConstantMedicineActionType.ADD_QUANTITY,
                 CreatedAt = DateTime.UtcNow,
+                MedicineId = medicineId,
+                MedicineName = "",
             };
-            await _context.Medicines.AddAsync(medicine, cancellationToken);
             await _context.MedicineHistories.AddAsync(medicineHistory, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
             return OperationResult<Medicine>.Succeeded(medicine);

@@ -72,7 +72,7 @@ namespace MedicalPoint.Controllers
             return RedirectToAction(nameof(Index), "Patients");
         }
 
-        public async Task<IActionResult>Detials(int id )
+        public async Task<IActionResult>Details(int id )
         {
             
             var patient = await _patientsService.GetById(id);
