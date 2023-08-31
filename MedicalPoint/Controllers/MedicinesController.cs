@@ -49,7 +49,7 @@ namespace MedicalPoint.Controllers
                 return RedirectToAction("AccessDenied", "Account");
             }
             
-            var result = await _mediicinesService.Add(userId.Value, viewModel.Name, viewModel.Quantity);
+            var result = await _mediicinesService.Add(userId.Value, viewModel.Name, viewModel.Quantity,viewModel.MinimumQuantityThreshold);
             if (!result.Success)
             {
                 return View();
