@@ -1,7 +1,8 @@
 ﻿using MedicalPoint.Common;
 using MedicalPoint.Constants;
 using MedicalPoint.Data;
-
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace MedicalPoint.Services
@@ -9,9 +10,12 @@ namespace MedicalPoint.Services
     public interface IMedicinesService
     {
         Task<OperationResult<Medicine>> Add(int userId, string name, int quantity, int? quantityThreshold = null, CancellationToken cancellationToken = default);
+        Task<OperationResult<Medicine>> AddQauntity(int userId, int medicineId, int quantity, CancellationToken cancellationToken = default);
+        Task<OperationResult<Medicine>> Delete(int userId, int medicineId, CancellationToken cancellationToken = default);
         Task<OperationResult<Medicine>> Edit(int userId, int medicineId, string name, int quantity, int? quantityThreshold = null, CancellationToken cancellationToken = default);
         Task<Medicine> Get(int medicineId, CancellationToken cancellationToken = default);
         Task<List<Medicine>> GetAll(string name = "", int? quantityLessThan = null, bool medicinesAboutToFinish = false, CancellationToken cancellationToken = default);
+
     }
 
     public class MedicinesService : IMedicinesService
@@ -48,6 +52,31 @@ namespace MedicalPoint.Services
             return result;
         }
 
+
+        public async Task<OperationResult<Medicine>> Delete(int userId, int medicineId, CancellationToken cancellationToken = default)
+        {
+            var medicine = await _context.Medicines.FirstOrDefaultAsync(x => x.Id == medicineId, cancellationToken);
+
+             if(medicine == null)
+            {
+                return OperationResult<Medicine>.Failed("");    
+            }
+
+            medicine.IsDeleted = true;
+            var history = new MedicineHistory
+            {
+                MedicineId = medicineId,
+                ActionType = ConstantMedicineActionType.DELETE,
+                MedicineName = medicine.Name,
+                MedicineQuantity = medicine.Quantity,
+                MinimumQuantityThreshold = medicine.MinimumQuantityThreshold,
+                CreatedAt = DateTime.UtcNow,
+                UserId = userId,
+            };
+            await _context.MedicineHistories.AddAsync(history);
+            _context.SaveChangesAsync();
+            return OperationResult<Medicine>.Succeeded(medicine);
+        }
         public async Task<OperationResult<Medicine>> Add(int userId, string name, int quantity, int? quantityThreshold = null, CancellationToken cancellationToken = default)
         {
             if (QueryValidator.IsMedicineNameExist(_context, name))
@@ -70,7 +99,36 @@ namespace MedicalPoint.Services
                 MedicineQuantity = quantity,
                 MinimumQuantityThreshold = quantityThreshold,
                 UserId = userId,
+                CreatedAt = DateTime.UtcNow,
                 ActionType = ConstantMedicineActionType.ADD,
+            };
+            await _context.Medicines.AddAsync(medicine, cancellationToken);
+            await _context.MedicineHistories.AddAsync(medicineHistory, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
+            return OperationResult<Medicine>.Succeeded(medicine);
+        }
+
+        public async Task<OperationResult<Medicine>> AddQauntity(int userId, int medicineId, int quantity, CancellationToken cancellationToken = default)
+        {
+            if(quantity < 0)
+            {
+                return OperationResult<Medicine>.Failed("");
+            }
+            var medicine = await _context.Medicines.FirstOrDefaultAsync(x => x.Id == medicineId && !x.IsDeleted);
+            if(medicine == null)
+            {
+                return OperationResult<Medicine>.Failed("");
+
+            }
+            medicine.Quantity += quantity;
+            var medicineHistory = new MedicineHistory
+            {
+               
+                Medicine = medicine,
+                MedicineQuantity = quantity,
+                UserId = userId,
+                ActionType = ConstantMedicineActionType.ADD_QUANTITY,
+                CreatedAt = DateTime.UtcNow,
             };
             await _context.Medicines.AddAsync(medicine, cancellationToken);
             await _context.MedicineHistories.AddAsync(medicineHistory, cancellationToken);
@@ -100,6 +158,7 @@ namespace MedicalPoint.Services
                 MedicineQuantity = quantity,
                 MinimumQuantityThreshold = quantityThreshold,
                 UserId = userId,
+                CreatedAt = DateTime.UtcNow,
                 ActionType = ConstantMedicineActionType.EDIT,
             };
             await _context.MedicineHistories.AddAsync(medicineHistory, cancellationToken);

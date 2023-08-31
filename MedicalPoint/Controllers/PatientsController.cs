@@ -162,27 +162,7 @@ namespace MedicalPoint.Controllers
 
 
 
-        // Get all data patient to print this data ! 
-        public async Task<IActionResult> GetDataPatientToPrint()
-        {
-            var patients = await _patientsService.GetPatients();
-            var viewModel = patients.ConvertAll(x => new PatientViewModel
-            {
-                CreatedAt = x.CreatedAt,
-                DegreeId = x.DegreeId,
-                GeneralNumber = x.GeneralNumber,
-                Id = x.Id,
-                Name = x.Name,
-                LastUpdatedAt = x.LastUpdatedAt,
-                LastVisitAt = x.LastVisitAt,
-                Major = x.Major,
-                MilitaryNumber = x.MilitaryNumber,
-                NationalNumber = x.NationalNumber,
-                SaryaNumber = x.SaryaNumber,
-                Degree = x.Degree?.Name ?? string.Empty,
-                RegisteredUserName = x.RegisteredUser?.FullName ?? string.Empty,
-            });
-            return View(viewModel);
-        }
+        
+       
     }
 }

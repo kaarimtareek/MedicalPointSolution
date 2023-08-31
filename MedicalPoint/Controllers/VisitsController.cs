@@ -9,6 +9,7 @@ using MedicalPoint.ViewModels.Visits;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Linq;
 
 namespace MedicalPoint.Controllers
 {
@@ -263,5 +264,37 @@ namespace MedicalPoint.Controllers
             }
             return RedirectToAction("Details", new { id = visitId });
         }
+
+
+
+        public async Task<IActionResult> PatientVisits(int patientId)
+        {
+
+            
+            var visits = await _visitsService.GetAll(null, patientId);
+            var viewModel = visits.Select(x => new VisitsViewModel
+            {
+                ClinicId = x.Id,
+                Diagnosis = x.Diagnosis,
+                DoctorId = x.DoctorId,
+                ExitTime = x.ExitTime,
+                FollowingVisitDate = x.FollowingVisitDate,
+                Id = x.Id,
+                IsDeleted = x.IsDeleted,
+                PatientId = x.PatientId,
+                PreviousVisitId = x.PreviousVisitId,
+                Status = x.Status,
+                Type = x.Type,
+                VisitNumber = x.VisitNumber,
+                VisitTime = x.VisitTime,
+                ClinicName = x.Clinic?.Name ?? "",
+                DoctorName = x.Doctor?.FullName ?? "",
+                PatientName = x.Patient?.Name ?? "",
+                PatientDegree = x.Patient?.Degree?.Name ?? "",
+            });
+            return View("Index", viewModel);
+        }
+
+
     }
 }

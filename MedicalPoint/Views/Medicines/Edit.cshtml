@@ -1,0 +1,68 @@
+﻿@model MedicalPoint.ViewModels.Medicines.GetAllMediciensViewModel
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="~/UserDesign/css/all.min.css">
+    <link rel="stylesheet" href="~/UserDesign/css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/UserDesign/css/bootstrap.min.css.map">
+    <link rel="stylesheet" href="~/UserDesign/css/style.css">
+    <title>تعديل دواء</title>
+    <link rel="icon" href="~/UserDesign/img/logo.png">
+</head>
+<body class="background-with-color">
+    <nav class="navbar navbar-expand-lg navbar-light d-none d-lg-block ">
+        <div class="container ">
+            <div>
+                <a  asp-controller="Account" asp-action="Logout" class="my-button ml-2">تسجيل الخروج <i class="fa-solid fa-right-from-bracket"></i></a>
+                <a  asp-controller="Medicines" asp-action="Index" class="my-button-blue">العودة للرئيسية <i class="fa-solid fa-house"></i></a>
+            </div>
+            <img src="~/UserDesign/img/logo.png" alt="logo">
+        </div>
+    </nav>
+
+
+    <div class="landing-three ">
+        <div class="container  fadeInUp-animation">
+            <div class="row justify-content-center ">
+                <form action="Edit" method="post">
+                    <div class="col-lg-12 text-center ">
+                        <img src="~/UserDesign/img/medicine.gif" alt="">
+                        <p id="name">تعديل دواء</p>
+                    </div>
+                    <div class="row justify-content-center">
+                        <div class="col-lg-4 text-center ">
+                            <input asp-for=Name class="my-input customewidth" type="text"  placeholder="إسم الصنف" >
+                            <input asp-for=Id class="my-input customewidth" type="text" hidden>
+
+                        </div>
+                        <div class="col-lg-4 text-center ">
+                            <input asp-for=Quantity class="my-input customewidth" type="number"  placeholder="الكمية">
+                        </div>
+                        <div class="col-lg-4 text-center ">
+                            <input asp-for=MinimumQuantityThreshold class="my-input customewidth" type="number"  placeholder="الحد الادنى للاكتفاء" >
+                        </div>
+                    </div>
+
+
+                    <div class="col-lg-12 text-center ">
+                        <button type="submit" class="my-button  mt-3">حفظ التعديل <i class="fa-solid fa-floppy-disk"></i></button>
+                        <a class="my-button  mt-3" asp-action="index" asp-controller="Medicines"> الرجوع <i class="fa-solid fa-floppy-disk"></i></a>
+
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="~/UserDesign/js/all.min.js"></script>
+<script src="~/UserDesign/js/bootstrap.bundle.min.js"></script>
+<!-- <script src="js/bootstrap.bundle.min.js.map"></script> -->
+
+</html>
