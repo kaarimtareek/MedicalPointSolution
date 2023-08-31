@@ -44,7 +44,7 @@ namespace MedicalPoint.Data
         public ICollection<VisitHistory> History { get; set; }
         public bool CanEditVisit(bool forceChange = false)
         {
-            return forceChange || Status == ConstantVisitStatus.FINISHED;
+            return forceChange || Status != ConstantVisitStatus.FINISHED;
         }
 
     }

@@ -113,11 +113,11 @@ namespace MedicalPoint.Services
             {
                 return OperationResult<Patient>.Failed("Name Already exist");
             }
-            patient.Major = major;
-            patient.SaryaNumber = sarayNumber;
-            patient.NationalNumber = nationalNumber;
-            patient.MilitaryNumber = militaryNumber;
-            patient.GeneralNumber = generalNumber;
+            patient.Major = major??"";
+            patient.SaryaNumber = sarayNumber??"";
+            patient.NationalNumber = nationalNumber??"";
+            patient.MilitaryNumber = militaryNumber??"";
+            patient.GeneralNumber = generalNumber??"";
             patient.Name = name;
             patient.LastUpdatedAt = DateTime.Now;
             patient.DegreeId = degreeId;

@@ -3,7 +3,6 @@
 @{
     Layout = null;
 }
-
 <!DOCTYPE html>
 <html dir="rtl">
 
@@ -38,15 +37,15 @@
                         <tbody>
                             <tr>
                                 <th>الدرجة / الرتبة</th>
-                                <td>@Model.Patient.Degree</td>
+                                <td>@Model.Patient?.Degree</td>
                             </tr>
                             <tr>
                                 <th>اسم المريض</th>
-                                <td>@Model.Patient.Name</td>
+                                <td>@Model.Patient?.Name</td>
                             </tr>
                             <tr>
                                 <th>العيادة</th>
-                                <td>@Model.Clinic.Name</td>
+                                <td>@Model.Clinic?.Name</td>
                             </tr>
                             <tr>
                                 <th>رقم الكشف</th>
@@ -58,7 +57,7 @@
                             </tr>
                             <tr>
                                 <th>اسم الطبيب</th>
-                                <td>@Model.Doctor.FullName</td>
+                                <td>@Model.Doctor?.FullName</td>
                             </tr>
 
 
@@ -77,32 +76,37 @@
 
                     <div class="beds-container">
                         <div class="beds p-0" style="    grid-gap: 5px !important;">
-                            <a id="paitant-image" href="~/userDesign/img/scaner.jpg">
-                                <img id="paitant-image-source"
-                                     src="~/userDesign/img/scaner.jpg"
-                                class="w-100 shadow-1-strong rounded " alt="Yosemite National Park" />
-                        </a>
-                            <a id="paitant-image" href="~/userDesign/img/data.jpg">
-                            <img id="paitant-image-source"
-                                     src="~/userDesign/img/data.jpg"
-                                class="w-100 shadow-1-strong rounded " alt="Yosemite National Park" />
+                            @foreach(var image in Model.Images)
+                            {
+
+                                        <form id="formDeleteImage-@image.Id" method="post" asp-action="DeleteVisitImage" asp-controller="Visits" asp-route-id="@image.Id" >
+                              <div class="image-container">
+                                    <div class="overlay-image">
+
+                                        <button type="submit" form="formDeleteImage-@image.Id" class="delete-image-button"><i class="fa-solid fa-trash "></i></button>
+                                  </div>
+                                    <img id="visit-image-@image.Id" onclick="window.opens('data:@image.ContentType;base64,@Convert.ToBase64String(@image.Content)','_blank')"
+                                         src="data:@image.ContentType;base64,@Convert.ToBase64String(@image.Content)"
+                                         class="w-100 shadow-1-strong rounded visit-image-style " alt="صور تحاليل واشعة" />
+                              </div>
+                                    
+                                        </form>
                                 
-                        </a>
-                            <a id="paitant-image" href="~/userDesign/img/scaner.jpg">
-                                <img id="paitant-image-source"
-                                     src="~/userDesign/img/scaner.jpg"
-                                    class="w-100 shadow-1-strong rounded " alt="Yosemite National Park" />
-                            </a>
-                            <a id="paitant-image" href="~/userDesign/img/scaner.jpg">
-                                <img id="paitant-image-source"
-                                     src="~/userDesign/img/scaner.jpg"
-                                class="w-100 shadow-1-strong rounded " alt="Yosemite National Park" />
-                        </a>
+                            }
+                            <div>
                           <div  style="background-color: white; border-radius: 10px; padding: 10px;">
                             <p id="nametwo"> إضافة صورة <i class="fa-solid fa-image"></i></p>
-                            <input  style="width: 100%;" type="file" name="" id="">
-                          </div>
+                           
+                                <form  enctype="multipart/form-data"  id="formUploadVisitImage" method="post" asp-action="UploadVisitImage" asp-controller="Visits" asp-route-id=@Model.Id>
 
+                                    <input style="width: 100%;" type="file" name="image"  form="formUploadVisitImage">
+
+                                    <input value="@Model.Id" type="number" name="id" hidden form="formUploadVisitImage" />
+                                </form>
+                          </div>
+                            <input type="submit" value="رفع الصورة" asp-action="UploadVisitImage" asp-controller="Visits" class="my-button-blue mt-4" form="formUploadVisitImage" asp-route-id=@Model.Id />
+
+                            </div>
                         </div>
 
                     </div>
@@ -129,58 +133,36 @@
                             </tr>
                         </thead>
                         <tbody>
-                            
+                            @foreach(var medicine in Model.Medicines)
+                            {
                                 <tr>
-                                    <td></td>
-                                    <td>
-                                        <select class="form-select ">
-                                            <option selected>العلاج</option>
-
-                                            <option value="1">بانادول</option>
-                                            <option value="2">كونجستال</option>
-
-
-                                        </select>
-                                    </td>
-                                    <td></td>
-                                    <td>
-                                        <input type="number" required placeholder="الكمية">
-                                    </td>
-                                    <td><button type="button" class="table-button-blue">إضافة <i
-                                                class="fa-solid fa-plus"></i></i></button></td>
-                                </tr>
-                                <tr>
-                                    <td></td>
-                                    <td>
-                                        <select class="form-select ">
-                                            <option selected>العلاج</option>
-
-                                            <option value="1">بانادول</option>
-                                            <option value="2">كونجستال</option>
-
-
-                                        </select>
-                                    </td>
-                                    <td></td>
-                                    <td>
-                                        <input type="number" required placeholder="الكمية">
-                                    </td>
-                                    <td>
-                                        <div id="edit-div">
-                                            <button type="button" class="table-button-blue"
-                                                onclick="activateSave()">تعديل <i
-                                                    class="fa-solid fa-pen-to-square"></i></button>
-                                            <button type="button" class="table-button-red">حذف <i
-                                                    class="fa-solid fa-trash"></i></button>
-                                        </div>
-                                        <div id="save-div">
-                                            <button type="button" class="table-button-blue" onclick="activateEdit()">حفظ
-                                                <i class="fa-solid fa-pen-to-square"></i></button>
-                                            <button type="button" class="table-button-red">الغاء <i
-                                                    class="fa-solid fa-xmark"></i></button>
-                                        </div>
-                                    </td>
-                                </tr>
+                                        <td></td>
+                                        <td>
+                                           @medicine.MedicineName
+                                        </td>
+                                        <td>@medicine.InventoryQuantity</td>
+                                        <td>
+                                            @medicine.Quantity
+                                            <input type="number" id="input-quantity-medicine-@medicine.Id" hidden required placeholder="الكمية" value="@medicine.Quantity">
+                                        </td>
+                                        <td>
+                                            <div id="edit-medicine-@medicine.Id">
+                                                <button type="button" class="table-button-blue"
+                                                    onclick="activateSave()">تعديل <i
+                                                        class="fa-solid fa-pen-to-square"></i></button>
+                                                <button type="button" class="table-button-red">حذف <i
+                                                        class="fa-solid fa-trash"></i></button>
+                                            </div>
+                                            <div id="save-medicine-@medicine.Id">
+                                                <button type="button" class="table-button-blue" onclick="activateEdit()">حفظ
+                                                    <i class="fa-solid fa-pen-to-square"></i></button>
+                                                <button type="button" class="table-button-red">الغاء <i
+                                                        class="fa-solid fa-xmark"></i></button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                
+                            }
                         </tbody>
                     </table>
                 </div>

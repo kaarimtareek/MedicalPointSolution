@@ -53,7 +53,7 @@ namespace MedicalPoint.Common
             (context, activeOnly) => context.Degrees.AsNoTracking().ToList());
 
         private static readonly Func<ApplicationDbContext, bool, List<Clinic>> _getClinics = EF.CompileQuery<ApplicationDbContext, bool, List<Clinic>>(
-            (context, activeOnly) => context.Clinics.AsNoTracking().Where(x=> !activeOnly ||  x.IsActive).ToList());
+            (context, activeOnly) => context.Clinics.AsNoTracking().ToList());
 
 
 

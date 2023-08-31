@@ -30,6 +30,7 @@ namespace MedicalPoint.ViewModels.Visits
         public DateTime VisitTime { get; set; }
         public DateTime? ExitTime { get; set; }
         public List<VisitImageViewModel> Images { get; set; }
+        public List<VisitMedicineViewModel> Medicines { get; set; }
         public DateTime? FollowingVisitDate { get; set; }
         [NotMapped]
         public bool IsFollowingVisit => PreviousVisitId != null;
@@ -38,6 +39,15 @@ namespace MedicalPoint.ViewModels.Visits
     {
         public int Id { get; set; }
         public string Name { get; set; }
+        public string ContentType { get; set; }
         public byte[] Content { get; set; }
+    }
+    public class VisitMedicineViewModel
+    {
+        public int Id { get; set; }
+        public int MedicineId { get; set; }
+        public string MedicineName { get; set; }
+        public int InventoryQuantity { get; set; }
+        public int Quantity { get; set; }
     }
 }
