@@ -52,6 +52,31 @@ namespace MedicalPoint.Controllers
             });
             return View(viewModel);
         }
+        public async Task<IActionResult> Patient(int patientId)
+        {
+            var visits = await _visitsService.GetAll(null, patientId);
+            var viewModel = visits.ConvertAll(x => new VisitsViewModel
+            {
+                ClinicId = x.Id,
+                Diagnosis = x.Diagnosis,
+                DoctorId = x.DoctorId,
+                ExitTime = x.ExitTime,
+                FollowingVisitDate = x.FollowingVisitDate,
+                Id = x.Id,
+                IsDeleted = x.IsDeleted,
+                PatientId = x.PatientId,
+                PreviousVisitId = x.PreviousVisitId,
+                Status = x.Status,
+                Type = x.Type,
+                VisitNumber = x.VisitNumber,
+                VisitTime = x.VisitTime,
+                ClinicName = x.Clinic?.Name ?? "",
+                DoctorName = x.Doctor?.FullName ?? "",
+                PatientName = x.Patient?.Name ?? "",
+                PatientDegree = x.Patient?.Degree?.Name,
+            });
+            return View("Index",viewModel);
+        }
         public async Task<IActionResult> Details(int id)
         {
             var visit = await _visitsService.Get(id);
@@ -167,7 +192,7 @@ namespace MedicalPoint.Controllers
             return RedirectToAction(nameof(Index));
         }
         [HttpPost]
-        public async Task<IActionResult> UploadVisitImage([FromForm] int id , [FromForm] IFormFile image)
+        public async Task<IActionResult> UploadVisitImage([FromForm] int id)
         {
 
             var userId = HttpContext.GetUserId();
