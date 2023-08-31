@@ -79,6 +79,7 @@ namespace MedicalPoint.Controllers
             
             //get patient id 
             ViewBag.Id = patient.Id;
+
             if(patient==null)
             {
                 return NotFound();
