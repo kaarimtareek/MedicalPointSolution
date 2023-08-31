@@ -1,4 +1,5 @@
-﻿@using MedicalPoint.ViewModels.Visits;
+﻿@using MedicalPoint.Constants;
+@using MedicalPoint.ViewModels.Visits;
 @model VisitViewModel
 @{
     Layout = null;
@@ -31,7 +32,7 @@
         <div class="container fadeInUp-animation ">
             <div class="row justify-content-center">
                 <div class="col-lg-8 text-center p-1 ">
-                    <p id="nametwo">بيانات مريض الكشف <i class="fa-solid fa-user"></i></p>
+                    <p id="nametwo">بيانات كشف المريض <i class="fa-solid fa-user"></i></p>
 
                     <table class="table  table-striped">
                         <tbody>
@@ -89,7 +90,7 @@
                                         <form id="formDeleteImage-@image.Id" method="post" asp-action="DeleteVisitImage" asp-controller="Visits" asp-route-id="@image.Id" >
                               <div class="image-container">
                                     <div class="overlay-image">
-                                            <input type="number" form="formDeleteImage-@image.Id" name="visitId" value="@Model.Id" />
+                                            <input type="number" form="formDeleteImage-@image.Id" style="display:none" name="visitId" value="@Model.Id" />
                                         <button type="submit" form="formDeleteImage-@image.Id" class="delete-image-button"><i class="fa-solid fa-trash "></i></button>
                                   </div>
                                     <img id="visit-image-@image.Id" onclick="window.opens('data:@image.ContentType;base64,@Convert.ToBase64String(@image.Content)','_blank')"
@@ -108,7 +109,7 @@
 
                                     <input style="width: 100%;" type="file" name="image"  form="formUploadVisitImage">
 
-                                    <input value="@Model.Id" type="number" name="id" hidden form="formUploadVisitImage" />
+                                    <input value="@Model.Id" type="number" style="display:none; !important" name="id" hidden form="formUploadVisitImage" />
                                 </form>
                           </div>
                             <input type="submit" value="رفع الصورة" asp-action="UploadVisitImage" asp-controller="Visits" class="my-button-blue mt-4" form="formUploadVisitImage" asp-route-id=@Model.Id />
@@ -124,56 +125,58 @@
                
 
             </div>
-            <div class="row justify-content-center  ">
-                <div class="col-lg-8 text-center p-1">
-                    <p id="nametwo">كتابة التشخيص والعلاج <i class="fa-solid fa-user"></i></p>
-                    <textarea class="form-control mb-2" id="exampleFormControlTextarea1" rows="2"
-                    placeholder="كتابة تشخيص المريض" style="font-weight: bold;"></textarea>
-                    <table class="table  table-striped">
-                        <thead>
-                            <tr>
-                                <th>مسلسل</th>
-                                <th>إسم العلاج</th>
-                                <th>المخزون</th>
-                                <th>الكمية</th>
-                                <th>خيارات</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach(var medicine in Model.Medicines)
-                            {
+
+            <div class="row justify-content-center" style="display:@this.Context.User.Claims.Any(x=> x.Value == ConstantUserType.SUPER_ADMIN || x.Value == ConstantUserType.Doctor )? block: none">
+                    <div class="col-lg-8 text-center p-1">
+                        <p id="nametwo">كتابة التشخيص والعلاج <i class="fa-solid fa-user"></i></p>
+                        <input value="@Model.Diagnosis" class="form-control mb-2" id="exampleFormControlTextarea1" rows="2"
+                        placeholder="كتابة تشخيص المريض" style="font-weight: bold;"/>
+                        <table class="table  table-striped">
+                            <thead>
                                 <tr>
-                                        <td></td>
-                                        <td>
-                                           @medicine.MedicineName
-                                        </td>
-                                        <td>@medicine.InventoryQuantity</td>
-                                        <td>
-                                            @medicine.Quantity
-                                            <input type="number" id="input-quantity-medicine-@medicine.Id" hidden required placeholder="الكمية" value="@medicine.Quantity">
-                                        </td>
-                                        <td>
-                                            <div id="edit-medicine-@medicine.Id">
-                                                <button type="button" class="table-button-blue"
-                                                    onclick="activateSave()">تعديل <i
-                                                        class="fa-solid fa-pen-to-square"></i></button>
-                                                <button type="button" class="table-button-red">حذف <i
-                                                        class="fa-solid fa-trash"></i></button>
-                                            </div>
-                                            <div id="save-medicine-@medicine.Id">
-                                                <button type="button" class="table-button-blue" onclick="activateEdit()">حفظ
-                                                    <i class="fa-solid fa-pen-to-square"></i></button>
-                                                <button type="button" class="table-button-red">الغاء <i
-                                                        class="fa-solid fa-xmark"></i></button>
-                                            </div>
-                                        </td>
-                                    </tr>
+                                    <th>مسلسل</th>
+                                    <th>إسم العلاج</th>
+                                    <th>المخزون</th>
+                                    <th>الكمية</th>
+                                    <th>خيارات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach(var medicine in Model.Medicines)
+                                {
+                                    <tr>
+                                            <td></td>
+                                            <td>
+                                               @medicine.MedicineName
+                                            </td>
+                                            <td>@medicine.InventoryQuantity</td>
+                                            <td>
+                                                @medicine.Quantity
+                                                <input type="number" id="input-quantity-medicine-@medicine.Id" hidden required placeholder="الكمية" value="@medicine.Quantity">
+                                            </td>
+                                            <td>
+                                                <div id="edit-medicine-@medicine.Id">
+                                                    <button type="button" class="table-button-blue"
+                                                        onclick="activateSave()">تعديل <i
+                                                            class="fa-solid fa-pen-to-square"></i></button>
+                                                    <button type="button" class="table-button-red">حذف <i
+                                                            class="fa-solid fa-trash"></i></button>
+                                                </div>
+                                                <div id="save-medicine-@medicine.Id">
+                                                    <button type="button" class="table-button-blue" onclick="activateEdit()">حفظ
+                                                        <i class="fa-solid fa-pen-to-square"></i></button>
+                                                    <button type="button" class="table-button-red">الغاء <i
+                                                            class="fa-solid fa-xmark"></i></button>
+                                                </div>
+                                            </td>
+                                        </tr>
                                 
-                            }
-                        </tbody>
-                    </table>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
+            
             <div class="row justify-content-center">
                 <div class="col-lg-4 text-center">
                     <button class="my-button custom-button mt-2 mb-2">

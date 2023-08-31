@@ -9,10 +9,10 @@ namespace MedicalPoint.Services
 {
     public interface IVisitMedicinesService
     {
-        Task<OperationResult<VisitMedicine>> Add(int visitId, int medicineId, int quantity, string? notes, CancellationToken cancellationToken = default);
-        Task<OperationResult<VisitMedicine>> Edit(int visitMedicineId, int quantity, string? notes, bool forceChange = false, CancellationToken cancellationToken = default);
+        Task<OperationResult<VisitMedicine>> Add(int userId, int visitId, int medicineId, int quantity, string? notes, CancellationToken cancellationToken = default);
+        Task<OperationResult<VisitMedicine>> Edit(int userId, int visitMedicineId, int quantity, string? notes, bool forceChange = false, CancellationToken cancellationToken = default);
         Task<List<VisitMedicine>> GetMedicinesForVisit(int visitId, CancellationToken cancellationToken = default);
-        Task<OperationResult<VisitMedicine>> Remove(int visitMedicineId, bool forceChange = false, CancellationToken cancellationToken = default);
+        Task<OperationResult<VisitMedicine>> Remove(int userId, int visitMedicineId, bool forceChange = false, CancellationToken cancellationToken = default);
     }
 
     public class VisitMedicinesService : IVisitMedicinesService
@@ -28,16 +28,16 @@ namespace MedicalPoint.Services
             var result = await _context.VisitMedicines.AsNoTracking().Where(x => x.VisitId == visitId).ToListAsync(cancellationToken);
             return result;
         }
-        public async Task<OperationResult<VisitMedicine>> Add(int visitId, int medicineId, int quantity, string? notes, CancellationToken cancellationToken = default)
+        public async Task<OperationResult<VisitMedicine>> Add(int userId, int visitId, int medicineId, int quantity, string? notes, CancellationToken cancellationToken = default)
         {
             //check if the medicine is already added to the visit
             //check if the visit status allows to add new medicine or not
-            var visit = await _context.Visits.AsNoTracking().FirstOrDefaultAsync(x => x.Id == visitId, cancellationToken);
+            var visit = await _context.Visits.FirstOrDefaultAsync(x => x.Id == visitId, cancellationToken);
             if (visit == null)
             {
                 return OperationResult<VisitMedicine>.Failed("");
             }
-            if (visit.Status == ConstantVisitStatus.FINISHED)
+            if (!visit.CanEditVisit())
             {
                 return OperationResult<VisitMedicine>.Failed("");
             }
@@ -45,6 +45,7 @@ namespace MedicalPoint.Services
             {
                 return OperationResult<VisitMedicine>.Failed("");
             }
+            visit.DoctorId ??= userId;
             var visitMedicine = new VisitMedicine
             {
                 CreatedAt = DateTime.Now,
@@ -57,7 +58,7 @@ namespace MedicalPoint.Services
             await _context.SaveChangesAsync(cancellationToken);
             return OperationResult<VisitMedicine>.Succeeded(visitMedicine, "");
         }
-        public async Task<OperationResult<VisitMedicine>> Edit(int visitMedicineId, int quantity, string? notes, bool forceChange = false, CancellationToken cancellationToken = default)
+        public async Task<OperationResult<VisitMedicine>> Edit(int userId, int visitMedicineId, int quantity, string? notes, bool forceChange = false, CancellationToken cancellationToken = default)
         {
             if (quantity < 1)
                 return OperationResult<VisitMedicine>.Failed("");
@@ -66,7 +67,7 @@ namespace MedicalPoint.Services
             {
                 return OperationResult<VisitMedicine>.Failed("");
             }
-            var visit = await _context.Visits.AsNoTracking().FirstOrDefaultAsync(x => x.Id == visitMedicine.VisitId, cancellationToken);
+            var visit = await _context.Visits.FirstOrDefaultAsync(x => x.Id == visitMedicine.VisitId, cancellationToken);
             if (visit == null || visit.IsDeleted)
             {
                 return OperationResult<VisitMedicine>.Failed("");
@@ -75,6 +76,8 @@ namespace MedicalPoint.Services
             {
                 return OperationResult<VisitMedicine>.Failed("");
             }
+            visit.DoctorId ??= userId;
+
             visitMedicine.Quantity = quantity;
             visitMedicine.Notes = notes ?? string.Empty;
 
@@ -82,7 +85,7 @@ namespace MedicalPoint.Services
             return OperationResult<VisitMedicine>.Succeeded(visitMedicine, "");
         }
 
-        public async Task<OperationResult<VisitMedicine>> Remove(int visitMedicineId, bool forceChange = false, CancellationToken cancellationToken = default)
+        public async Task<OperationResult<VisitMedicine>> Remove(int userId, int visitMedicineId, bool forceChange = false, CancellationToken cancellationToken = default)
         {
 
             var visitMedicine = await _context.VisitMedicines.FirstOrDefaultAsync(x => x.Id == visitMedicineId, cancellationToken);
@@ -90,7 +93,7 @@ namespace MedicalPoint.Services
             {
                 return OperationResult<VisitMedicine>.Failed("");
             }
-            var visit = await _context.Visits.AsNoTracking().FirstOrDefaultAsync(x => x.Id == visitMedicine.VisitId, cancellationToken);
+            var visit = await _context.Visits.FirstOrDefaultAsync(x => x.Id == visitMedicine.VisitId, cancellationToken);
             if (visit == null || visit.IsDeleted)
             {
                 return OperationResult<VisitMedicine>.Failed("");
@@ -99,6 +102,7 @@ namespace MedicalPoint.Services
             {
                 return OperationResult<VisitMedicine>.Failed("");
             }
+            visit.DoctorId ??= userId;
             _context.VisitMedicines.Remove(visitMedicine);
             await _context.SaveChangesAsync(cancellationToken);
             return OperationResult<VisitMedicine>.Succeeded(visitMedicine, "");

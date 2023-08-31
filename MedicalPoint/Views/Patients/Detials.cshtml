@@ -19,8 +19,8 @@
     <nav class="navbar navbar-expand-lg navbar-light ">
         <div class="container">
             <div>
-                <button class="my-button ml-2">تسجيل الخروج <i class="fa-solid fa-right-from-bracket"></i></button>
-                <button class="my-button-blue">العودة للرئيسية <i class="fa-solid fa-house"></i></button>
+                <a asp-action="Logout" asp-controller="Account" class="my-button ml-2">تسجيل الخروج <i class="fa-solid fa-right-from-bracket"></i></a>
+                <a asp-action="Index" asp-controller="Patients" class="my-button-blue">العودة للرئيسية <i class="fa-solid fa-house"></i></a>
             </div>
             <img src="~/UserDesign/img/logo.png" alt="logo">
         </div>
@@ -71,10 +71,10 @@
                     <div>
 
                         <a asp-controller="Patients" asp-action="Edit" asp-route-id="@ViewBag.Id" class="my-button mt-2 mb-2">تعديل <i class="fa-solid fa-pen-to-square"></i></a>
-                        <a class="my-button-blue mt-2 mb-2" asp-controller="Visits" asp-action="Details" asp-route-id="@ViewBag.VisitId ">
+                        <a class="my-button-blue mt-2 mb-2" asp-controller="Visits" asp-action="Patient" asp-route-patientId="@Model.Id ">
                             كشوفات المريض <i class="fa-solid fa-list-check"></i>
                         </a>
-                        <a class="my-button-blue mt-2 mb-2" asp-controller="Visits" asp-action="Create" asp-route-id="@ViewBag.Id ">
+                        <a class="my-button-blue mt-2 mb-2" asp-controller="Visits" asp-action="Create" asp-route-patientId="@Model.Id ">
                             كشف جديد  <i class="fa-solid fa-plus"></i>
                         </a>
                     </div>
