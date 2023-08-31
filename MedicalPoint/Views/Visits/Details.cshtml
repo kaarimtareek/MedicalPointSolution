@@ -21,8 +21,8 @@
     <nav class="navbar navbar-expand-lg navbar-light ">
         <div class="container">
             <div>
-                <button class="my-button ml-2">تسجيل الخروج <i class="fa-solid fa-right-from-bracket"></i></button>
-                <button class="my-button-blue">العودة للرئيسية <i class="fa-solid fa-house"></i></button>
+                <a asp-action="Logout" asp-controller="Account" class="my-button ml-2">تسجيل الخروج <i class="fa-solid fa-right-from-bracket"></i></a>
+                <a asp-action="Index" asp-controller="Visits" class="my-button-blue">العودة للرئيسية <i class="fa-solid fa-house"></i></a>
             </div>
             <img src="~/userDesign/img/logo.png" alt="logo">
         </div>
@@ -59,8 +59,15 @@
                                 <th>اسم الطبيب</th>
                                 <td>@Model.Doctor?.FullName</td>
                             </tr>
+                            <tr>
+                                <th>حالة الكشف</th>
+                                <td>@Model.Status</td>
+                            </tr>
 
-
+                            <tr>
+                                <th>تاريخ الكشف</th>
+                                <td>@Model.VisitTime</td>
+                            </tr>
                         </tbody>
                     </table>
 
@@ -82,7 +89,7 @@
                                         <form id="formDeleteImage-@image.Id" method="post" asp-action="DeleteVisitImage" asp-controller="Visits" asp-route-id="@image.Id" >
                               <div class="image-container">
                                     <div class="overlay-image">
-
+                                            <input type="number" form="formDeleteImage-@image.Id" name="visitId" value="@Model.Id" />
                                         <button type="submit" form="formDeleteImage-@image.Id" class="delete-image-button"><i class="fa-solid fa-trash "></i></button>
                                   </div>
                                     <img id="visit-image-@image.Id" onclick="window.opens('data:@image.ContentType;base64,@Convert.ToBase64String(@image.Content)','_blank')"
@@ -169,8 +176,9 @@
             </div>
             <div class="row justify-content-center">
                 <div class="col-lg-4 text-center">
-                    <button class="my-button custom-button mt-2 mb-2"><i class="fa-solid fa-forward-step"></i>
-                        التالي</button>
+                    <button class="my-button custom-button mt-2 mb-2">
+                        حفظ البيانات <i class="fa-solid fa-floppy-disk"></i>
+                    </button>
                 </div>
             </div>
             

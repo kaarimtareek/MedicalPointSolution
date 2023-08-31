@@ -183,6 +183,7 @@ namespace MedicalPoint.Services
                 .Include(x=> x.Doctor)
                 .Include(x=> x.Patient)
                     .ThenInclude(x=> x.Degree)
+                 .Include(x=> x.Clinic)
                 .AsNoTracking().AsQueryable();
 
             if (doctorId != null)
