@@ -37,9 +37,9 @@
                         <h1 id="choose"> تسجيل بيانات الكشف للمريض @Model.Patient?.Name <i class="fa-solid fa-user-pen"></i></h1>
                     </div>
                     <div class="col-lg-4 text-center">
-                        <select asp-for="ClinicId" id="my-select" class="form-select my-select">
-                            <option value="0" selected>العيادة</option>
-                            <option value="طبية">طبية</option>
+                        <select asp-for="ClinicId" id="my-select" class="form-select my-select" asp-items="ViewBag.Clinics">
+                            <option  selected>العيادة</option>
+                            
                         </select>
                     </div>
                     <div class="col-lg-4 text-center">

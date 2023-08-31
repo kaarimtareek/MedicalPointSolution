@@ -2,6 +2,7 @@
 using MedicalPoint.Constants;
 using MedicalPoint.Data;
 
+using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 
 using static Azure.Core.HttpHeader;
@@ -36,7 +37,7 @@ namespace MedicalPoint.Services
             }
             var numberOfVisitsToday = QueryFinder.GetVisitsCountForDay(_context);
             var currentVisitNumber = ++numberOfVisitsToday;
-            string visitNumber = $"{DateTime.Today:yyyyMMdd}{currentVisitNumber:D4}";
+            string visitNumber = $"{DateTime.Today:yyyyMMdd}{currentVisitNumber:D3}";
             //we can add checks for the existence of clinic & doctor but will skip it for simplicity 
             var visit = new Visit
             {
@@ -48,7 +49,11 @@ namespace MedicalPoint.Services
                 Status = ConstantVisitStatus.IN_RECIEPTION,
                 Type = type ?? string.Empty,
                 VisitTime = visitTime ?? DateTime.Now,
-                VisitNumber = visitNumber
+                VisitNumber = visitNumber,
+                Diagnosis = string.Empty,
+                Notes = string.Empty,
+                RegisteredUserId = userId,
+                
             };
             await _context.Visits.AddAsync(visit, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
@@ -64,7 +69,9 @@ namespace MedicalPoint.Services
                 PreviousVisitId = previousVisitId,
                 PatientId = patientId,
                 Status = ConstantVisitStatus.IN_RECIEPTION,
-                VisitNumber = visitNumber
+                VisitNumber = visitNumber,
+                Notes= string.Empty,
+                Diagnosis= string.Empty,
 
             };
             await _context.VisitHistories.AddAsync(visitHistory, cancellationToken);
@@ -81,7 +88,7 @@ namespace MedicalPoint.Services
                 return OperationResult<Visit>.Failed(nameof(Visit));
             }
             visit.Diagnosis = diagnosis;
-            visit.Notes = notes;
+            visit.Notes = notes??"";
             visit.ExitTime = exitTime;
             visit.VisitTime = visitTime ?? visit.VisitTime;
             visit.ClinicId = clinicId;
@@ -100,8 +107,8 @@ namespace MedicalPoint.Services
                 ClinicId = clinicId,
                 Type = type?? string.Empty,
                 VisitTime = visitTime,
-                Diagnosis = diagnosis,
-                Notes = notes,
+                Diagnosis = diagnosis??"",
+                Notes = notes??"",
                 ExitTime = exitTime,
                 DoctorId = doctorId,
                 HasFollowingVisit = hasFollowingVisit,
@@ -134,6 +141,10 @@ namespace MedicalPoint.Services
                 CreatedAt = DateTime.Now,
                 UserId = userId,
                  Status = status,
+                Diagnosis =  "",
+                Notes = "",
+                Type = "",
+                VisitNumber = "",
             };
             await _context.VisitHistories.AddAsync(visitHistory, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
@@ -155,7 +166,11 @@ namespace MedicalPoint.Services
                  VisitId = visitId,
                  IsDeleted = true,
                  CreatedAt = DateTime.Now,
-                 UserId = userId
+                 UserId = userId,
+                Diagnosis = "",
+                Notes = "",
+                Type = "",
+                VisitNumber = "",
             };
 
             await _context.VisitHistories.AddAsync(visitHistory, cancellationToken);
@@ -207,6 +222,7 @@ namespace MedicalPoint.Services
                 .Include(x=> x.Patient)
                     .ThenInclude(x=> x.Degree)
                 .Include(x=> x.Medicines)
+                    .ThenInclude(x=> x.Medicine)
                 .Include(x=> x.PreviousVisit)
                 .Include(x=> x.Images)
                 .Include(x=> x.History)

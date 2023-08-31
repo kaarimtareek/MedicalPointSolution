@@ -1,4 +1,5 @@
-﻿using MedicalPoint.Data;
+﻿using MedicalPoint.Common;
+using MedicalPoint.Data;
 using MedicalPoint.Services;
 using MedicalPoint.ViewModels.Doctors;
 using MedicalPoint.ViewModels.Patients;
@@ -6,6 +7,7 @@ using MedicalPoint.ViewModels.Visits;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace MedicalPoint.Controllers
 {
@@ -14,11 +16,15 @@ namespace MedicalPoint.Controllers
     {
         private readonly IVisitsService _visitsService;
         private readonly IPatientsService _patientsService;
+        private readonly IClinicsServices _clinicsServices;
+        private readonly IVisitImagesService _visitImagesService;
 
-        public VisitsController(IVisitsService visitsService, IPatientsService patientsService)
+        public VisitsController(IVisitsService visitsService, IPatientsService patientsService, IClinicsServices clinicsServices, IVisitImagesService visitImagesService)
         {
             _visitsService = visitsService;
             _patientsService = patientsService;
+            _clinicsServices = clinicsServices;
+            _visitImagesService = visitImagesService;
         }
         public async Task<IActionResult> Index()
         {
@@ -98,20 +104,106 @@ namespace MedicalPoint.Controllers
                     Name = x.Name,
                     Content = x.Content,
                     Id = x.Id,
+                    ContentType = x.Format
+                }).ToList(),
+                Medicines = visit.Medicines == null? null : visit.Medicines.Select(x=> new VisitMedicineViewModel
+                {
+                    Id = x.Id,
+                    InventoryQuantity = x.Medicine.Quantity,
+                    Quantity = x.Quantity,
+                    MedicineId = x.Medicine.Id,
+                    MedicineName = x.Medicine.Name,
+
                 }).ToList()
             };
             return View(viewModel);
         }
         public async Task<IActionResult> Create(int patientId)
         {
-            var patient = new PatientViewModel();
+            var patient = await _patientsService.GetById(patientId);
+            if(patient == null)
+            {
+                return NotFound();
+            }
+            ViewBag.Clinics = _clinicsServices.GetAll().Select(x => new SelectListItem
+            {
+                Text = x.Name,
+                Value = x.Id.ToString(),
+            });
+            var patientViewModel = new PatientViewModel
+            {
+                Id = patientId,
+                Name= patient.Name,
+            };
             var viewModel = new AddVisitViewModel 
             {
                 PatientId = patientId,
-                Patient = patient,
+                Patient = patientViewModel,
             };
 
             return View(viewModel);
+        }
+        [HttpPost]
+        public async Task<IActionResult> Create([FromForm] AddVisitViewModel viewModel)
+        {
+            var userId = HttpContext.GetUserId();
+            if(userId == null)
+            {
+                return NotFound();
+            }
+            var result = await _visitsService.Create(userId.Value, viewModel.PatientId, viewModel.VisitTime, viewModel.ClinicId, viewModel.DoctorId, viewModel.Type);
+           
+           if(!result.Success) 
+            {
+                return RedirectToAction("Create", viewModel.PatientId);
+            }
+            return RedirectToAction(nameof(Index));
+        }
+        [HttpPost]
+        public async Task<IActionResult> UploadVisitImage([FromForm] int id , [FromForm] IFormFile image)
+        {
+
+            var userId = HttpContext.GetUserId();
+            if(userId == null)
+            {
+                return NotFound();
+            }
+            var file = HttpContext.Request.Form.Files.FirstOrDefault();
+            if(file == null)
+            {
+                return RedirectToAction("Details",new { id });
+            }
+            var isValidExtension = AllowedFileExtensions.IsValid(file);
+            if(!isValidExtension)
+            {
+                return RedirectToAction("Details", new { id });
+
+            }
+            var result = await _visitImagesService.Add(file, id);
+           
+           if(!result.Success) 
+            {
+                return RedirectToAction("Details", new { id });
+            }
+            return RedirectToAction(nameof(Index));
+        }
+        [HttpPost]
+        public async Task<IActionResult> DeleteVisitImage( int id )
+        {
+
+            var userId = HttpContext.GetUserId();
+            if(userId == null)
+            {
+                return NotFound();
+            }
+           
+            var result = await _visitImagesService.Remove(id);
+           
+           if(!result.Success) 
+            {
+                return RedirectToAction("Details", new { id });
+            }
+            return RedirectToAction(nameof(Index));
         }
     }
 }

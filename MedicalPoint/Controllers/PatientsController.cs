@@ -67,7 +67,7 @@ namespace MedicalPoint.Controllers
             { 
                 return View();
             }
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Index), "Patients");
         }
 
         public async Task<IActionResult>Detials(int id )

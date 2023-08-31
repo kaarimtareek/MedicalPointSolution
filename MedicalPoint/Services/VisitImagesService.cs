@@ -45,7 +45,7 @@ namespace MedicalPoint.Services
             {
                 return OperationResult<VisitImage>.Failed("");
             }
-            if (image == null || image.Length > 0)
+            if (image == null || image.Length == 0)
             {
                 return OperationResult<VisitImage>.Failed("");
 
@@ -67,6 +67,7 @@ namespace MedicalPoint.Services
                     VisitId = visitId,
                     IsDeleted = false,
                     Content = memoryStream.ToArray(),
+                    Path = string.Empty,
                 };
                 await _context.VisitImages.AddAsync(visitImage, cancellationToken);
                 await _context.SaveChangesAsync(cancellationToken);
