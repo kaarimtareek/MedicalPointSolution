@@ -1,4 +1,5 @@
 ﻿using MedicalPoint.Services;
+using MedicalPoint.ViewModels.Departments;
 
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,7 +17,10 @@ namespace MedicalPoint.Controllers
         }
         public async Task<IActionResult> Index()
         {
-            var departments = await _departmentsService.GetAll();
+            var departments = (await _departmentsService.GetAll()).Select(x=> new DepartmentsViewModel
+            {
+
+            });
             return View(departments);
         } public async Task<IActionResult> Details(int id)
         {
