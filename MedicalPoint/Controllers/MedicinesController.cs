@@ -58,7 +58,7 @@ namespace MedicalPoint.Controllers
 
 
 
-        public async Task<IActionResult> AddNewQuantaty([FromForm] AddMedicinesViewModel viewModel)
+        public async Task<IActionResult> AddQuantity([FromForm] AddMedicineQuantityViewModel viewModel)
         {
             var userId = HttpContext.GetUserId();
             if (userId == null)
@@ -66,7 +66,7 @@ namespace MedicalPoint.Controllers
                 return RedirectToAction("AccessDenied", "Account");
             }
 
-            var result = await _mediicinesService.AddQauntaty(userId.Value,  viewModel.Quantity);
+            var result = await _mediicinesService.AddQauntity(userId.Value, viewModel.MedicineId,  viewModel.Quantity);
             if (!result.Success)
             {
                 return View();
@@ -81,7 +81,7 @@ namespace MedicalPoint.Controllers
 
 
 
-        public async Task<IActionResult> Detials(int id)
+        public async Task<IActionResult> Details(int id)
         {
 
             var medicine = await _mediicinesService.Get(id);
@@ -103,7 +103,7 @@ namespace MedicalPoint.Controllers
                 LastUpdatedAt = medicine.LastUpdatedAt,
             Quantity = medicine.Quantity,
                MinimumQuantityThreshold = medicine.MinimumQuantityThreshold,
-               IsDeleted = medicine.IsDeleted,
+              
             };
             return View(viewModel);
         }
@@ -117,12 +117,16 @@ namespace MedicalPoint.Controllers
         {
 
             var medicine = await _mediicinesService.Get(id);
-
+            var userId = HttpContext.GetUserId();
+            if(userId == null)
+            {
+                return NotFound();
+            }
             if (medicine == null)
             {
                 return NotFound();
             }
-            await _mediicinesService.Delete(id);
+            await _mediicinesService.Delete(userId.Value, id);
            
             return RedirectToAction("Index","Medicines");
         }
@@ -151,8 +155,7 @@ namespace MedicalPoint.Controllers
                 LastUpdatedAt = medicines.LastUpdatedAt,
                 Quantity = medicines.Quantity,
                 MinimumQuantityThreshold = medicines.MinimumQuantityThreshold,
-                IsDeleted = medicines.IsDeleted,
-
+                
 
             };
             return View(viewModel);

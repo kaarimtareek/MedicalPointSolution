@@ -15,5 +15,6 @@ namespace MedicalPoint.Data
         public string ActionType { get; set; }
         public MedicalPointUser User { get; set; }
         public Medicine Medicine { get; set; }
+        public DateTime CreatedAt { get; set; }
     }
 }
