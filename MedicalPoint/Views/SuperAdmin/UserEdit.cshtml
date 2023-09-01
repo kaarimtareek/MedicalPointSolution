@@ -1,0 +1,86 @@
+﻿@model MedicalPoint.ViewModels.Users.UsersViewModel
+
+@{
+    ViewData["Title"] = "UserEdit";
+    Layout = "~/Views/Shared/_LayoutDesignLeader.cshtml";
+}
+<div class="pagetitle">
+    <h1>تعديل بيانات المريض</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">قائد النقطة الطبية</a></li>
+            <li class="breadcrumb-item active"></li>
+            <li class="breadcrumb-item active"></li>
+            <li>   <button style="background-color: #900000; height: 23px; width: 40px; margin-right: 3px; padding: 1px;" class="btn btn-danger" onclick="history.back()">عودة</button></li>
+
+        </ol>
+    </nav>
+</div><!-- End Page Title -->
+<!-- E-Data -->
+<form asp-action="UserEdit" method="post">
+
+
+
+    <div class="row mb-3">
+        <label for="fullName" style="font-weight: bold;" class="col-md-4 col-lg-3 col-form-label">اسم المريض</label>
+        <div class="col-md-8 col-lg-9">
+            <input asp-for="Name" class="form-control" id="fullName">
+        </div>
+    </div>
+
+
+
+    <div class="row mb-3">
+        <label for="mnumber" style="font-weight: bold;" class="col-md-4 col-lg-3 col-form-label">الرقم العسكري</label>
+        <div class="col-md-8 col-lg-9">
+            <input asp-for="MilitaryNumber" class="form-control" id="mnumber">
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <label for="degre" style="font-weight: bold;" class="col-md-4 col-lg-3 col-form-label">الرتبة</label>
+        <div class="col-md-8 col-lg-9">
+            <input asp-for="DegreeName" class="form-control" id="degre">
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <label for="pv" style="font-weight: bold;" class="col-md-4 col-lg-3 col-form-label">الرقم الهاتف </label>
+        <div class="col-md-8 col-lg-9">
+            <input asp-for="PhoneNumber" class="form-control" id="Nid">
+        </div>
+    </div>
+
+
+
+    <div class="row mb-3">
+        <label for="Address" style="font-weight: bold;" class="col-md-4 col-lg-3 col-form-label">نوع الحساب</label>
+        <div class="col-md-8 col-lg-9">
+            <input asp-for="AccountType" class="form-control" id="َQU">
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <label for="Phone" style="font-weight: bold;" class="col-md-4 col-lg-3 col-form-label"> الحساب الالكتروني </label>
+        <div class="col-md-8 col-lg-9">
+            <input asp-for="Email" class="form-control" id="SN">
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+    <div class="text-center">
+        <button class="btn btn-danger" type="submit" style="margin-right: 200px; height: 40px; padding-top: 7px;" role="button">حفظ التغييرات</button>
+
+    </div>
+
+</form><!-- End E-Data -->
+
+
+
+

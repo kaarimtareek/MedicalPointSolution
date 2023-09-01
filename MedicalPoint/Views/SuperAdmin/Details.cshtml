@@ -1,0 +1,175 @@
+﻿@using MedicalPoint.Constants;
+@using MedicalPoint.ViewModels.Visits;
+@model VisitViewModel
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutDesignLeader.cshtml";
+}
+
+
+<center>
+    <div class="col-11">
+        <div class="card recent-sales overflow-auto">
+
+
+
+
+            <div class="card-body">
+                <h5 class="card-title fw-bold">تفاصيل المريض</h5>
+
+                <table id="table2" class="table datatable table-bordered table-striped" style="border: 0.5px;  border-width: 0.5px;">
+                    <thead class="Light">
+                        <tr>
+                        </tr>
+                    </thead>
+                    <tbody text-center>
+                        <tr>
+                            <th scope="row"> <div class="text-center"><label>اسم المريض</label></div></th>
+                            <th scope="row"><div class="text-center"><label>@Html.DisplayFor(model=>model.Patient.Name)</label></div></th>
+                             
+
+
+                        </tr>
+                        <tr>
+                            <th scope="row"><div class="text-center"><label>الرقم العسكري</label></div></th>
+                            <th scope="row"><div class="text-center"><label>
+                                @if(Model.Patient.MilitaryNumber==string.Empty)
+                                        {
+                                            <span style="color:blue"> لم يتم التسجيل </span>
+                                        }
+                                        else
+                                        {
+                                            @Model.Patient.MilitaryNumber
+                                        }
+                                    </label></div></th>
+
+                        </tr>
+                        <tr>
+                            <th scope="row"><div class="text-center"><label>الرقم القومي</label></div></th>
+                            <th scope="row">
+                                <div class="text-center">
+                                    <label>
+                                        @if (Model.Patient.NationalNumber == string.Empty)
+                                        {
+                                            <span style="color:blue"> لم يتم التسجيل </span>
+                                        }
+                                        else
+                                        {
+                                            @Model.Patient.NationalNumber
+                                        }
+                                    </label>
+                                </div>
+                            </th>
+
+
+
+                        </tr>
+                        <tr>
+                            <th scope="row"><div class="text-center"><label>الرتبة</label></div></th>
+                            <th scope="row"><div class="text-center"><label>@Model.Patient.Degree</label></div></th>
+
+                        </tr>
+                     
+                        <tr>
+                            <th scope="row"><div class="text-center"><label>العيادة</label></div></th>
+                            <th scope="row"> <div class="text-center"><label>@Model.Clinic.Name</label></div></th>
+
+                        </tr>
+                        <tr>
+                            <th scope="row"><div class="text-center"><label>تشخيص الطبيب</label></div></th>
+                            <th scope="row">
+                                <div class="text-center">
+                                    <label>
+                                        @if (string.IsNullOrWhiteSpace(Model.Diagnosis))
+                                        {
+                                            <span style="color:blue"> لم يتم التشخيص  </span>
+                                        }
+                                        else
+                                        {
+                                            @Model.Diagnosis
+                                        }
+                                </div></label>
+                            </th>
+
+                        </tr>
+                        <tr>
+                            <th scope="row"><div class="text-center"><label>اسم الطبيب</label></div></th>
+                            <th scope="row">
+                                <div class="text-center">
+                                    <label>
+                                        @if (string.IsNullOrEmpty(Model.Doctor ?.FullName))
+                                        {
+                                            <span style="color:blue"> لم يتم الكشف   </span>
+                                        }
+                                        else
+                                        {
+                                            @Model.Doctor?.FullName
+                                        }
+                                </div>
+                                </label>
+                            </th>
+
+                        </tr>
+                        <tr>
+                            <th scope="row"><div class="text-center"><label> رقم الزياره  </label></div></th>
+                            <th scope="row"><div class="text-center"><label>@Model.VisitNumber.</label></th>
+
+                        </tr>
+                        <tr>
+                            <th scope="row"><div class="text-center"><label>  حاله الكشف   </label></div></th>
+                            <th scope="row"><div class="text-center"><label>@Model.Status.</label></th>
+
+                        </tr>
+                        <tr>
+                            <th scope="row"><div class="text-center"><label>  نوع الكشف   </label></div></th>
+                            <th scope="row"><div class="text-center"><label>@Model.Type</label></th>
+
+                        </tr>
+                        @* <tr>
+                            <th scope="row"><div class="text-center"><label>العلاج المصروف للمريض </label></div></th>
+                            <th scope="row"><div class="text-center"><label>2 بانادول&nbsp; - 3أموكسيسيلين &nbsp;- 1ميترونيدازول </div></label></th>
+
+                        </tr> *@
+
+
+
+                        <tr>
+                            <th scope="row"><div class="text-center"><label>المرفقات</label></div></th>
+                            <th scope="row"><div class="text-center"><label><img src="" class="rounded mx-auto d-block" alt="..." height="150" width="150"><p> </p><div class="text-center"><a class="btn btn-warning  btn-sm" href="assets/img/download.jpg" role="button">عرض المرفق</a></div></label></div></th>
+
+                        </tr>
+
+                    
+                        <tr>
+                            <th scope="row"><div class="text-center"><label>تاريخ الزياره</label></div></th>
+                            <th scope="row"><div class="text-center"><label>@Model.VisitTime</label></th>
+
+                        </tr>
+                        <tr>
+                            <th scope="row"><div class="text-center"><label>تاريخ الخروج </label></div></th>
+                            <th scope="row"><div class="text-center"><label>@Model.ExitTime</label></th>
+
+                        </tr>
+                        <tr>
+                            <th scope="row"><div class="text-center"><label> المتابعه  </label></div></th>
+                            <th scope="row"><div class="text-center"><label>@Model.PreviousVisit</label></th>
+
+                        </tr>
+                       
+                       
+
+
+
+
+
+                    </tbody>
+                </table>
+                <div class="text-center">
+                    <a class="btn btn-danger  print" onclick="window.print()" style="width: 300px; border-radius: 15px; height: 40px; text-align: center; font-size: large; font-weight:bold;" role="button">طباعة</a>
+                </div>
+
+            </div>
+
+        </div>
+    </div><!-- End P-report -->
+</center>

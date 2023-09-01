@@ -1,0 +1,103 @@
+﻿@using MedicalPoint.ViewModels.Patients;
+@model List<PatientViewModel>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutDesignLeader.cshtml";
+}
+
+<!-- P-Data -->
+<div class="col-12">
+    <div class="card recent-sales overflow-auto">
+
+        <div class="filter">
+            <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                <li class="dropdown-header text-start">
+                    <h6>فرز</h6>
+                </li>
+
+                <li><a class="dropdown-item" href="#">اليوم</a></li>
+                <li><a class="dropdown-item" href="#">هذا الشهر</a></li>
+                <li><a class="dropdown-item" href="#">هذة السنة</a></li>
+            </ul>
+        </div>
+
+
+        <div class="card-body">
+            <h5 class="card-title fw-bold text-center">بيانات المرضي </h5>
+
+            <table class="table datatable table-striped" style="border: 0.5px; background-color: gray; border-width: 0.5px;">
+                <thead class="Light">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">الرتبة</th>
+                        <th scope="col">الاسم</th>
+                        <th scope="col">الرقم العسكري</th>
+                        <th scope="col">الرقم القومي</th>
+                        <th scope="col">السرية</th>
+                        <th scope="col">الرقم العام</th>
+                        <th scope="col"> المؤهل الدراسي</th>
+                        <th scope="col"> اسم المسجل</th>
+
+
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach(var item in Model)
+                    {
+                    <tr>
+                        <td></td>
+                        <th scope="row"class="fw-bold">@item.Degree</th>
+                        <th scope="row" class="fw-bold">@item.Name</th>
+                        <td>
+                            @if(string.IsNullOrEmpty(item.MilitaryNumber))
+                                {
+                                    <span style="color:red"> لم يتم التسجيل </span>
+                                }
+                                else
+                                {
+                                    @item.MilitaryNumber
+                                }
+                            </td>
+                            <td>
+                                @if (string.IsNullOrEmpty(item.NationalNumber))
+                                {
+                                    <span style="color:red"> لم يتم التسجيل </span>
+                                }
+                                else
+                                {
+                                    @item.NationalNumber
+                                }
+                            </td>
+                        <td>@item.SaryaNumber</td>
+
+                        <td>@item.GeneralNumber</td>
+                            <td>@item.Major</td>
+                            <td>@item.RegisteredUserName</td>
+
+
+                     
+                        <td>
+                            <a class="btn btn-danger  btn-sm"  asp-action="PatientDetials" asp-controller="SuperAdmin" asp-route-id="@item.Id" role="button"> تفاصيل </a>
+                            <a class="btn btn-warning  btn-sm" asp-action="PatientEdit" asp-controller="SuperAdmin" asp-route-id="@item.Id" role="button"> تعديل </a>
+
+                            </td>
+                    </tr>
+                           }
+                </tbody>
+
+
+
+            </table>
+           @*  <div class="text-center">
+
+                &nbsp; &nbsp;
+                <a class="btn btn-danger" style="width: 300px; border-radius: 15px; height: 40px; text-align: center; font-size: large; font-weight:bold;" href="كل بيانات المرضي.html" role="button">عرض كل البيانات</a>
+            </div> *@
+
+        </div>
+
+    </div>
+</div><!-- End P-Data -->

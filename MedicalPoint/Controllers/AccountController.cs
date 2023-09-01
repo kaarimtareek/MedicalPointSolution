@@ -46,6 +46,12 @@ namespace MedicalPoint.Controllers
          
             return View(userViewMode);
         }
+
+
+        
+
+
+
         public IActionResult Login()
         {
             return View();
@@ -204,7 +210,7 @@ namespace MedicalPoint.Controllers
         {
             if (HttpContext.User.Identity.IsAuthenticated)
             {
-                return RedirectToAction("Index", "Admin");
+                return RedirectToAction("Index", "SuperAdmin");
             }
             var result = await _medicalPointUsersService.Login(email, password);
             if (!result.Success)
@@ -225,7 +231,7 @@ namespace MedicalPoint.Controllers
             var principal = new ClaimsPrincipal(identity);
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
             var userfromcookieE = HttpContext.User;
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "SuperAdmin");
 
         }
         [HttpPost]

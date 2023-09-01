@@ -1,0 +1,91 @@
+﻿@using MedicalPoint.ViewModels.Visits;
+@model IEnumerable<VisitsViewModel>
+
+@{
+    Layout = "~/Views/Shared/_LayoutDesignLeader.cshtml";
+}
+  <!-- ======= Header ======= -->
+  
+   
+    <!-- P-Data -->
+    <div class="col-12">
+      <div class="card recent-sales overflow-auto">
+
+        <div class="filter">
+          <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+            <li class="dropdown-header text-start">
+              <h6>فرز</h6>
+            </li>
+
+            <li><a class="dropdown-item" href="#">اليوم</a></li>
+            <li><a class="dropdown-item" href="#">هذا الشهر</a></li>
+            <li><a class="dropdown-item" href="#">هذة السنة</a></li>
+          </ul>
+        </div>
+        
+
+        <div class="card-body">
+          <h5 class="card-title" style="font-weight: bold; text-align: center;">بيانات المرضي </h5>
+
+          <table class="table datatable table-striped" style="border: 0.5px; background-color: gray; border-width: 0.5px;">
+            <thead class="Light">
+              <tr>
+                <th>#</th>
+                <th scope="col">الرتبة</th>
+                <th scope="col">الاسم</th>
+                <th scope="col">العيادة</th>
+                <th scope="col">رقم الكشف</th>
+                <th scope="col">نوع الكشف</th>
+                <th scope="col">اسم الطبيب</th>
+                <th scope="col"> حاله الكشف</th>
+                        <th scope="col">  التشخيص الحاله </th>
+
+                <th scope="col">تقرير الحالة</th>
+              </tr>
+            </thead>
+            <tbody>
+                @foreach(var item in Model)
+                {
+                          <tr>
+                            <td></td>
+                            <th scope="row" class="fw-bold">@item.PatientDegree</th>
+                            <td>@item.PatientName</td>
+                            <th scope="row" class="fw-bold">@item.ClinicName</th>
+                            <td>@item.VisitNumber</td>
+                            <td>@item.Type</td>
+                            <td>
+                                @if(string.IsNullOrEmpty(item.DoctorName))
+                                {
+                                    <span style="color:blue"> لم يتم الكشف </span>
+                                }
+                                else{
+                                @item.DoctorName
+                                }
+                            </td>
+                            <td>@item.Status</td>
+                            <td>
+                                @if (string.IsNullOrEmpty(item.Diagnosis))
+                                {
+                                    <span style="color:blue"> لم يشخص بعد  </span>
+                                }
+                                else
+                                {
+                                    @item.Diagnosis
+                                }
+                            </td>
+                                    
+                            <td><a class="btn btn-danger  btn-sm" asp-action="Details" asp-controller="SuperAdmin" asp-route-id="@item.Id" role="button">عرض التقرير</a></td>
+
+                          </tr>
+              }
+            </tbody>
+          </table>
+         
+      
+
+        </div>
+
+      </div>
+    </div><!-- End P-Data -->
+ 
