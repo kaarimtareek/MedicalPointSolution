@@ -288,6 +288,23 @@ namespace MedicalPoint.Controllers
             }
             return RedirectToAction("Details", new { id = VisitId });
         }
+        
+        [HttpPost]
+        public async Task<IActionResult> RemoveVisitMedicine([FromForm] int id, [FromForm] int visitId)
+        {
+            var userId = HttpContext.GetUserId();
+            if (userId == null)
+            {
+                return NotFound();
+            }
+            var result = await _visitMedicinesService.Remove(userId.Value, id);
+
+            if (!result.Success)
+            {
+                return RedirectToAction("Details", new { id = visitId });
+            }
+            return RedirectToAction("Details", new { id = visitId });
+        }
 
         public async Task<IActionResult> PatientVisits(int patientId)
         {
