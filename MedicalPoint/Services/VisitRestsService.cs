@@ -12,6 +12,7 @@ namespace MedicalPoint.Services
         Task<OperationResult<VisitRest>> Edit(int visitRestId, int doctorId, int restType, string notes, DateTime startTime, int numberOfRestDays, CancellationToken cancellationToken = default);
         Task<VisitRest> Get(int visitRestId, CancellationToken cancellationToken = default);
         Task<List<VisitRest>> GetAll(DateTime? from = null, DateTime? to = null, CancellationToken cancellationToken = default);
+        Task<VisitRest> GetByVisitId(int visitId, CancellationToken cancellationToken = default);
         Task<int> GetCountForPatient(int patientId, CancellationToken cancellationToken = default);
     }
 
@@ -44,6 +45,11 @@ namespace MedicalPoint.Services
             var result = await _context.VisitRests.AsNoTracking().FirstOrDefaultAsync(x => x.Id == visitRestId, cancellationToken);
             return result;
         }
+        public async Task<VisitRest> GetByVisitId(int visitId, CancellationToken cancellationToken = default)
+        {
+            var result = await _context.VisitRests.AsNoTracking().FirstOrDefaultAsync(x => x.VisitId == visitId, cancellationToken);
+            return result;
+        }
 
         public async Task<int> GetCountForPatient(int patientId, CancellationToken cancellationToken = default)
         {
@@ -61,10 +67,6 @@ namespace MedicalPoint.Services
             {
                 return OperationResult<VisitRest>.Failed("");
             }
-            if (!visit.CanEditVisit())
-            {
-                return OperationResult<VisitRest>.Failed("");
-            }
             //return if there's already visit rest for this visit
             if (await _context.VisitRests.AnyAsync(x => x.VisitId == visitId, cancellationToken))
             {
@@ -75,7 +77,7 @@ namespace MedicalPoint.Services
                 PatientId = visit.PatientId,
                 CreatedAt = DateTime.Now,
                 DoctorId = doctorId,
-                Notes = notes,
+                Notes = notes??"",
                 RestDaysNumber = numberOfRestDays,
                 StartDate = startTime,
                 EndDate = startTime.AddDays(numberOfRestDays),
@@ -106,7 +108,7 @@ namespace MedicalPoint.Services
             {
                 return OperationResult<VisitRest>.Failed("");
             }
-            visitRest.Notes = notes;
+            visitRest.Notes = notes??"";
             visitRest.StartDate = startTime;
             visitRest.RestTypeId = restType;
             visitRest.RestDaysNumber = numberOfRestDays;

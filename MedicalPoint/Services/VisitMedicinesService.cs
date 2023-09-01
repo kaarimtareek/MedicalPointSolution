@@ -13,6 +13,7 @@ namespace MedicalPoint.Services
         Task<OperationResult<VisitMedicine>> Edit(int userId, int visitMedicineId, int quantity, string? notes, bool forceChange = false, CancellationToken cancellationToken = default);
         Task<List<Medicine>> GetAvailableMedicinesForVisit(int visitId, CancellationToken cancellationToken = default);
         Task<List<VisitMedicine>> GetMedicinesForVisit(int visitId, CancellationToken cancellationToken = default);
+        Task<OperationResult> GiveMedicines(int visitId, int userId, CancellationToken cancellationToken = default);
         Task<OperationResult<VisitMedicine>> Remove(int userId, int visitMedicineId, bool forceChange = false, CancellationToken cancellationToken = default);
     }
 
@@ -134,6 +135,62 @@ namespace MedicalPoint.Services
             await _context.SaveChangesAsync(cancellationToken);
             return OperationResult<VisitMedicine>.Succeeded(visitMedicine, "");
         }
+        public async Task<OperationResult> GiveMedicines(int visitId, int userId, CancellationToken cancellationToken = default)
+        {
+            var visit = await _context.Visits.FirstOrDefaultAsync(x=> x.Id == visitId, cancellationToken);
+            if(visit == null || visit.IsDeleted)
+            {
+                return OperationResult.Failed("");
+            }
+            var visitMedicines = await _context.VisitMedicines.Where(x=> x.VisitId == visitId ).ToListAsync(cancellationToken);
+            if (visitMedicines.Count ==0 && visitMedicines.All(x=> x.IsGiven))
+            {
+                return OperationResult.Failed("");
+            }
+            var medicinesIds = visitMedicines.Select(x=> x.MedicineId).ToList();
+            var medicines = await _context.Medicines.Where(x => medicinesIds.Contains(x.Id)).ToListAsync(cancellationToken);
 
+            foreach (var visitMedicine in visitMedicines)
+            {
+                var medicine = medicines.FirstOrDefault(x => x.Id == visitMedicine.MedicineId);
+                if (medicine == null || medicine.IsDeleted)
+                {
+                    return OperationResult.Failed("");
+                }
+                if(medicine.Quantity < visitMedicine.Quantity)
+                {
+                    return OperationResult.Failed("");
+                }
+                medicine.Quantity -= visitMedicine.Quantity;
+                var medicineHistory = new MedicineHistory
+                {
+                    ActionType = ConstantMedicineActionType.EXPORT,
+                    CreatedAt = DateTime.Now,
+                    MedicineId = medicine.Id,
+                    MedicineName = "",
+                    MedicineQuantity = visitMedicine.Quantity,
+                    UserId = userId,
+                };
+                await _context.AddAsync(medicineHistory, cancellationToken);
+            }
+            var visitHistory = new VisitHistory
+            {
+                UserId = userId,
+                VisitId = visitId,
+                CreatedAt = DateTime.Now,
+                Notes = "",
+                Diagnosis = "",
+                Status = "",
+                VisitNumber = "",
+                IsMedicinesGiven = true,
+                MedicineGivenTime = DateTime.Now,
+                Type = "",
+            };
+            visit.IsMedicinesGiven = true;
+            visit.MedicineGivenTime = DateTime.Now;
+            await _context.VisitHistories.AddAsync(visitHistory);
+            await _context.SaveChangesAsync(cancellationToken);
+            return OperationResult.Succeeded();
+        }
     }
 }

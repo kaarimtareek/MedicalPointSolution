@@ -37,6 +37,8 @@ namespace MedicalPoint.Data
         public DateTime? FollowingVisitDate { get; set; }
         [NotMapped]
         public  bool IsFollowingVisit => PreviousVisitId != null;
+        public bool IsMedicinesGiven { get; set; }
+        public DateTime? MedicineGivenTime { get; set; }
         public bool IsDeleted { get; set; }
         public ICollection<Visit> FollowingVisits { get; set; }
         public ICollection<VisitMedicine> Medicines { get; set; }

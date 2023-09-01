@@ -1,4 +1,5 @@
 ﻿@using MedicalPoint.Constants;
+@using MedicalPoint.ViewModels.Medicines;
 @using MedicalPoint.ViewModels.Visits;
 @model VisitViewModel
 @{
@@ -201,12 +202,18 @@
                                     <td></td>
                                     <td>
                                         <form id="formAddVisitMedicine" method="post" asp-action="AddVisitMedicine" asp-controller="Visits"></form>
-                                    <select onchange="setData({Id:'add-visit-medicine-quantity-label',Qun:'@ViewBag'})" name="MedicineId" form="formAddVisitMedicine" class="form-select " asp-items="ViewBag.AvailableMedicines">
+                                    <select id="select-add-medicine" onchange="setData({Id:'select-add-medicine'})" name="MedicineId" form="formAddVisitMedicine" class="form-select ">
                                             <option selected>العلاج</option>
+                                            @foreach(var medicine in (List<MedicineViewModel>)      ViewBag.AvailableMedicines)
+                                        {
+                                            <option value="@medicine.Id" id="medicine-quantity-@medicine.Quantity" >@medicine.Name</option>
+                                        }
+                                    </select>
 
-                                        </select>
                                     </td>
-                                    <td id="add-visit-medicine-quantity-label"></td>
+                                    <td >
+                                    <p id="add-visit-medicine-quantity-label" ></p>
+                                    </td>
                                     <td>
                                         <input type="number" value="@Model.Id" name="VisitId" form="formAddVisitMedicine" hidden />
                                     <input type="number" name="Quantity" form="formAddVisitMedicine" required placeholder="الكمية" style="width: 100%">
@@ -246,9 +253,13 @@
             document.getElementById(enableTwo).style.display = "";
             document.getElementById(disbleTwo).style.display = "none";
         }
-        function setData({Qun,Id}) {
+        function setData({Id}) {
             
-            document.getElementById(Id).innerHTML = Qun;
+            var e = document.getElementById(Id);
+            var optionId = e.options[e.selectedIndex].id;
+            var formattedId = optionId.replace('medicine-quantity-','');
+            var quantity = parseInt(formattedId);
+            document.getElementById('add-visit-medicine-quantity-label').innerHTML = quantity;
         }
     </script>
 </body>
