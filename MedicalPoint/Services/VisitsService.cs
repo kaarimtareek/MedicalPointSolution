@@ -17,6 +17,7 @@ namespace MedicalPoint.Services
         Task<OperationResult<Visit>> Edit(int visitId, int userId,  string notes, DateTime? exitTime = null, DateTime? visitTime = null, int? clinicId = null, int? doctorId = null, string? type = null, int? previousVisitId = null, DateTime? followDate = null, bool hasFollowingVisit = false, CancellationToken cancellationToken = default);
         Task<Visit> Get(int visitId, CancellationToken cancellationToken = default);
         Task<List<Visit>> GetAll(int? doctorId = null, int? patientId = null, DateTime? from = null, DateTime? to = null, string? type = null, int? clinicId = null, CancellationToken cancellationToken = default);
+        Task<List<Visit>> GetVisitsThatNeedsToGiveMedicines(CancellationToken cancellationToken = default);
         Task<OperationResult<Visit>> WriteDiagnosis(int visitId, int userId, string diagnosis, bool forceChange = false, CancellationToken cancellationToken = default);
     }
 
@@ -136,11 +137,16 @@ namespace MedicalPoint.Services
                 return OperationResult<Visit>.Failed(nameof(Visit));
             }
             visit.Status = status;
+            if(status == ConstantVisitStatus.FINISHED)
+            {
+                visit.VisitTime = DateTime.Now;
+            }    
             var visitHistory = new VisitHistory
             {
                 VisitId = visitId,
                 CreatedAt = DateTime.Now,
                 UserId = userId,
+                VisitTime = visit.VisitTime,
                  Status = status,
                 Diagnosis =  "",
                 Notes = "",
@@ -253,6 +259,19 @@ namespace MedicalPoint.Services
                 query.Where(x => x.ClinicId == clinicId);
             }
             var result = await query.ToListAsync(cancellationToken);
+            return result;
+        }
+        public async Task<List<Visit>> GetVisitsThatNeedsToGiveMedicines(CancellationToken cancellationToken = default)
+        {
+            var query = _context.Visits
+                .Include(x=> x.Doctor)
+                .Include(x=> x.Patient)
+                    .ThenInclude(x=> x.Degree)
+                 .Include(x=> x.Clinic)
+                .AsNoTracking().AsQueryable();
+
+           
+            var result = await query.Where(x=> !x.IsMedicinesGiven && ( x.Status == ConstantVisitStatus.TAKING_MEDICINE || x.Status == ConstantVisitStatus.FINISHED) ).ToListAsync(cancellationToken);
             return result;
         }
         public async Task<Visit> Get(int visitId, CancellationToken cancellationToken = default)

@@ -1,8 +1,10 @@
 ﻿using MedicalPoint.Common;
 using MedicalPoint.Data;
 using MedicalPoint.Services;
+using MedicalPoint.ViewModels.Doctors;
 using MedicalPoint.ViewModels.Medicines;
 using MedicalPoint.ViewModels.Patients;
+using MedicalPoint.ViewModels.Visits;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,11 +16,14 @@ namespace MedicalPoint.Controllers
     public class MedicinesController : Controller
     {
         private readonly IMedicinesService _medicinesService;
+        private readonly IVisitsService _visitsService;
+        private readonly IVisitMedicinesService _visitMedicinesService;
 
-        public MedicinesController(IMedicinesService mediicinesService)
+        public MedicinesController(IMedicinesService mediicinesService, IVisitsService visitsService, IVisitMedicinesService visitMedicinesService)
         {
             _medicinesService = mediicinesService;
-
+            _visitsService = visitsService;
+            _visitMedicinesService = visitMedicinesService;
         }
         public async Task< IActionResult> Index() 
         {
@@ -181,6 +186,124 @@ namespace MedicalPoint.Controllers
                 return View();
             }
             return RedirectToAction(nameof(Index));
+        }
+        
+
+        public async Task<IActionResult> VisitsMedicines()
+
+        {
+            var visits = await _visitsService.GetVisitsThatNeedsToGiveMedicines();
+            
+            var viewModel = visits.ConvertAll(x => new VisitsViewModel
+            {
+                ClinicId = x.Id,
+                Diagnosis = x.Diagnosis,
+                DoctorId = x.DoctorId,
+                ExitTime = x.ExitTime,
+                FollowingVisitDate = x.FollowingVisitDate,
+                Id = x.Id,
+                IsDeleted = x.IsDeleted,
+                PatientId = x.PatientId,
+                PreviousVisitId = x.PreviousVisitId,
+                Status = x.Status,
+                Type = x.Type,
+                VisitNumber = x.VisitNumber,
+                VisitTime = x.VisitTime,
+                IsMedicinesGiven = x.IsMedicinesGiven,
+                ClinicName = x.Clinic?.Name ?? "",
+                DoctorName = x.Doctor?.FullName ?? "",
+                PatientName = x.Patient?.Name ?? "",
+                PatientDegree = x.Patient?.Degree?.Name,
+                
+            });
+            return View(viewModel);
+        }
+         public async Task<IActionResult> GiveMedicines(int id, CancellationToken cancellationToken)
+
+        {
+            var visit = await _visitsService.Get(id);
+            if (visit == null)
+            {
+                return NotFound();
+            }
+            var visitMedicines = await _visitMedicinesService.GetMedicinesForVisit(id);
+           
+            var viewModel = new GiveVisitMedicinesViewModel
+            {
+
+                ClinicId = visit.ClinicId,
+                Clinic = visit.Clinic == null ? null : new ViewModels.Clinics.ClinicViewModel
+                {
+                    Name = visit.Clinic.Name,
+                    Id = visit.Clinic.Id,
+                    IsActive = visit.Clinic.IsActive,
+                },
+                Diagnosis = visit.Diagnosis,
+                Id = visit.Id,
+                
+                IsMedicinesGiven = visit.IsMedicinesGiven,
+                MedicineGivenTime = visit.MedicineGivenTime,
+                DoctorId = visit.DoctorId,
+                PatientId = visit.PatientId,
+             
+                Notes = visit.Notes,
+               VisitTime = visit.VisitTime,
+                Type = visit.Type,
+                Status = visit.Status,
+                
+                VisitNumber = visit.VisitNumber,
+                Doctor = visit.Doctor == null ? null : new DoctorViewModel
+                {
+                    Id = visit.DoctorId.Value,
+                    FullName = visit.Doctor.FullName,
+                    IsActive = visit.Doctor.IsActive,
+                },
+                Patient = visit.Patient == null ? null : new PatientViewModel
+                {
+                    CreatedAt = visit.Patient.CreatedAt,
+                    DegreeId = visit.Patient.DegreeId,
+                    GeneralNumber = visit.Patient.GeneralNumber,
+                    Id = visit.Patient.Id,
+                    LastUpdatedAt = visit.Patient.LastUpdatedAt,
+                    Name = visit.Patient.Name,
+                    SaryaNumber = visit.Patient.SaryaNumber,
+                    MilitaryNumber = visit.Patient.MilitaryNumber,
+                    Major = visit.Patient.Major,
+                    NationalNumber = visit.Patient.NationalNumber,
+                    LastVisitAt = visit.Patient.LastVisitAt,
+                    Degree = visit.Patient.Degree?.Name ?? "",
+                },
+                
+                Medicines = visit.Medicines == null ? null : visit.Medicines.Select(x => new VisitMedicineViewModel
+                {
+                    Id = x.Id,
+                    InventoryQuantity = x.Medicine.Quantity,
+                    Quantity = x.Quantity,
+                    MedicineId = x.Medicine.Id,
+                    MedicineName = x.Medicine.Name,
+
+                }).ToList()
+
+            };
+            return View(viewModel);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> GiveVisitMedicines(int id)
+        {
+            var userId = HttpContext.GetUserId();
+            if (userId == null)
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+            var result = await _visitMedicinesService.GiveMedicines(id, userId.Value );
+
+            if (!result.Success)
+            {
+                RedirectToAction(nameof(GiveMedicines), new {id});
+            }
+            return RedirectToAction(nameof(VisitsMedicines));
         }
 
     }
