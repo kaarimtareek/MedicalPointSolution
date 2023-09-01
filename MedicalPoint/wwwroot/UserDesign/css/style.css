@@ -381,9 +381,9 @@ select {
     font-size: 20px;
 }
 
-/* ::-webkit-file-upload-button {
+ ::-webkit-file-upload-button {
     display: none;
-} */
+} 
 
 /* ::file-selector-button {
     display: none;
@@ -658,7 +658,8 @@ td {
 
 .visit-image-style {
     transition: .3s transform cubic-bezier(.155, 1.105, .295, 1.12), .3s box-shadow, .3s -webkit-transform cubic-bezier(.155, 1.105, .295, 1.12);
-    height: 15rem;
+    height: 20vh;
+  
 }
 
 
@@ -671,6 +672,7 @@ td {
 
 .image-container {
     position: relative;
+
 }
 
 .overlay-image {
