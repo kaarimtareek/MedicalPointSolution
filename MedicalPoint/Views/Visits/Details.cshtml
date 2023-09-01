@@ -30,51 +30,53 @@
     </nav>
     <div class="landing-three ">
         <div class="container fadeInUp-animation ">
-            <div class="row justify-content-center">
-                <div class="col-lg-6 text-center p-1 ">
-                    <p id="nametwo">بيانات كشف المريض <i class="fa-solid fa-user"></i></p>
+           
+                <div class="row justify-content-center">
+                    <div class="col-lg-6 text-center p-1">
+                        <p id="nametwo">بيانات كشف المريض <i class="fa-solid fa-user"></i></p>
 
-                    <table class="table  table-striped">
-                        <tbody>
-                            <tr>
-                                <th>الدرجة / الرتبة</th>
-                                <td>@Model.Patient?.Degree</td>
-                            </tr>
-                            <tr>
-                                <th>اسم المريض</th>
-                                <td>@Model.Patient?.Name</td>
-                            </tr>
-                            <tr>
-                                <th>العيادة</th>
-                                <td>@Model.Clinic?.Name</td>
-                            </tr>
-                            <tr>
-                                <th>رقم الكشف</th>
-                                <td>@Model.VisitNumber</td>
-                            </tr>
-                            <tr>
-                                <th>نوع الكشف</th>
-                                <td>@Model.Type</td>
-                            </tr>
-                            <tr>
-                                <th>اسم الطبيب</th>
-                                <td>@Model.Doctor?.FullName</td>
-                            </tr>
-                            <tr>
-                                <th>حالة الكشف</th>
-                                <td>@Model.Status</td>
-                            </tr>
+                        <table class="table  table-striped">
+                            <tbody>
+                                <tr>
+                                    <th>الدرجة / الرتبة</th>
+                                    <td>@Model.Patient?.Degree</td>
+                                </tr>
+                                <tr>
+                                    <th>اسم المريض</th>
+                                    <td>@Model.Patient?.Name</td>
+                                </tr>
+                                <tr>
+                                    <th>العيادة</th>
+                                    <td>@Model.Clinic?.Name</td>
+                                </tr>
+                                <tr>
+                                    <th>رقم الكشف</th>
+                                    <td>@Model.VisitNumber</td>
+                                </tr>
+                                <tr>
+                                    <th>نوع الكشف</th>
+                                    <td>@Model.Type</td>
+                                </tr>
+                                <tr>
+                                    <th>اسم الطبيب</th>
+                                    <td>@Model.Doctor?.FullName</td>
+                                </tr>
+                                <tr>
+                                    <th>حالة الكشف</th>
+                                    <td>@Model.Status</td>
+                                </tr>
 
-                            <tr>
-                                <th>تاريخ الكشف</th>
-                                <td>@Model.VisitTime</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                                <tr>
+                                    <th>تاريخ الكشف</th>
+                                    <td>@Model.VisitTime</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                     
 
 
 
-                </div>
+                    </div>
                 <div class="col-lg-6 text-center  p-1">
                     <p id="nametwo">مرفقات المريض <i class="fa-solid fa-image"></i></p>
 
@@ -98,46 +100,52 @@
 
                             }
                             <div>
-                                <div style="background-color: white; border-radius: 10px; padding: 10px;">
+                                <div style="background-color: #c9c6c6; border-radius: 10px; padding: 10px;">
                                     <p id="nametwo"> إضافة صورة <i class="fa-solid fa-image"></i></p>
 
                                     <form enctype="multipart/form-data" id="formUploadVisitImage" method="post" asp-action="UploadVisitImage" asp-controller="Visits" asp-route-id=@Model.Id>
 
-                                        <input style="width: 100%;" type="file" name="image" form="formUploadVisitImage">
+                                        <input style="width:35%;" type="file" name="image" form="formUploadVisitImage">
 
                                         <input value="@Model.Id" type="number" style="display:none; !important" name="id" hidden form="formUploadVisitImage" />
                                     </form>
-                                    <input type="submit" value="رفع الصورة" asp-action="UploadVisitImage" asp-controller="Visits" class="my-button-blue mt-4" form="formUploadVisitImage" asp-route-id=@Model.Id />
+                                    <input type="submit" value="رفع الصورة" asp-action="UploadVisitImage" asp-controller="Visits" class="table-button-blue mt-4" form="formUploadVisitImage" asp-route-id=@Model.Id />
                                 </div>
 
                             </div>
                         </div>
 
                     </div>
+                    <div class="mt-5">
+                     
+                    </div>
                 </div>
 
 
+                </div>
 
-            </div>
            
 
-            <div class="row justify-content-center mt-4" style="display:@this.Context.User.Claims.Any(x=> x.Value == ConstantUserType.SUPER_ADMIN || x.Value == ConstantUserType.Doctor )? block: none">
-                    <div class="col-lg-6 text-center p-1">
+            
+         
+      
+                <div class="row justify-content-center mt-4" style="display:@this.Context.User.Claims.Any(x=> x.Value == ConstantUserType.SUPER_ADMIN || x.Value == ConstantUserType.Doctor )? block: none">
+                    <div class="col-lg-12 text-center p-1">
 
-                    <form id="formWriteDiagnosis" method="post" asp-action="WriteDiagnosis" asp-controller="Visits"></form>
-                    <p id="nametwo">كتابة التشخيص <i class="fa-solid fa-user"></i></p>
+                        <form id="formWriteDiagnosis" method="post" asp-action="WriteDiagnosis" asp-controller="Visits"></form>
+                        <p id="nametwo">كتابة التشخيص <i class="fa-solid fa-user"></i></p>
 
-                    <input type="text" hidden value="@Model.Id" name="VisitId" form="formWriteDiagnosis" />
+                        <input type="text" hidden value="@Model.Id" name="VisitId" form="formWriteDiagnosis" />
 
-                    <input value="@Model.Diagnosis" form="formWriteDiagnosis" name="Diagnosis" class="form-control mb-2"
-                           placeholder="كتابة تشخيص المريض" style="font-weight: bold; height:4rem" />
+                        <input value="@Model.Diagnosis" form="formWriteDiagnosis" name="Diagnosis" class="form-control mb-2"
+                               placeholder="كتابة تشخيص المريض" style="font-weight: bold; height:4rem" />
 
-                    <input type="submit" class="my-button-blue mt-2 mb-4" form="formWriteDiagnosis" value="حفظ التشخيص" />
-                    <!-- end of diagnosis-->
+                        <input type="submit" class="my-button-green mt-2 mb-4" form="formWriteDiagnosis" value="حفظ التشخيص" />
+                        <!-- end of diagnosis-->
                     </div>
 
-                    <div class="col-lg-6 text-center p-1 mt-2">
-                    <p id="nametwo">كتابة العلاج <i class="fa-solid fa-prescription-bottle-medical "></i></p>
+                    <div class="col-lg-12 text-center p-1 mt-2">
+                        <p id="nametwo">كتابة العلاج <i class="fa-solid fa-prescription-bottle-medical "></i></p>
 
                         <table class="table  table-striped">
                             <thead>
@@ -150,94 +158,104 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach(var visitMedicine in Model.Medicines)
+                                @foreach (var visitMedicine in Model.Medicines)
                                 {
                                     <tr>
-                                            <td></td>
-                                            <td>
-                                               @visitMedicine.MedicineName
-                                            </td>
-                                            <td>@visitMedicine.InventoryQuantity</td>
-                                            <td>
-                                                @visitMedicine.Quantity
-                                                <input type="number" id="input-quantity-medicine-@visitMedicine.Id" hidden required placeholder="الكمية" value="@visitMedicine.Quantity">
-                                            </td>
-                                            <td>
-                                        <form id="form-delete-visitmedicine-@visitMedicine.Id" method="post" asp-action="RemoveVisitMedicine" asp-controller="Visits"></form>
-                                                <div id="edit-medicine-@visitMedicine.Id">
-                                                    <button type="button" class="table-button-blue"
-                                                        onclick="activateSave()">تعديل <i
-                                                            class="fa-solid fa-pen-to-square"></i></button>
-                                            <input hidden form="form-delete-visitmedicine-@visitMedicine.Id" name="Id" value="@visitMedicine.Id" />
-                                            <input hidden form="form-delete-visitmedicine-@visitMedicine.Id" name="visitId" value="@Model.Id" />
-                                            <button type="submit" form="form-delete-visitmedicine-@visitMedicine.Id"   class="table-button-red">
-                                                حذف <i class="fa-solid fa-trash"></i></button>
-                                                </div>
-                                                <div id="save-medicine-@visitMedicine.Id" style="display:none">
-                                                    <button type="button" class="table-button-blue"  onclick="activateEdit()">حفظ
-                                                        <i class="fa-solid fa-pen-to-square"></i></button>
-                                                    <button type="button" class="table-button-red">الغاء <i
-                                                            class="fa-solid fa-xmark"></i></button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                
-                                }
-                            <tr>
-                                <td></td>
-                                <td>
-                                    <form id="formAddVisitMedicine" method="post" asp-action="AddVisitMedicine" asp-controller="Visits"></form>
-                                    <select name="MedicineId" form="formAddVisitMedicine" class="form-select " asp-items="ViewBag.AvailableMedicines">
-                                        <option selected>العلاج</option>
+                                        <td></td>
+                                        <td>
+                                            @visitMedicine.MedicineName
+                                        </td>
+                                    <td id="InventoryQuantity">@visitMedicine.InventoryQuantity</td>
+                                        <td>
+                                        <span id="input-quantity-medicine-@visitMedicine.Id"> @visitMedicine.Quantity</span>
+                                        <input type="number" id="input-quantity-medicine-@visitMedicine.Id" hidden required placeholder="الكمية" value="@visitMedicine.Quantity">
+                                        <input id="edit-input-@visitMedicine.Id" type="number" name="Quantity" form="formAddVisitMedicine" value="@visitMedicine.Quantity" required placeholder="الكمية" style="width: 100%; display:none;">
 
-                                    </select>
-                                </td>
-                                <td id="add-visit-medicine-quantity-label"></td>
-                                <td>
-                                    <input type="number" value="@Model.Id" name="VisitId" form="formAddVisitMedicine" hidden />
-                                    <input type="number" name="Quantity" form="formAddVisitMedicine" required placeholder="الكمية">
-                                </td>
-                                <td>
-                                    <button type="submit" form="formAddVisitMedicine" class="table-button-blue">
-                                        إضافة <i class="fa-solid fa-plus"></i></i>
-                                    </button>
-                                </td>
-                            </tr>
+                                        </td>
+                                        <td>
+                                            <form id="form-delete-visitmedicine-@visitMedicine.Id" method="post" asp-action="RemoveVisitMedicine" asp-controller="Visits"></form>
+                                            <div id="edit-medicine-@visitMedicine.Id">
+                                            <button type="button" onclick="activeDisable({disble:'input-quantity-medicine-@visitMedicine.Id',enable:'edit-input-@visitMedicine.Id',enableTwo:'save-medicine-@visitMedicine.Id',disbleTwo:'edit-medicine-@visitMedicine.Id'})" class="table-button-blue">
+                                                    تعديل <i class="fa-solid fa-pen-to-square"></i>
+                                                </button>
+                                                <input hidden form="form-delete-visitmedicine-@visitMedicine.Id" name="Id" value="@visitMedicine.Id" />
+                                                <input hidden form="form-delete-visitmedicine-@visitMedicine.Id" name="visitId" value="@Model.Id" />
+                                                <button type="submit" form="form-delete-visitmedicine-@visitMedicine.Id" class="table-button-red">
+                                                    حذف <i class="fa-solid fa-trash"></i>
+                                                </button>
+                                            </div>
+                                            <div id="save-medicine-@visitMedicine.Id" style="display:none">
+                                                <button type="button" class="table-button-blue">
+                                                    حفظ
+                                                    <i class="fa-solid fa-pen-to-square"></i>
+                                                </button>
+                                            <button type="button" class="table-button-red" onclick="activeDisable({enable:'edit-medicine-@visitMedicine.Id',disble:'save-medicine-@visitMedicine.Id',enableTwo:'input-quantity-medicine-@visitMedicine.Id',disbleTwo:'edit-input-@visitMedicine.Id'})">
+                                                    الغاء <i class="fa-solid fa-xmark"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                }
+                                <tr>
+                                    <td></td>
+                                    <td>
+                                        <form id="formAddVisitMedicine" method="post" asp-action="AddVisitMedicine" asp-controller="Visits"></form>
+                                    <select onchange="setData({Id:'add-visit-medicine-quantity-label',Qun:'@ViewBag'})" name="MedicineId" form="formAddVisitMedicine" class="form-select " asp-items="ViewBag.AvailableMedicines">
+                                            <option selected>العلاج</option>
+
+                                        </select>
+                                    </td>
+                                    <td id="add-visit-medicine-quantity-label"></td>
+                                    <td>
+                                        <input type="number" value="@Model.Id" name="VisitId" form="formAddVisitMedicine" hidden />
+                                    <input type="number" name="Quantity" form="formAddVisitMedicine" required placeholder="الكمية" style="width: 100%">
+                                    </td>
+                                    <td>
+                                        <button type="submit" form="formAddVisitMedicine" class="table-button-blue">
+                                            إضافة <i class="fa-solid fa-plus"></i>
+                                        </button>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
 
                 </div>
-            
-            <div class="row justify-content-center ">
-                <div class="col-lg-4 text-center mb-4">
-                    <a asp-action="FinishVisitDiagnosis" asp-route-id="@Model.Id" asp-controller="Visits" class="my-button custom-button mt-2 mb-2">
-                        انهاء الكشف <i class="fa-solid fa-floppy-disk"></i>
-                    </a>
+                <div class="row justify-content-center ">
+                    <div class="col-lg-4 text-center mb-4">
+                        <a asp-action="FinishVisitDiagnosis" asp-route-id="@Model.Id" asp-controller="Visits" class="my-button custom-button  mb-2">
+                            انهاء الكشف <i class="fa-solid fa-floppy-disk"></i>
+                        </a>
+                    </div>
                 </div>
-            </div>
+
+    
+           
+           
             
         </div>
     </div>
 
+
+<script>
+        function activeDisable({ disble, enable, enableTwo, disbleTwo}) {
+       
+            document.getElementById(enable).style.display = "";
+            document.getElementById(disble).style.display = "none";
+            document.getElementById(enableTwo).style.display = "";
+            document.getElementById(disbleTwo).style.display = "none";
+        }
+        function setData({Qun,Id}) {
+            
+            document.getElementById(Id).innerHTML = Qun;
+        }
+    </script>
 </body>
 
 <script src="~/userDesign/js/all.min.js"></script>
 <script src="~/userDesign/js/bootstrap.bundle.min.js"></script>
 
-<script>
-    const save_div = document.getElementById('save-div');
-    save_div.style.display = "none";
-    const edit_div = document.getElementById('edit-div');
-    function activateSave() {
-        save_div.style.display = "";
-        edit_div.style.display = "none";
-    }
-    function activateEdit() {
-        save_div.style.display = "none";
-        edit_div.style.display = "";
-    }
-</script>
 <!-- <script src="js/bootstrap.bundle.min.js.map"></script> -->
 
 </html>
