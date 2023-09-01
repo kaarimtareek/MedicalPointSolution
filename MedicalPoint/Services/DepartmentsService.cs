@@ -29,7 +29,8 @@ namespace MedicalPoint.Services
         }
         public async Task<List<UnderObservationDepartment>> GetAllAvailable()
         {
-            var result = await _context.UnderObservationDepartments.AsNoTracking().Where(x=> x.AvailableBedsCount > 0).ToListAsync();
+            var result = await _context.UnderObservationDepartments
+                .AsNoTracking().Where(x=> x.AvailableBedsCount > 0).ToListAsync();
             return result;
         }
         public async Task<UnderObservationDepartment> Get(int id)

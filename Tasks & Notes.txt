@@ -17,3 +17,9 @@ Admin123
 - add buttons in the patient details & table to add him in bed.
 - need ajax to select the department fisrt then choose the bed number, and get only the available beds & the departments that has available beds count > 0.
 - work on medicines index buttons.
+
+========
+1-9-2023
+========
+
+- Work on visit rest

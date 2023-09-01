@@ -1,4 +1,6 @@
-﻿@model MedicalPoint.ViewModels.Patients.PatientViewModel
+﻿@using MedicalPoint.Common;
+@using MedicalPoint.Constants;
+@model MedicalPoint.ViewModels.Patients.PatientViewModel
 
 @{
     Layout = null;
@@ -69,8 +71,19 @@
 
 
                     <div>
-
-                        <a asp-controller="Patients" asp-action="Edit" asp-route-id="@ViewBag.Id" class="my-button mt-2 mb-2">تعديل <i class="fa-solid fa-pen-to-square"></i></a>
+                        @if(Model.IsUnderObservation)
+                        {
+                            <p style="color:red" class="mb-4 mt-4"> المريض تحت الملاحظة <a asp-controller="Departments" asp-action="Bed" asp-route-id="@Model.BedId.Value" class="my-button mt-2 mb-2"> تفاصيل الحجز <i class="fa-solid fa-pen-to-square"></i></a> </p>
+                        }
+                        else
+                        {
+                            @if(this.Context.IsUserHasRoles(new string[] { ConstantUserType.Doctor, ConstantUserType.SUPER_ADMIN}))
+                            {
+                                <a asp-controller="Departments" asp-action="AddPatientToBed" asp-route-patientId="@Model.Id" class="my-button mt-2 mb-2"> حجز المريض <i class="fa-solid fa-pen-to-square"></i></a>
+                            }
+                            
+                        }
+                        <a asp-controller="Patients" asp-action="Edit" asp-route-id="@Model.Id" class="my-button mt-2 mb-2">تعديل <i class="fa-solid fa-pen-to-square"></i></a>
                         <a class="my-button-blue mt-2 mb-2" asp-controller="Visits" asp-action="Patient" asp-route-patientId="@Model.Id ">
                             كشوفات المريض <i class="fa-solid fa-list-check"></i>
                         </a>

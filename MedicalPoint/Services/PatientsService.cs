@@ -11,7 +11,7 @@ namespace MedicalPoint.Services
         Task<OperationResult<Patient>> Edit(int id, string name, int degreeId, string militaryNumber = "", string nationalNumber = "", string generalNumber = "", string sarayNumber = "", string major = "", int? userId = null, CancellationToken cancellationToken = default);
         Task<List<Patient>> GetPatients(string searchValue = "", int? degree = null, CancellationToken cancellationToken = default);
         Task<Patient> GetById( int id , CancellationToken cancellationToken = default);
-
+        bool IsUnderObservation(int id, CancellationToken cancellationToken = default);
     }
 
     public class PatientsService : IPatientsService
@@ -138,6 +138,10 @@ namespace MedicalPoint.Services
 
 
             return patient;
+        }
+          public  bool IsUnderObservation(int id, CancellationToken cancellationToken = default)
+        {
+            return QueryValidator.IsPatientInBed(_context, id);
         }
 
     }

@@ -1,7 +1,10 @@
 ﻿using MedicalPoint.Services;
+using MedicalPoint.ViewModels.Beds;
 using MedicalPoint.ViewModels.Departments;
+using MedicalPoint.ViewModels.Patients;
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace MedicalPoint.Controllers
 {
@@ -9,11 +12,13 @@ namespace MedicalPoint.Controllers
     {
         private readonly IDepartmentsService _departmentsService;
         private readonly IUnderObservationBedsService _underObservationBedsService;
+        private readonly IPatientsService _patientsService;
 
-        public DepartmentsController(IDepartmentsService departmentsService, IUnderObservationBedsService underObservationBedsService, IUnderObservationBedsService underObservationBedsService1)
+        public DepartmentsController(IDepartmentsService departmentsService, IUnderObservationBedsService underObservationBedsService, IPatientsService patientsService)
         {
             _departmentsService = departmentsService;
             _underObservationBedsService = underObservationBedsService;
+            _patientsService = patientsService;
         }
         public async Task<IActionResult> Index()
         {
@@ -93,6 +98,78 @@ namespace MedicalPoint.Controllers
                 PatientDegree = bed.Patient?.Degree?.Name??"",
                 PatientName = bed.Patient?.Name??"",
             };
+            return View(viewModel);
+        }
+        public async Task<IActionResult> AddPatientToBed(int patientId)
+        {
+            var patient = await _patientsService.GetById(patientId);
+            if(patient == null)
+            {
+                return NotFound();
+            }
+
+            var availableDepartments = await _departmentsService.GetAllAvailable();
+            if(availableDepartments.Count == 0)
+            {
+                return NotFound();
+            }
+            var departmentsIds = availableDepartments.Select(x=> x.Id).ToList();
+            var beds = await _underObservationBedsService.GetAllAvailable(departmentsIds);
+            if(beds.Count == 0)
+            {
+                return BadRequest();
+            }
+            ViewBag.Departments = availableDepartments.ConvertAll(x => new SelectListItem
+            {
+                Text = x.Name,
+                Value = x.Id.ToString()
+            });
+            ViewBag.AvailableBeds = beds.ConvertAll(x => new SelectListItem
+            {
+                Text = "سرير رقم " + x.BedNumber,
+                Value = x.Id.ToString(),
+                Group = new SelectListGroup
+                {
+                    Name = x.DepartmentId.ToString(),
+                }
+            });
+            var firstDepartment = availableDepartments.First();
+            ViewBag.SelectListBeds = beds.Where(x => x.DepartmentId == firstDepartment.Id).Select(x => new SelectListItem
+            {
+                Text = "سرير رقم: " + x.BedNumber,
+                Value = x.Id.ToString(),
+                Group = new SelectListGroup
+                {
+                    Name = x.DepartmentId.ToString(),
+                }
+            }).ToList();
+            var viewModel =  new AddPatientToBedViewModel{
+                Beds = beds.ConvertAll(x=> new BedsViewModel
+                {
+                    BedNumber = x.BedNumber,
+                    DepartmentId = x.DepartmentId,
+                    DoctorId = x.DoctorId,
+                    Id = x.Id,
+                }),
+                Departments = availableDepartments.ConvertAll(x=> new DepartmentsViewModel
+                {
+                    Id = x.Id,
+                    AvailableBedsCount = x.AvailableBedsCount,
+                    BedsCount = x.BedsCount,
+                    Name = x.Name,
+                }),
+                SelectedDepartmentId = firstDepartment.Id,
+                PatientId = patientId,
+              Patient = new PatientViewModel
+            {
+                Id = patient.Id,
+                CreatedAt = patient.CreatedAt,
+                DegreeId = patient.DegreeId,
+                Degree = patient.Degree?.Name?? string.Empty,
+                Name = patient.Name,
+
+            }};
+          
             return View(viewModel);
         }
         public async Task<IActionResult> CreateBed(int id)
