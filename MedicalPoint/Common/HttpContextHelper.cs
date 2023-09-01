@@ -14,5 +14,9 @@ namespace MedicalPoint.Common
             var userId = int.Parse(userIdString);
             return userId;
         }
+        public static bool IsUserHasRoles(this HttpContext context, string[] roles)
+        {
+            return context.User.Claims.Any(x=> roles.Contains(x.Value));
+        }
     }
 }

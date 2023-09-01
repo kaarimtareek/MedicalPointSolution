@@ -31,7 +31,7 @@ namespace MedicalPoint.Services
         }
         public async Task<List<Medicine>> GetAvailableMedicinesForVisit(int visitId, CancellationToken cancellationToken = default)
         {
-            var visitMedicinesIds = await _context.VisitMedicines.Include(x=> x.Medicine).AsNoTracking().Where(x => x.VisitId == visitId).Select(x=> x.Id).ToListAsync(cancellationToken);
+            var visitMedicinesIds = await _context.VisitMedicines.Include(x=> x.Medicine).AsNoTracking().Where(x => x.VisitId == visitId).Select(x=> x.MedicineId).ToListAsync(cancellationToken);
             var availableMedicines = await _context.Medicines.AsNoTracking().Where(x => !visitMedicinesIds.Contains(x.Id) && x.Quantity > 0 && !x.IsDeleted).ToListAsync();
             return availableMedicines;
         }

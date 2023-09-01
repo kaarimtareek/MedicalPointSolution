@@ -1,4 +1,6 @@
-﻿@model MedicalPoint.ViewModels.Medicines.MedicineViewModel
+﻿@using MedicalPoint.Constants;
+@using MedicalPoint.Common;
+@model MedicalPoint.ViewModels.Medicines.MedicineViewModel
 
 @{
     Layout = null;
@@ -72,8 +74,16 @@
                 </div>
             </div>
 
+            @if (this.Context.IsUserHasRoles(new string[]{ConstantUserType.SUPER_ADMIN}))
+            {
+                    
             <div class="row justify-content-center mt-4">
-             <div class="col-lg-8">
+                <div class="col-lg-8 text-center">
+                 
+                    <p id="nametwo">
+                        سجل الدواء
+                    </p>    
+                 
                     <table class="table  table-striped">
                         <thead>
                             <tr>
@@ -81,10 +91,9 @@
                                 <th>متخذ الاجراء</th>
                                 <th>التوقيت</th>
                                 <th>نوع الاجراء</th>
-
-                            <th>اسم الدواء</th>
-                            <th>الكمية</th>
-                            <th>الحد الادني من الاكتفاء</th>
+                                <th>اسم الدواء</th>
+                                <th>الكمية</th>
+                                <th>الحد الادني من الاكتفاء</th>
 
                             </tr>
                         </thead>
@@ -99,15 +108,16 @@
                                     <td>@history.MedicineName</td>
                                     <td>@history.MedicineQuantity</td>
                                     <td>@history.MinimumQuantityThreshold</td>
-                               </tr>
+                                </tr>
                                 
                             }
                         </tbody>
                     </table>
 
 
-             </div>
+                </div>
             </div>
+            }
 
 
         </div>

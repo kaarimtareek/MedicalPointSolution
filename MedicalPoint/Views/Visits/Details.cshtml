@@ -150,27 +150,30 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach(var medicine in Model.Medicines)
+                                @foreach(var visitMedicine in Model.Medicines)
                                 {
                                     <tr>
                                             <td></td>
                                             <td>
-                                               @medicine.MedicineName
+                                               @visitMedicine.MedicineName
                                             </td>
-                                            <td>@medicine.InventoryQuantity</td>
+                                            <td>@visitMedicine.InventoryQuantity</td>
                                             <td>
-                                                @medicine.Quantity
-                                                <input type="number" id="input-quantity-medicine-@medicine.Id" hidden required placeholder="الكمية" value="@medicine.Quantity">
+                                                @visitMedicine.Quantity
+                                                <input type="number" id="input-quantity-medicine-@visitMedicine.Id" hidden required placeholder="الكمية" value="@visitMedicine.Quantity">
                                             </td>
                                             <td>
-                                                <div id="edit-medicine-@medicine.Id">
+                                        <form id="form-delete-visitmedicine-@visitMedicine.Id" method="post" asp-action="RemoveVisitMedicine" asp-controller="Visits"></form>
+                                                <div id="edit-medicine-@visitMedicine.Id">
                                                     <button type="button" class="table-button-blue"
                                                         onclick="activateSave()">تعديل <i
                                                             class="fa-solid fa-pen-to-square"></i></button>
-                                                    <button type="button" class="table-button-red">حذف <i
-                                                            class="fa-solid fa-trash"></i></button>
+                                            <input hidden form="form-delete-visitmedicine-@visitMedicine.Id" name="Id" value="@visitMedicine.Id" />
+                                            <input hidden form="form-delete-visitmedicine-@visitMedicine.Id" name="visitId" value="@Model.Id" />
+                                            <button type="submit" form="form-delete-visitmedicine-@visitMedicine.Id"   class="table-button-red">
+                                                حذف <i class="fa-solid fa-trash"></i></button>
                                                 </div>
-                                                <div id="save-medicine-@medicine.Id" style="display:none">
+                                                <div id="save-medicine-@visitMedicine.Id" style="display:none">
                                                     <button type="button" class="table-button-blue"  onclick="activateEdit()">حفظ
                                                         <i class="fa-solid fa-pen-to-square"></i></button>
                                                     <button type="button" class="table-button-red">الغاء <i

@@ -1,4 +1,6 @@
-﻿@using MedicalPoint.ViewModels.Medicines;
+﻿@using MedicalPoint.Common;
+@using MedicalPoint.Constants;
+@using MedicalPoint.ViewModels.Medicines;
 @model List<GetAllMediciensViewModel>
 @{
     Layout = null;
@@ -18,11 +20,16 @@
 </head>
 
 <body class="background-with-color">
-    <nav class="navbar navbar-expand-lg navbar-light ">
+    <nav class="navbar navbar-expand-lg navbar-light print ">
         <div class="container">
             <div>
                 <a  asp-controller="Account" asp-action="Logout" class="my-button ml-2">تسجيل الخروج <i class="fa-solid fa-right-from-bracket"></i></a>
                 <a  asp-action="Index" asp-controller="Medicines" class="my-button-blue">العودة للرئيسية <i class="fa-solid fa-house"></i></a>
+                <a class="my-button-blue" onclick="window.print()">طباعة الأدوية <i class="fa-solid fa-print"></i></a>
+                @if(this.Context.IsUserHasRoles(new string[]{ConstantUserType.SUPER_ADMIN}))
+                {
+                    <a  asp-action="Create" asp-controller="Medicines" class="my-button-blue">إضافة دواء جديد <i class="fa-solid fa-add"></i></a>
+                }
             </div>
             <img src="~/UserDesign/img/logo.png" alt="logo">
         </div>
@@ -40,8 +47,8 @@
                                 <th>إسم العلاج</th>
                                 <th>الحد الادنى من الاكتفاء</th>
                                 <th>المخزون</th>
-                                <th>إضافة كمية <i class="fa-solid fa-plus"></i></th>
-                                <th>خيارات <i class="fa-solid fa-gear"></i></th>
+                                <th class="print">إضافة كمية <i class="fa-solid fa-plus"></i></th>
+                                <th class="print">خيارات <i class="fa-solid fa-gear"></i></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -58,7 +65,7 @@
                                     </td>
                                     <td>@item.Quantity</td>
 
-                                    <td>
+                                    <td class="print">
                                         
                                         <button   onclick="activeDiv({buttonId:'add-medicine-button-@item.Id',divId:'add-medicine-@item.Id'})" id="add-medicine-button-@item.Id" type="button" class="table-button-blue">إضافة كمية جديدة <i class="fa-solid fa-plus"></i></button>
                                     <form id="formAddQuantity-@item.Id" method="post" asp-action="AddQuantity" asp-controller="Medicines" >
@@ -75,7 +82,7 @@
                                     </div>
                                             </form>
                                     </td>
-                                    <td>
+                                    <td class="print">
 
 <div>
                                             <a title="تفاصيل" style="cursor:pointer; font-size:22px; color:var(--green-color)"  asp-controller="Medicines" asp-action="Details"  asp-route-id="@item.Id">   <i class="fa-solid fa-circle-info"></i> </a>
