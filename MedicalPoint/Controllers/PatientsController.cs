@@ -1,5 +1,7 @@
 ﻿using System.Net;
 using System.Security.Claims;
+
+using MedicalPoint.Common;
 using MedicalPoint.Data;
 using MedicalPoint.Services;
 using MedicalPoint.ViewModels.Patients;
@@ -17,11 +19,14 @@ namespace MedicalPoint.Controllers
         private readonly IPatientsService _patientsService;
         private readonly IDegreesService  _degreesService;
         private readonly IVisitsService _visitsService;
-        public PatientsController(IPatientsService patientsService, IDegreesService degreesService,IVisitsService visitsService)
+        private readonly IUnderObservationBedsService _underObservationBedsService;
+
+        public PatientsController(IPatientsService patientsService, IDegreesService degreesService,IVisitsService visitsService, IUnderObservationBedsService underObservationBedsService)
         {
             _patientsService = patientsService;
             _degreesService = degreesService;
             _visitsService = visitsService;
+            _underObservationBedsService = underObservationBedsService;
         }
       
         public async Task<IActionResult> Index()
@@ -76,31 +81,29 @@ namespace MedicalPoint.Controllers
         {
             
             var patient = await _patientsService.GetById(id);
-            
-            //get patient id 
-            ViewBag.Id = patient.Id;
-
             if(patient==null)
             {
                 return NotFound();
             }
+            var bedId = await _underObservationBedsService.GetBedIdByPatientId(id);
             //Creating the View model
             var viewModel =  new PatientViewModel
             {
                 
-                Name                = patient.Name,    
-                Id                  = id,
-                CreatedAt           =patient.CreatedAt,
-                 Major              = patient.Major,
-                 SaryaNumber        = patient.SaryaNumber,
-                 MilitaryNumber     = patient.MilitaryNumber,
-                 LastUpdatedAt      = patient.LastUpdatedAt,
-                 LastVisitAt        = patient.LastVisitAt,
-                 DegreeId           = patient.DegreeId,
-                 NationalNumber     =patient.NationalNumber,
-                 GeneralNumber      =patient.GeneralNumber,
-                 
-
+                Name = patient.Name,    
+                Id = id,
+                CreatedAt =patient.CreatedAt,
+                 Major = patient.Major,
+                 SaryaNumber  = patient.SaryaNumber,
+                 MilitaryNumber = patient.MilitaryNumber,
+                 LastUpdatedAt  = patient.LastUpdatedAt,
+                 LastVisitAt    = patient.LastVisitAt,
+                 DegreeId  = patient.DegreeId,
+                 NationalNumber =patient.NationalNumber,
+                 GeneralNumber  =patient.GeneralNumber,
+                 Degree = patient.Degree?.Name ??string.Empty,
+                 BedId = bedId,
+                 RegisteredUserName = patient.RegisteredUser?.FullName??string.Empty,
             };
             return View(viewModel);
         }

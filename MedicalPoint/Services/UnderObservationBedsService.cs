@@ -14,6 +14,8 @@ namespace MedicalPoint.Services
         Task<UnderObservationBed> Get(int id, CancellationToken cancellationToken = default);
         Task<List<UnderObservationBed>> GetAll(int departmentId, CancellationToken cancellationToken = default);
         Task<List<UnderObservationBed>> GetAllAvailable(int departmentId, CancellationToken cancellationToken = default);
+        Task<List<UnderObservationBed>> GetAllAvailable(List<int> departmentsIds, CancellationToken cancellationToken = default);
+        Task<int?> GetBedIdByPatientId(int patientId, CancellationToken cancellationToken = default);
         Task<OperationResult<UnderObservationBed>> RemovePatientFromBed(int bedId, int doctorId, CancellationToken cancellationToken = default);
     }
 
@@ -36,6 +38,11 @@ namespace MedicalPoint.Services
             var result = await _context.UnderObservationBeds.AsNoTracking().Where(x => x.DepartmentId == departmentId && x.IsActive && x.PatientId == null).ToListAsync(cancellationToken);
             return result;
         }
+         public async Task<List<UnderObservationBed>> GetAllAvailable(List<int> departmentsIds, CancellationToken cancellationToken = default)
+        {
+            var result = await _context.UnderObservationBeds.AsNoTracking().Where(x => departmentsIds.Contains( x.DepartmentId ) && x.IsActive && x.PatientId == null).ToListAsync(cancellationToken);
+            return result;
+        }
 
         public async Task<UnderObservationBed> Get(int id, CancellationToken cancellationToken = default)
         {
@@ -49,7 +56,6 @@ namespace MedicalPoint.Services
                 .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
             return result;
         }
-
         public async Task<OperationResult<UnderObservationBed>> AddPatientToBed(int bedId, int visitId, int patientId, int doctorId, string notes, DateTime? enterDate, CancellationToken cancellationToken = default)
         {
             var bed = await _context.UnderObservationBeds.FirstOrDefaultAsync(x => x.Id == bedId, cancellationToken);
@@ -171,6 +177,13 @@ namespace MedicalPoint.Services
             await _context.UnderObservationBedHistories.AddAsync(bedHistory, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
             return OperationResult<UnderObservationBed>.Succeeded(bed);
+        }
+        public async Task<int?> GetBedIdByPatientId(int patientId, CancellationToken cancellationToken = default)
+        {
+            var bedId = await _context.UnderObservationBeds.AsNoTracking().Where(x => x.PatientId == patientId).Select(x=> x.Id).FirstOrDefaultAsync(cancellationToken);
+            if (bedId == 0)
+                return null;
+            return bedId;
         }
 
         private async Task RefreshAavailableBedCount(int departmentId)

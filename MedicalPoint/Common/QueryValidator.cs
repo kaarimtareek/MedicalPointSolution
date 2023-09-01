@@ -42,6 +42,10 @@ namespace MedicalPoint.Common
         {
             return _isPatientExist(context, id);
         }
+          public static bool IsPatientInBed(ApplicationDbContext context, int id)
+        {
+            return _isPatientInBed(context, id);
+        }
 
         public static bool PatientHasAlreadyActiveVisit(ApplicationDbContext context, int id)
         {
@@ -74,6 +78,8 @@ namespace MedicalPoint.Common
         private static readonly Func<ApplicationDbContext, string, int?, bool> _isPatientMilitaryNumberExist = EF.CompileQuery<ApplicationDbContext, string, int?, bool>((context, militaryNumber,  patientId) => context.Patients.AsNoTracking().Any(x => x.MilitaryNumber == militaryNumber && (!patientId.HasValue || x.Id != patientId)));
 
         private static readonly Func<ApplicationDbContext, int, bool> _isPatientExist = EF.CompileQuery<ApplicationDbContext, int, bool>((context, id) => context.Patients.AsNoTracking().Any(x => x.Id == id));
+        
+        private static readonly Func<ApplicationDbContext, int, bool> _isPatientInBed = EF.CompileQuery<ApplicationDbContext, int, bool>((context, id) => context.UnderObservationBeds.AsNoTracking().Any(x => x.PatientId == id));
 
         private static readonly Func<ApplicationDbContext, int, bool> _isPatientHasAlreadyActiveVisit = EF.CompileQuery<ApplicationDbContext, int, bool>((context, id) => context.Visits.AsNoTracking().Any(x => x.PatientId == id && x.Status != Constants.ConstantVisitStatus.FINISHED && !x.IsDeleted));
 

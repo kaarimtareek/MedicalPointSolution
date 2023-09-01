@@ -18,5 +18,7 @@ namespace MedicalPoint.ViewModels.Patients
         public DateTime CreatedAt { get; set; }
         public DateTime LastUpdatedAt { get; set; }
         public DateTime? LastVisitAt { get; set; }
+        public int? BedId { get; set; }
+        public bool IsUnderObservation => BedId != null && BedId !=0;
     }
 }
