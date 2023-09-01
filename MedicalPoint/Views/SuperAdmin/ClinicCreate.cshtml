@@ -1,0 +1,45 @@
+﻿@model MedicalPoint.ViewModels.Clinics.AddClinicViewModel
+
+@{
+    Layout = "~/Views/Shared/_LayoutDesignLeader.cshtml";
+}
+   <center>
+
+              <!-- M-report -->
+       
+              <div class="col-md-12 ">
+                <div class="align-items-center">
+  
+                 
+  
+                 
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title" style="text-align: center; font-weight: bold;">اضافة عيادة</h5>
+
+              <!-- Add-Admin -->
+              <form asp-action="ClinicCreate" method="post">
+                <div class="text-center">
+                  <div class="row mb-3">
+                    <label for="inputText" style="font-weight: bold;" class="col-sm-2 col-form-label">العيادة</label>
+                    <div class="col-sm-10">
+                      <input asp-for="Name" type="text" class="form-control">
+                    </div>
+                  </div>
+                  
+                    
+                    <div class="text-center">
+                      <button class="btn btn-danger" type="submit" style="width: 200px; height: 50; font-weight: bold; font-size: 20px; border-radius: 15px;" >حفظ العيادة</button>
+                    </div>
+                    
+                  </div>
+               </form>
+                </div>
+              </div><!-- End M-report -->
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+      </center>

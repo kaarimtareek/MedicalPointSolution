@@ -11,6 +11,8 @@ namespace MedicalPoint.Services
         Task<OperationResult<Clinic>> Edit(int id, string name, bool isActive, CancellationToken cancellationToken = default);
         List<Clinic> GetAll(bool activeOnly = true);
         Task<OperationResult<Clinic>> Remove(int id, CancellationToken cancellationToken = default);
+        Task<Clinic> GetById(int id, CancellationToken cancellationToken = default);
+
     }
 
     public class ClinicsServices : IClinicsServices
@@ -20,6 +22,15 @@ namespace MedicalPoint.Services
         public ClinicsServices(ApplicationDbContext context)
         {
             _context = context;
+        }
+
+        public async Task<Clinic> GetById(int id, CancellationToken cancellationToken = default)
+        {
+            var clinic = await _context.Clinics.AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+
+
+            return clinic;
         }
         public List<Clinic> GetAll(bool activeOnly = true)
         {
