@@ -13,5 +13,7 @@ namespace MedicalPoint.Data
         public Visit Visit { get; set; }
         public Medicine Medicine { get; set; }
         public DateTime CreatedAt { get; set; }
+        public bool IsGiven { get; set; }
+        public DateTime? GivenTime { get; set; }
     }
 }

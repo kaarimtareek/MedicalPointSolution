@@ -189,7 +189,8 @@ namespace MedicalPoint.Services
             await _context.SaveChangesAsync(cancellationToken);
             return OperationResult<Visit>.Succeeded(visit);
         }
-
+        
+       
         public async Task<OperationResult<Visit>> Delete(int visitId, int userId, CancellationToken cancellationToken = default)
         {
             //check if user has already active visit

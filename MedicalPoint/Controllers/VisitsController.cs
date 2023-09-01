@@ -3,6 +3,7 @@ using MedicalPoint.Constants;
 using MedicalPoint.Data;
 using MedicalPoint.Services;
 using MedicalPoint.ViewModels.Doctors;
+using MedicalPoint.ViewModels.Medicines;
 using MedicalPoint.ViewModels.Patients;
 using MedicalPoint.ViewModels.Visits;
 
@@ -146,10 +147,11 @@ namespace MedicalPoint.Controllers
 
                 }).ToList()
             };
-            ViewBag.AvailableMedicines =(await _visitMedicinesService.GetAvailableMedicinesForVisit(id)).Select(x=> new SelectListItem
+            ViewBag.AvailableMedicines =(await _visitMedicinesService.GetAvailableMedicinesForVisit(id)).ConvertAll(x=> new MedicineViewModel
             {
-                Text = x.Name,
-                Value = x.Id.ToString(),
+                Id=x.Id,
+                Quantity =x.Quantity,
+                Name = x.Name
             });
             return View(viewModel);
         }
