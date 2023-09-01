@@ -25,9 +25,10 @@ namespace MedicalPoint.ViewModels.Visits
         public DateTime VisitTime { get; set; }
         public DateTime? ExitTime { get; set; }
         public DateTime? FollowingVisitDate { get; set; }
-        [NotMapped]
         public bool IsFollowingVisit => PreviousVisitId != null;
         public bool IsDeleted { get; set; }
+        public bool IsMedicinesGiven { get; set; }
+
     }
     
 }
