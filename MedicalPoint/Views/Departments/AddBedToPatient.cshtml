@@ -1,0 +1,142 @@
+﻿@using MedicalPoint.ViewModels.Beds;
+@model AddBedToPatientViewModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="~/userDesign/css/all.min.css">
+    <link rel="stylesheet" href="~/userDesign/css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/userDesign/css/bootstrap.min.css.map">
+    <link rel="stylesheet" href="~/userDesign/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="~/userDesign/css/style.css">
+    <script defer src="~/userDesign/js/jquery-3.7.0.js"></script>
+    <script defer src="~/userDesign/js/jquery.dataTables.min.js"></script>
+    <script defer src="~/userDesign/js/dataTables.bootstrap5.min.js"></script>
+    <script defer src="~/userDesign/js/table.js"></script>
+    <title>إضافة مريض للسرير</title>
+    <link rel="icon" href="~/userDesign/img/logo.png">
+</head>
+
+<body class="background-with-color">
+ 
+    <nav class="navbar navbar-expand-lg navbar-light  d-none d-lg-block sticky-top" id="bg">
+        <div class="container">
+            <div> <button class="my-button">تسجيل الخروج <i class="fa-solid fa-right-from-bracket"></i></button>
+                <button class="my-button-blue">العودة للرئيسية <i class="fa-solid fa-house"></i></button>
+
+                
+            </div>
+            <img src="~/userDesign/img/logo.png" alt="logo">
+        </div>
+    </nav>
+    <div class="landing-three ">
+
+        <div class="container fadeInUp-animation ">
+            <div class="row  justify-content-center">
+                <div class="col-lg-12 text-center">
+                    <p id="nametwo">إضافة مريض للسرير <i class="fa-solid fa-bed"></i></p id="name">
+                    <table id="example" class="table table-striped" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>مسلسل</th>
+                                <th>الدرجة / الرتبة</th>
+                                <th>اسم المريض</th>
+                                <th class="print">ملاحظات</th>
+                                <th class="print">حجز المريض</th>
+                               
+                         
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach(var patient in Model.Patients)
+                            {
+                                <form id="formAddBedToPatient-@patient.Id" style="display:none" asp-action="AddBedToPatient" asp-controller="Departments" asp-route-id="@patient.Id" ></form>
+                                <tr>
+                                    <td></td>
+                                    <td>@patient.Degree</td>
+                                    <td>@patient.Name</td>
+                                    <td class="print">
+                                        <a  id="button-notes-@patient.Id" style="cursor: pointer; color: var(--green-color);"  onclick="enableDisable({ids:['note-id','link-id','cancel-note']})">إضافة ملاحظة</a>
+
+                                        <input form="formAddBedToPatient-@patient.Id" id="input-note-@patient.Id" type="text" name="Notes" style="width:90%; display:none;" placeholder=" الملاحظة" >
+
+                                        <a id="button-cancel-note-@patient.Id"  style="cursor: pointer;display:none;"  onclick="enableDisable({ids:['note-id','link-id','cancel-note']})"><span >إلغاء <i class="fa-solid fa-xmark"></i></span></a>
+                                    </td>
+                          
+                                   
+                                    <td class="print"><a form="formAddBedToPatient-@patient.Id" >حجز  <i class="fa-solid fa-plus"></i></a></td>
+              
+                                </tr>
+                                
+                            }
+                         
+                        </tbody>
+          
+                      
+                    </table>
+
+
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+   
+
+
+    @*<footer >
+        <!-- Copyright -->
+        <div class="container">
+            <div class="row ">
+                <div class="col-lg-12 mb-3">
+                    <p id="footer-text">
+                        توقيع المسؤول
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="text-center p-1" >
+            
+          <p id="footer-text">تم الانشاء بواسطة <span style="color: var(--red-color);">فرع النظم</span> الدفعة <span style="color: var(--red-color);">164</span> ضباط إحتياط ©</p>
+        </div>
+        <!-- Copyright -->
+      </footer>*@
+<script>
+     function enableDisable({ ids }) {
+            console.log("Clicked!!")
+
+            if(ids ==null)
+            {
+                console.log("ids are null")
+                return;
+
+            }
+            for(i=0 ; i< ids.length; i++ )
+            {
+                var id = ids[i];
+                var element = document.getElementById(id);
+                if(element == null)
+                {
+                    console.log("elemet with id:" + id  +" is null");
+                    continue;
+                }
+                console.log("element with id:" + id + " is NOT null null!!!");
+
+                element.style.display = element.style.display == "none"? "" : "none";
+            }
+           
+        }
+</script>
+</body>
+
+<script src="~/userDesign/js/all.min.js"></script>
+<script src="~/userDesign/js/bootstrap.bundle.min.js"></script>
+
+
+</html>
