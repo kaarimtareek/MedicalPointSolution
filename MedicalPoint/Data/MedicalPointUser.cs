@@ -24,7 +24,7 @@ namespace MedicalPoint.Data
         public bool IsActive { get; set; }
         public byte[] Salt { get; set; }
         public Degree Degree { get; set; }
-        
+        public ICollection<UnderObservationBedHistory> UnderObservationBedHistories { get; set; }
 
     }
 }

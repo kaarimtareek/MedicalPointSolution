@@ -16,6 +16,11 @@ namespace MedicalPoint.Data
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<MedicalPointUser>().HasOne(x=> x.Degree).WithMany().OnDelete(DeleteBehavior.NoAction);
             modelBuilder.Entity<Visit>().HasOne(x => x.RegisteredUser).WithMany().OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<UnderObservationBedHistory>().HasOne(x => x.Doctor).WithMany(x=> x.UnderObservationBedHistories).OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<UnderObservationBedHistory>().HasOne(x => x.Bed).WithMany(x=> x.History).OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<UnderObservationBedHistory>().HasOne(x => x.Patient).WithOne().OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<MedicalPointUser>().HasMany(x => x.UnderObservationBedHistories).WithOne(x=>x.Doctor).OnDelete(DeleteBehavior.NoAction);
+            
 
             #region DATA SEEDING
             List<Clinic> clinics = new List<Clinic>
@@ -32,6 +37,36 @@ namespace MedicalPoint.Data
                     IsActive = true,
                     Name = "عظام"
                 },
+                new Clinic
+                {
+                    Id = 3,
+                    IsActive = true,
+                    Name = "باطنة"
+                },
+                new Clinic
+                {
+                    Id =4 ,
+                    IsActive = true,
+                    Name = "أنف وأذن"
+                },
+                new Clinic
+                {
+                    Id =5 ,
+                    IsActive = true,
+                    Name = "مسالك"
+                },
+                new Clinic
+                {
+                    Id = 6 ,
+                    IsActive = true,
+                    Name = "مخ وأعصاب"
+                },
+                new Clinic
+                {
+                    Id = 7 ,
+                    IsActive = true,
+                    Name = "أسنان"
+                }
 
             };
             modelBuilder.Entity<Clinic>().HasData(clinics);
@@ -46,16 +81,77 @@ namespace MedicalPoint.Data
                 new Degree
                 {
                     Id = 2,
-                    Name = "ملازم"
-                },
-                 new Degree
-                {
-                    Id = 3,
-                    Name = "نقيب"
+                    Name = "جندي"
                 },
                 new Degree
                 {
+                    Id = 3,
+                    Name = "ملازم"
+                },
+                
+                new Degree
+                {
                     Id = 4,
+                    Name = "ملازم أول"
+                },
+                 new Degree
+                {
+                    Id = 5,
+                    Name = "نقيب"
+                },
+                 new Degree
+                {
+                    Id = 6,
+                    Name = "رائد"
+                },
+                new Degree
+                {
+                    Id = 7,
+                    Name = "مقدم"
+                },
+                new Degree
+                {
+                    Id = 8,
+                    Name = "عقيد"
+                },
+                new Degree
+                {
+                    Id = 9,
+                    Name = "عميد"
+                },
+                new Degree
+                {
+                    Id =10,
+                    Name = "لواء"
+                },
+                new Degree
+                {
+                    Id = 11,
+                    Name = "عريف"
+                },
+                new Degree
+                {
+                    Id = 12,
+                    Name = "رقيب"
+                },
+                new Degree
+                {
+                    Id = 13,
+                    Name = "رقيب أول"
+                },
+                new Degree
+                {
+                    Id = 14,
+                    Name = "مساعد"
+                },
+                new Degree
+                {
+                    Id = 15,
+                    Name = "مساعد أول"
+                },
+                new Degree
+                {
+                    Id = 16,
                     Name = "مدني"
                 },
             };
@@ -102,7 +198,6 @@ namespace MedicalPoint.Data
         public DbSet<VisitImage> VisitImages { get; set; }
         public DbSet<VisitMedicine> VisitMedicines { get; set; }
         public DbSet<VisitRest> VisitRests { get; set; }
-        public DbSet<MedicalPoint.ViewModels.Medicines.GetAllMediciensViewModel> GetAllMediciensViewModel { get; set; } = default!;
-        public DbSet<MedicalPoint.ViewModels.Users.UsersViewModel> UsersViewModel { get; set; } = default!;
+
     }
 }
