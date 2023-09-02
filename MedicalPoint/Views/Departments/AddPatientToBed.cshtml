@@ -99,11 +99,10 @@
     </div>
     <script>
         function enableDisable({ ids }) {
-            console.log("Clicked!!")
-
+           
             if(ids ==null)
             {
-                console.log("ids are null")
+          
                 return;
 
             }
@@ -113,10 +112,10 @@
                 var element = document.getElementById(id);
                 if(element == null)
                 {
-                    console.log("elemet with id:" + id  +" is null");
+                   
                     continue;
                 }
-                console.log("element with id:" + id + " is NOT null null!!!");
+               
 
                 element.style.display = element.style.display == "none"? "" : "none";
             }
