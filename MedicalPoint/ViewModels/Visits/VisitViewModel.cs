@@ -8,6 +8,7 @@ namespace MedicalPoint.ViewModels.Visits
     public class VisitViewModel
     {
         public int Id { get; set; }
+        public int? VisitRestId { get; set; }
         public int? ClinicId { get; set; }
         public ClinicViewModel Clinic { get; set; }
 
@@ -35,6 +36,7 @@ namespace MedicalPoint.ViewModels.Visits
         public bool IsMedicinesGiven { get; set; }
         public DateTime? MedicineGivenTime { get; set; }
         public bool IsFollowingVisit => PreviousVisitId != null;
+        public bool HasVisitRest { get; set; }
     }
     public class VisitImageViewModel
     {

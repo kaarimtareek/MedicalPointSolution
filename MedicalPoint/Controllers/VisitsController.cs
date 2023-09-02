@@ -22,14 +22,16 @@ namespace MedicalPoint.Controllers
         private readonly IClinicsServices _clinicsServices;
         private readonly IVisitImagesService _visitImagesService;
         private readonly IVisitMedicinesService _visitMedicinesService;
+        private readonly IVisitRestsService _visitRestsService;
 
-        public VisitsController(IVisitsService visitsService, IPatientsService patientsService, IClinicsServices clinicsServices, IVisitImagesService visitImagesService, IVisitMedicinesService visitMedicinesService)
+        public VisitsController(IVisitsService visitsService, IPatientsService patientsService, IClinicsServices clinicsServices, IVisitImagesService visitImagesService, IVisitMedicinesService visitMedicinesService, IVisitRestsService visitRestsService)
         {
             _visitsService = visitsService;
             _patientsService = patientsService;
             _clinicsServices = clinicsServices;
             _visitImagesService = visitImagesService;
             _visitMedicinesService = visitMedicinesService;
+            _visitRestsService = visitRestsService;
         }
         public async Task<IActionResult> Index(DateTime? date)
         {
@@ -88,6 +90,7 @@ namespace MedicalPoint.Controllers
             var visit = await _visitsService.Get(id);
             if(visit == null)
                 return NotFound();
+            var hasVisitRest = await _visitsService.IsVisitHasRest(id);
             var viewModel = new VisitViewModel
             {
                 ClinicId= visit.ClinicId,
@@ -97,6 +100,7 @@ namespace MedicalPoint.Controllers
                     Id = visit.Clinic.Id,
                     IsActive = visit.Clinic.IsActive,
                 },
+                 HasVisitRest = hasVisitRest,
                 ExitTime = visit.ExitTime,
                 Id = visit.Id,
                 CreatedAt = visit.CreatedAt,
@@ -340,7 +344,164 @@ namespace MedicalPoint.Controllers
             });
             return View("Index", viewModel);
         }
+        public async Task<IActionResult> VisitRest(int id)
+        {
+            var visit = await _visitsService.Get(id);
+            if (visit == null)
+                return NotFound();
+            var visitRest = await _visitsService.GetVisitRest(id);
+            if(visitRest == null)
+                return NotFound();
+            ViewBag.RestTypes = (await _visitsService.GetVisitRestTypes()).Select(x=> new SelectListItem
+            {
+                Text = x.Name,
+                Value = x.Id.ToString(),
+            });
+            var viewModel = new VisitRestViewModel
+            {
+                ClinicId = visit.ClinicId,
+                RestType = visitRest.RestType== null? null: visitRest.RestType.Name,
+                Clinic = visit.Clinic == null ? null : new ViewModels.Clinics.ClinicViewModel
+                {
+                    Name = visit.Clinic.Name,
+                    Id = visit.Clinic.Id,
+                    IsActive = visit.Clinic.IsActive,
+                },
+                Id = visit.Id,
+                CreatedAt = visit.CreatedAt,
+                Diagnosis = visit.Diagnosis,
+                IsMedicinesGiven = visit.IsMedicinesGiven,
+                MedicineGivenTime = visit.MedicineGivenTime,
+                DoctorId = visit.DoctorId,
+                PatientId = visit.PatientId,
+                Notes = visit.Notes,
+                Type = visit.Type,
+                EndDate = visitRest.EndDate,
+                RestDaysNumber = visitRest.RestDaysNumber,
+                RestTypeId = visitRest.RestTypeId,
+                StartDate = visitRest.StartDate,
+                VisitId = id,
+                VisitNumber = visit.VisitNumber,
+                Doctor = visit.Doctor == null ? null : new DoctorViewModel
+                {
+                    Id = visit.DoctorId.Value,
+                    FullName = visit.Doctor.FullName,
+                    IsActive = visit.Doctor.IsActive,
+                },
+                Patient = visit.Patient == null ? null : new PatientViewModel
+                {
+                    CreatedAt = visit.Patient.CreatedAt,
+                    DegreeId = visit.Patient.DegreeId,
+                    GeneralNumber = visit.Patient.GeneralNumber,
+                    Id = visit.Patient.Id,
+                    LastUpdatedAt = visit.Patient.LastUpdatedAt,
+                    Name = visit.Patient.Name,
+                    SaryaNumber = visit.Patient.SaryaNumber,
+                    MilitaryNumber = visit.Patient.MilitaryNumber,
+                    Major = visit.Patient.Major,
+                    NationalNumber = visit.Patient.NationalNumber,
+                    LastVisitAt = visit.Patient.LastVisitAt,
+                    Degree = visit.Patient.Degree?.Name ?? "",
+                },
+                Medicines = visit.Medicines == null ? null : visit.Medicines.Select(x => new VisitMedicineViewModel
+                {
+                    Id = x.Id,
+                    InventoryQuantity = x.Medicine.Quantity,
+                    Quantity = x.Quantity,
+                    MedicineId = x.Medicine.Id,
+                    MedicineName = x.Medicine.Name,
 
+                }).ToList(),
+            };
+            
+            return View(viewModel);
+        }
+        
+        public async Task<IActionResult> CreateVisitRest(int visitId)
+        {
+            var visit = await _visitsService.Get(visitId);
+            if (visit == null)
+                return NotFound();
+            var visitRest = await _visitsService.GetVisitRest(visitId);
+            if(visitRest != null)
+                return BadRequest();
+            ViewBag.RestTypes = (await _visitsService.GetVisitRestTypes()).Select(x=> new SelectListItem
+            {
+                Text = x.Name,
+                Value = x.Id.ToString(),
+            });
+            var viewModel = new CreateVisitRestViewModel
+            {
+                ClinicId = visit.ClinicId,
+                DegreeId = visit.Patient== null? 0 :  visit.Patient.DegreeId,
+                RestType = "",
+                Clinic = visit.Clinic == null ? null : new ViewModels.Clinics.ClinicViewModel
+                {
+                    Name = visit.Clinic.Name,
+                    Id = visit.Clinic.Id,
+                    IsActive = visit.Clinic.IsActive,
+                },
+                Id = visit.Id,
+                CreatedAt = visit.CreatedAt,
+                Diagnosis = visit.Diagnosis,
+                IsMedicinesGiven = visit.IsMedicinesGiven,
+                MedicineGivenTime = visit.MedicineGivenTime,
+                DoctorId = visit.DoctorId,
+                PatientId = visit.PatientId,
+                Notes = visit.Notes,
+                
+                VisitId = visitId,
+                VisitNumber = visit.VisitNumber,
+                Doctor = visit.Doctor == null ? null : new DoctorViewModel
+                {
+                    Id = visit.DoctorId.Value,
+                    FullName = visit.Doctor.FullName,
+                    IsActive = visit.Doctor.IsActive,
+                },
+                Patient = visit.Patient == null ? null : new PatientViewModel
+                {
+                    CreatedAt = visit.Patient.CreatedAt,
+                    DegreeId = visit.Patient.DegreeId,
+                    GeneralNumber = visit.Patient.GeneralNumber,
+                    Id = visit.Patient.Id,
+                    LastUpdatedAt = visit.Patient.LastUpdatedAt,
+                    Name = visit.Patient.Name,
+                    SaryaNumber = visit.Patient.SaryaNumber,
+                    MilitaryNumber = visit.Patient.MilitaryNumber,
+                    Major = visit.Patient.Major,
+                    NationalNumber = visit.Patient.NationalNumber,
+                    LastVisitAt = visit.Patient.LastVisitAt,
+                    Degree = visit.Patient.Degree?.Name ?? "",
+                },
+                Medicines = visit.Medicines == null ? null : visit.Medicines.Select(x => new VisitMedicineViewModel
+                {
+                    Id = x.Id,
+                    InventoryQuantity = x.Medicine.Quantity,
+                    Quantity = x.Quantity,
+                    MedicineId = x.Medicine.Id,
+                    MedicineName = x.Medicine.Name,
+
+                }).ToList(),
+            };
+            
+            return View(viewModel);
+        }
+        [HttpPost]
+        public async Task<IActionResult> CreateVisitRest([FromForm] CreateVisitRestViewModel viewModel)
+        {
+            var userId = HttpContext.GetUserId();
+            if(userId == null)
+            {
+                return NotFound();
+            }
+            var result =await _visitRestsService.Add(viewModel.VisitId, userId.Value, viewModel.RestTypeId, viewModel.Notes, viewModel.StartDate, viewModel.RestDaysNumber);
+            if(!result.Success)
+            {
+                return BadRequest();
+            }
+            
+            return RedirectToAction(nameof(VisitRest), new { id = viewModel.VisitId});
+        }
 
     }
 }

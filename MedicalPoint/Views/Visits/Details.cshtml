@@ -236,6 +236,28 @@
                         </a>
                     </div>
                 </div>
+            @if (Model.HasVisitRest)
+            {
+                <div class="row justify-content-center ">
+                    <div class="col-lg-4 text-center mb-4">
+                        <a asp-action="VisitRest" asp-route-id="@Model.Id" asp-controller="Visits" class="my-button custom-button  mb-2">
+                            تفاصيل الاورنيك اورنيك <i class="fa-solid fa-floppy-disk"></i>
+                        </a>
+                    </div>
+                </div>
+
+            }
+            else
+            {
+                <div class="row justify-content-center ">
+                    <div class="col-lg-4 text-center mb-4">
+                        <a asp-action="CreateVisitRest" asp-route-id="@Model.Id" asp-controller="Visits" class="my-button custom-button  mb-2">
+                            إنشاء اورنيك <i class="fa-solid fa-floppy-disk"></i>
+                        </a>
+                    </div>
+                </div>
+                
+            }
 
     
            

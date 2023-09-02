@@ -17,7 +17,10 @@ namespace MedicalPoint.Services
         Task<OperationResult<Visit>> Edit(int visitId, int userId,  string notes, DateTime? exitTime = null, DateTime? visitTime = null, int? clinicId = null, int? doctorId = null, string? type = null, int? previousVisitId = null, DateTime? followDate = null, bool hasFollowingVisit = false, CancellationToken cancellationToken = default);
         Task<Visit> Get(int visitId, CancellationToken cancellationToken = default);
         Task<List<Visit>> GetAll(int? doctorId = null, int? patientId = null, DateTime? from = null, DateTime? to = null, string? type = null, int? clinicId = null, CancellationToken cancellationToken = default);
+        Task<VisitRest> GetVisitRest(int visitId, CancellationToken cancellationToken = default);
+        Task<List<LookupVisitRestType>> GetVisitRestTypes(CancellationToken cancellationToken = default);
         Task<List<Visit>> GetVisitsThatNeedsToGiveMedicines(CancellationToken cancellationToken = default);
+        Task<bool> IsVisitHasRest(int visitId, CancellationToken cancellationToken = default);
         Task<OperationResult<Visit>> WriteDiagnosis(int visitId, int userId, string diagnosis, bool forceChange = false, CancellationToken cancellationToken = default);
     }
 
@@ -287,6 +290,29 @@ namespace MedicalPoint.Services
                 .Include(x=> x.Images)
                 .Include(x=> x.History)
                 .FirstOrDefaultAsync(x=> x.Id == visitId, cancellationToken);
+           
+
+            return visit;
+        }
+        public async Task<bool> IsVisitHasRest(int visitId, CancellationToken cancellationToken = default)
+        {
+            var visit = await _context.VisitRests.AsNoTracking()
+                .FirstOrDefaultAsync(x=> x.VisitId == visitId, cancellationToken);
+           
+
+            return visit !=null;
+        }
+        public async Task<VisitRest> GetVisitRest(int visitId, CancellationToken cancellationToken = default)
+        {
+            var visit = await _context.VisitRests.AsNoTracking()
+                .Include(x=> x.RestType)
+                .FirstOrDefaultAsync(x=> x.VisitId == visitId, cancellationToken);
+            return visit;
+        }
+        public async Task<List<LookupVisitRestType>> GetVisitRestTypes(CancellationToken cancellationToken = default)
+        {
+            var visit = await _context.LookupVisitRestTypes.AsNoTracking()
+                .ToListAsync(cancellationToken);
             return visit;
         }
     }
