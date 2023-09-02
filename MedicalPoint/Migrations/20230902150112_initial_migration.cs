@@ -306,7 +306,7 @@ namespace MedicalPoint.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     BedId = table.Column<int>(type: "int", nullable: false),
-                    PatientId = table.Column<int>(type: "int", nullable: false),
+                    PatientId = table.Column<int>(type: "int", nullable: true),
                     VisitId = table.Column<int>(type: "int", nullable: true),
                     DoctorId = table.Column<int>(type: "int", nullable: false),
                     ActionType = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
@@ -508,7 +508,8 @@ namespace MedicalPoint.Migrations
                 name: "IX_UnderObservationBedHistories_PatientId",
                 table: "UnderObservationBedHistories",
                 column: "PatientId",
-                unique: true);
+                unique: true,
+                filter: "[PatientId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UnderObservationBeds_DepartmentId",

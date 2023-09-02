@@ -35,6 +35,7 @@ namespace MedicalPoint.Controllers
                 Name = x.Name,
                 LastUpdatedAt = x.LastUpdatedAt,
                Quantity = x.Quantity,   
+               Status  = x.Status,
                MinimumQuantityThreshold = x.MinimumQuantityThreshold,
 
             });

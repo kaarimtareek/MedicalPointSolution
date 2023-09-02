@@ -52,6 +52,7 @@
                             <tr>
                                 <th>مسلسل</th>
                                 <th>إسم العلاج</th>
+                                <th>حالة الكمية</th>
                                 <th>الحد الادنى من الاكتفاء</th>
                                 <th>المخزون</th>
                                 <th class="print">إضافة كمية <i class="fa-solid fa-plus"></i></th>
@@ -66,6 +67,27 @@
                                     <td></td>
                                     <td>
                                         @item.Name
+                                    </td>
+                                    <td>
+                                        @{
+                                            string colorName = "";
+                                            if (item.Status == ConstantMedicineStatus.NOT_AVAILABLE)
+                                            {
+                                                colorName = "red";
+                                            }
+                                            else if(item.Status == ConstantMedicineStatus.NEAR_FINISH)
+                                            {
+                                                colorName = "yellow";
+                                            }
+                                            else
+                                            {
+                                                colorName = "green";
+                                            }
+                                            <span style="color:@colorName">
+                                               @item.Status
+                                           </span> 
+
+                                        }
                                     </td>
                                     <td>
                                        @item.MinimumQuantityThreshold

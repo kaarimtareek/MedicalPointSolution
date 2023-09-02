@@ -1,4 +1,5 @@
-﻿@using MedicalPoint.Constants;
+﻿@using MedicalPoint.Common;
+@using MedicalPoint.Constants;
 @using MedicalPoint.ViewModels.Medicines;
 @using MedicalPoint.ViewModels.Visits;
 @model VisitViewModel
@@ -108,7 +109,7 @@
                                 </form>
 
                             }
-                            @if (!Model.IsFinishedDiagnosis)
+                            @if (!Model.IsFinishedDiagnosis && this.Context.IsUserHasRoles(new string[] { ConstantUserType.Doctor, ConstantUserType.SUPER_ADMIN }))
                             {
                                 <div>
                                     <div style="background-color: #c9c6c6; border-radius: 10px; padding: 10px;">
@@ -135,9 +136,9 @@
 
                 </div>
 
-           
 
-                @if(!Model.CanEditDiagnosis)
+
+            @if (!Model.CanEditDiagnosis || !this.Context.IsUserHasRoles(new string[] { ConstantUserType.Doctor, ConstantUserType.SUPER_ADMIN }))
                 {
                 <p id="nametwo" class="text-center"> التشخيص <i class="fa-solid fa-user"></i></p>
                 <input type="text" class="form-control mb-2" style="font-weight: bold; height:4rem" value="@Model.Diagnosis" readonly />
@@ -145,7 +146,7 @@
             }
             else
             {
-                
+               
                 <div class="row justify-content-center text-center  mt-4" style="display:@this.Context.User.Claims.Any(x=> x.Value == ConstantUserType.SUPER_ADMIN || x.Value == ConstantUserType.Doctor )? block: none">
                         <p id="nametwo">كتابة التشخيص <i class="fa-solid fa-user"></i></p>
                     <div class="col-lg-10 text-center p-1">
@@ -221,7 +222,8 @@
                                     </tr>
 
                                 }
-                            @if (!Model.IsFinishedDiagnosis)
+
+                            @if (!Model.IsFinishedDiagnosis && this.Context.IsUserHasRoles(new string[] { ConstantUserType.Doctor, ConstantUserType.SUPER_ADMIN }))
                             {
                                 <tr>
                                         <td></td>
@@ -258,7 +260,7 @@
                 </div>
                 
                 <div class="row justify-content-center ">
-                @if (!Model.IsFinishedDiagnosis)
+                @if (!Model.IsFinishedDiagnosis || !this.Context.IsUserHasRoles(new string[] { ConstantUserType.Doctor, ConstantUserType.SUPER_ADMIN }))
                     {
                         <div class="col-lg-4 text-center mb-4">
                             <a asp-action="FinishVisitDiagnosis" asp-route-id="@Model.Id" asp-controller="Visits" class="my-button custom-button  mb-2">
@@ -266,7 +268,7 @@
                             </a>
                         </div>
                     }
-                    @if (Model.HasVisitRest)
+                @if (Model.HasVisitRest)
                     {
                         <div class="col-lg-4 text-center mb-4">
                             <a asp-action="VisitRest" asp-route-id="@Model.Id" asp-controller="Visits" class="my-button custom-button  mb-2">
@@ -276,11 +278,15 @@
                     }
                     else
                     {
-                        <div class="col-lg-4 text-center mb-4">
-                            <a asp-action="CreateVisitRest" asp-route-id="@Model.Id" asp-controller="Visits" class="my-button custom-button  mb-2">
-                                إنشاء اورنيك <i class="fa-solid fa-floppy-disk"></i>
-                            </a>
-                        </div>
+                        @if (this.Context.IsUserHasRoles(new string[] { ConstantUserType.Doctor, ConstantUserType.SUPER_ADMIN }) )
+                        {
+                    
+                            <div class="col-lg-4 text-center mb-4">
+                                <a asp-action="CreateVisitRest" asp-route-id="@Model.Id" asp-controller="Visits" class="my-button custom-button  mb-2">
+                                    إنشاء اورنيك <i class="fa-solid fa-floppy-disk"></i>
+                                </a>
+                            </div>
+                        }
                     }
                     </div>
 

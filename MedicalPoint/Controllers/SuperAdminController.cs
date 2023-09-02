@@ -195,7 +195,7 @@ namespace MedicalPoint.Controllers
             {
                 return View();
             }
-            return RedirectToAction("GetMidicines", "SuperAdmin");
+            return RedirectToAction("GetMedicines", "SuperAdmin");
         }
 
      
