@@ -105,7 +105,7 @@ namespace MedicalPoint.Services
             var bedHistory = new UnderObservationBedHistory
             {
                 PatientId = bed.PatientId.Value,
-                Notes = bed.Notes,
+                Notes = bed.Notes??"",
                 VisitId = bed.VisitId,
                 DoctorId = doctorId,
                 ActionDate = DateTime.Now,
@@ -116,7 +116,7 @@ namespace MedicalPoint.Services
             bed.EnterDate = null;
             bed.DoctorId = null;
             bed.VisitId = null;
-            bed.Notes = null;
+            bed.Notes = "";
 
             await _context.UnderObservationBedHistories.AddAsync(bedHistory, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);

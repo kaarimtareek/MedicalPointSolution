@@ -103,7 +103,7 @@
 /* end navbar */
 
 .landing-three {
-    height: calc(100vh - 89.59px);
+    min-height: calc(100vh - 89.59px);
 }
 
 
@@ -623,13 +623,13 @@ td {
 .empty-bed {
     filter: drop-shadow(0 0 0.75rem var(--green-color));
     transition: .3s transform cubic-bezier(.155, 1.105, .295, 1.12), .3s box-shadow, .3s -webkit-transform cubic-bezier(.155, 1.105, .295, 1.12);
-    width: 80% !important;
+    max-width: 17vw;
 }
 
 .filled-bed {
     filter: drop-shadow(0 0 0.75rem var(--red-color));
     transition: .3s transform cubic-bezier(.155, 1.105, .295, 1.12), .3s box-shadow, .3s -webkit-transform cubic-bezier(.155, 1.105, .295, 1.12);
-    width: 80% !important;
+    max-width: 17vw;
 }
 
 #bedname {
@@ -763,4 +763,8 @@ td {
 
 #example > :not(caption) > * > * {
     padding: 0.1rem 0.1rem;
+}
+#footer-text {
+    margin: 0;
+    font-weight: bold;
 }

@@ -30,6 +30,7 @@ namespace MedicalPoint.Services
         public async Task<List<UnderObservationDepartment>> GetAllAvailable()
         {
             var result = await _context.UnderObservationDepartments
+                .Include(x=> x.Beds)
                 .AsNoTracking().Where(x=> x.AvailableBedsCount > 0).ToListAsync();
             return result;
         }
