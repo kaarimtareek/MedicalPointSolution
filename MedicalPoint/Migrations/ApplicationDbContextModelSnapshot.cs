@@ -54,6 +54,36 @@ namespace MedicalPoint.Migrations
                             Id = 2,
                             IsActive = true,
                             Name = "عظام"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            IsActive = true,
+                            Name = "باطنة"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            IsActive = true,
+                            Name = "أنف وأذن"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            IsActive = true,
+                            Name = "مسالك"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            IsActive = true,
+                            Name = "مخ وأعصاب"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            IsActive = true,
+                            Name = "أسنان"
                         });
                 });
 
@@ -83,16 +113,76 @@ namespace MedicalPoint.Migrations
                         new
                         {
                             Id = 2,
-                            Name = "ملازم"
+                            Name = "جندي"
                         },
                         new
                         {
                             Id = 3,
-                            Name = "نقيب"
+                            Name = "ملازم"
                         },
                         new
                         {
                             Id = 4,
+                            Name = "ملازم أول"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "نقيب"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Name = "رائد"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Name = "مقدم"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Name = "عقيد"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Name = "عميد"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Name = "لواء"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Name = "عريف"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Name = "رقيب"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Name = "رقيب أول"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Name = "مساعد"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Name = "مساعد أول"
+                        },
+                        new
+                        {
+                            Id = 16,
                             Name = "مدني"
                         });
                 });
@@ -419,6 +509,11 @@ namespace MedicalPoint.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("BedId");
+
+                    b.HasIndex("DoctorId");
+
+                    b.HasIndex("PatientId")
+                        .IsUnique();
 
                     b.ToTable("UnderObservationBedHistories");
                 });
@@ -817,10 +912,26 @@ namespace MedicalPoint.Migrations
                     b.HasOne("MedicalPoint.Data.UnderObservationBed", "Bed")
                         .WithMany("History")
                         .HasForeignKey("BedId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("MedicalPoint.Data.MedicalPointUser", "Doctor")
+                        .WithMany("UnderObservationBedHistories")
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("MedicalPoint.Data.Patient", "Patient")
+                        .WithOne()
+                        .HasForeignKey("MedicalPoint.Data.UnderObservationBedHistory", "PatientId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Bed");
+
+                    b.Navigation("Doctor");
+
+                    b.Navigation("Patient");
                 });
 
             modelBuilder.Entity("MedicalPoint.Data.Visit", b =>
@@ -908,6 +1019,11 @@ namespace MedicalPoint.Migrations
                         .IsRequired();
 
                     b.Navigation("RestType");
+                });
+
+            modelBuilder.Entity("MedicalPoint.Data.MedicalPointUser", b =>
+                {
+                    b.Navigation("UnderObservationBedHistories");
                 });
 
             modelBuilder.Entity("MedicalPoint.Data.Medicine", b =>
