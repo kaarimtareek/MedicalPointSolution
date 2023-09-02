@@ -18,7 +18,6 @@ namespace MedicalPoint.Data
             modelBuilder.Entity<Visit>().HasOne(x => x.RegisteredUser).WithMany().OnDelete(DeleteBehavior.NoAction);
             modelBuilder.Entity<UnderObservationBedHistory>().HasOne(x => x.Doctor).WithMany(x=> x.UnderObservationBedHistories).OnDelete(DeleteBehavior.NoAction);
             modelBuilder.Entity<UnderObservationBedHistory>().HasOne(x => x.Bed).WithMany(x=> x.History).OnDelete(DeleteBehavior.NoAction);
-            modelBuilder.Entity<UnderObservationBedHistory>().HasOne(x => x.Patient).WithOne().OnDelete(DeleteBehavior.NoAction);
             modelBuilder.Entity<MedicalPointUser>().HasMany(x => x.UnderObservationBedHistories).WithOne(x=>x.Doctor).OnDelete(DeleteBehavior.NoAction);
             
 

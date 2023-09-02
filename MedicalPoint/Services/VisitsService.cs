@@ -59,6 +59,7 @@ namespace MedicalPoint.Services
                 Notes = string.Empty,
                 RegisteredUserId = userId,
                 
+                
             };
             await _context.Visits.AddAsync(visit, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);

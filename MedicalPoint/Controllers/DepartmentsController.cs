@@ -1,4 +1,5 @@
 ﻿using MedicalPoint.Common;
+using MedicalPoint.Constants;
 using MedicalPoint.Services;
 using MedicalPoint.ViewModels.Beds;
 using MedicalPoint.ViewModels.Departments;
@@ -10,7 +11,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace MedicalPoint.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = $"{ConstantUserType.Recieptionist},{ConstantUserType.SUPER_ADMIN},{ConstantUserType.Doctor}")]
     public class DepartmentsController : Controller
     {
         private readonly IDepartmentsService _departmentsService;

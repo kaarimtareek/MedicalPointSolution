@@ -1,4 +1,5 @@
 ﻿using MedicalPoint.Common;
+using MedicalPoint.Constants;
 using MedicalPoint.Data;
 using MedicalPoint.Services;
 using MedicalPoint.ViewModels.Doctors;
@@ -12,7 +13,7 @@ using System.Security.Claims;
 
 namespace MedicalPoint.Controllers
 {
-    [Authorize]
+    [Authorize(Roles =$"{ConstantUserType.Pharmacist},{ConstantUserType.SUPER_ADMIN}")]
     public class MedicinesController : Controller
     {
         private readonly IMedicinesService _medicinesService;

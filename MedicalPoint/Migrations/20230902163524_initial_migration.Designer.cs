@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MedicalPoint.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230902150112_initial_migration")]
+    [Migration("20230902163524_initial_migration")]
     partial class initial_migration
     {
         /// <inheritdoc />
@@ -515,9 +515,7 @@ namespace MedicalPoint.Migrations
 
                     b.HasIndex("DoctorId");
 
-                    b.HasIndex("PatientId")
-                        .IsUnique()
-                        .HasFilter("[PatientId] IS NOT NULL");
+                    b.HasIndex("PatientId");
 
                     b.ToTable("UnderObservationBedHistories");
                 });
@@ -926,9 +924,8 @@ namespace MedicalPoint.Migrations
                         .IsRequired();
 
                     b.HasOne("MedicalPoint.Data.Patient", "Patient")
-                        .WithOne()
-                        .HasForeignKey("MedicalPoint.Data.UnderObservationBedHistory", "PatientId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .WithMany()
+                        .HasForeignKey("PatientId");
 
                     b.Navigation("Bed");
 

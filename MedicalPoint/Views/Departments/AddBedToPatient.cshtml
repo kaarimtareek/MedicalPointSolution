@@ -56,8 +56,8 @@
                             @foreach(var patient in Model.Patients)
                             {
                                 <tr>
-                                <form id="formAddBedToPatient-@patient.Id" method="post" asp-action="AddBedToPatient" asp-controller="Departments" asp-route-id="@Model.Id" ></form>
                                     <td></td>
+                                <form id="formAddBedToPatient-@patient.Id" method="post" asp-action="AddBedToPatient" asp-controller="Departments" asp-route-id="@Model.Id" style="display:none" ></form>
                                     <td>@patient.Degree</td>
                                     <td>@patient.Name</td>
                                     <td >

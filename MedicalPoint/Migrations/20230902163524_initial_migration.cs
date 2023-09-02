@@ -507,9 +507,7 @@ namespace MedicalPoint.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_UnderObservationBedHistories_PatientId",
                 table: "UnderObservationBedHistories",
-                column: "PatientId",
-                unique: true,
-                filter: "[PatientId] IS NOT NULL");
+                column: "PatientId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UnderObservationBeds_DepartmentId",

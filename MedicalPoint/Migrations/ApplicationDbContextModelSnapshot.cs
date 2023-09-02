@@ -512,9 +512,7 @@ namespace MedicalPoint.Migrations
 
                     b.HasIndex("DoctorId");
 
-                    b.HasIndex("PatientId")
-                        .IsUnique()
-                        .HasFilter("[PatientId] IS NOT NULL");
+                    b.HasIndex("PatientId");
 
                     b.ToTable("UnderObservationBedHistories");
                 });
@@ -923,9 +921,8 @@ namespace MedicalPoint.Migrations
                         .IsRequired();
 
                     b.HasOne("MedicalPoint.Data.Patient", "Patient")
-                        .WithOne()
-                        .HasForeignKey("MedicalPoint.Data.UnderObservationBedHistory", "PatientId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .WithMany()
+                        .HasForeignKey("PatientId");
 
                     b.Navigation("Bed");
 

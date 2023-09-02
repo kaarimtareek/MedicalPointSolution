@@ -108,8 +108,8 @@ namespace MedicalPoint.Services
                 DegreeId = degree,
                 FullName = name,
                 IsActive = true,
-                MilitaryNumber = militaryNumber,
-                PhoneNumber = phonenumber,
+                MilitaryNumber = militaryNumber??"",
+                PhoneNumber = phonenumber??"",
                 Salt = generatedSalt,
             };
             await _context.Users.AddAsync(user, cancellationToken);
@@ -137,8 +137,8 @@ namespace MedicalPoint.Services
                 return OperationResult<MedicalPointUser>.Failed("");
             }
             user.Email = email;
-            user.PhoneNumber = phonenumber;
-            user.MilitaryNumber = militaryNumber;
+            user.PhoneNumber = phonenumber??"";
+            user.MilitaryNumber = militaryNumber??"";
             user.FullName = name;
             user.DegreeId = degree;
           
