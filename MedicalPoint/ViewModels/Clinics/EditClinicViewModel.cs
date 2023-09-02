@@ -1,4 +1,4 @@
-﻿namespace MedicalPoint.ViewModels.d
+﻿namespace MedicalPoint.ViewModels.Clinics
 {
     public class EditClinicViewModel
     {

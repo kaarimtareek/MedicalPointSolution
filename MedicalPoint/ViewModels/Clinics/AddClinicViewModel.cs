@@ -2,7 +2,6 @@
 {
     public class AddClinicViewModel
     {
-       
         public string Name { get; set; }
     }
 }

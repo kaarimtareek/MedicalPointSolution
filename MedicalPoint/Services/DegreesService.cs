@@ -11,8 +11,6 @@ namespace MedicalPoint.Services
         Task<OperationResult<Degree>> Add(string name, CancellationToken cancellationToken = default);
         Task<OperationResult<Degree>> Edit(int id, string name, CancellationToken cancellationToken = default);
         Task<OperationResult<Degree>> Remove(int id, CancellationToken cancellationToken = default);
-        Task<Degree> GetById(int id, CancellationToken cancellationToken = default);
-
     }
 
     public class DegreesService : IDegreesService
@@ -22,14 +20,6 @@ namespace MedicalPoint.Services
         public DegreesService(ApplicationDbContext context)
         {
             _context = context;
-        }
-        public async Task<Degree> GetById(int id, CancellationToken cancellationToken = default)
-        {
-            var clinic = await _context.Degrees.AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
-
-
-            return clinic;
         }
         public List<Degree> GetAll(bool activeOnly = true)
         {
