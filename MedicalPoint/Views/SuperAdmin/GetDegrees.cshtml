@@ -1,0 +1,55 @@
+﻿@using MedicalPoint.ViewModels.Degrees;
+@model List<DegreesViewModel>
+@{
+    Layout = "~/Views/Shared/_LayoutDesignLeader.cshtml";
+}
+
+
+
+<!-- Cli -->
+<center>
+    <div style="left: 0; margin-right: 600px; padding-bottom: 0;">
+        <p style="font-weight: bold; font-size: 20px; "> اضافه رتبه /درجه :- <a class="btn btn-g" style="width: 100px; height: 40px; font-weight: bold; background-color: #263f85; color: white;" asp-action="DegreeCreate" asp-controller="SuperAdmin" role="button ">اضافة عيادة</a></p>
+
+
+    </div>
+
+    <div class="col-md-12">
+        <div class="align-items-center">
+
+
+
+            <div class="card-body pb-0">
+                <h5 class="card-title fw-bold" style="font-weight: bold; font-size: 35px;"> الرتبه / الدرجه </h5>
+
+                <table class="table datatable  table-striped " style="border: 0.5px; background-color: gray; border-width: 0.5px;">
+                    <thead>
+                        <tr>
+                            <th scope="col" width="10%"> #</th>
+                            <th scope="col"> الرتبه / الدرجه </th>
+                            <th scope="col" style="width: 10%;">خيارت</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td></td>
+                                <td><a href="#" class="fw-bold">@item.Name</a></td>
+                                <td>
+                                    <a style="width: 60px; height: 30px;" type="button" asp-action="EditClinics" asp-controller="SuperAdmin" asp-route-id="@item.Id" class="btn btn-warning btn-sm"> تعديل</a>
+
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+
+
+            </div>
+
+        </div>
+    </div><!-- End Cli-->
+</center>
