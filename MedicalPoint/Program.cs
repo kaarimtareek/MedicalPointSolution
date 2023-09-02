@@ -23,6 +23,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.AccessDeniedPath = "/Account/AccessDenied";
     });
 
+
+
 //builder.Services.AddAuthorization(options =>
 //{
 //    options.AddPolicy("ContentsEditor", policy =>
