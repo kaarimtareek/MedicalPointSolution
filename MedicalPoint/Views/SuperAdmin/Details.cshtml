@@ -15,7 +15,7 @@
 
 
             <div class="card-body">
-                <h5 class="card-title fw-bold">تفاصيل المريض</h5>
+                <h5 class="card-title fw-bold">تفاصيل الكشف</h5>
 
                 <table id="table2" class="table datatable table-bordered table-striped" style="border: 0.5px;  border-width: 0.5px;">
                     <thead class="Light">
@@ -134,9 +134,20 @@
 
 
                         <tr>
-                            <th scope="row"><div class="text-center"><label>المرفقات</label></div></th>
-                            <th scope="row"><div class="text-center"><label><img src="" class="rounded mx-auto d-block" alt="..." height="150" width="150"><p> </p><div class="text-center"><a class="btn btn-warning  btn-sm" href="assets/img/download.jpg" role="button">عرض المرفق</a></div></label></div></th>
 
+
+                            <th scope="row"><div class="text-center"><label>المرفقات</label></div></th>
+                            @foreach(var image in Model.Images)
+                            {
+                                <th scope="row">
+
+                                  <img id="visit-image-@image.Id" onclick="window.opens('data:@image.ContentType;base64,@Convert.ToBase64String(@image.Content)','_blank')"
+                                         src="data:@image.ContentType;base64,@Convert.ToBase64String(@image.Content)"
+                                         class="w-100 shadow-1-strong rounded visit-image-style " alt="صور تحاليل واشعة" />
+                              </th> 
+                            }
+                           @*  <th scope="row"><div class="text-center"><label><img src="" class="rounded mx-auto d-block" alt="..." height="150" width="150"><p> </p><div class="text-center"><a class="btn btn-warning  btn-sm" href="assets/img/download.jpg" role="button">عرض المرفق</a></div></label></div></th>
+ *@
                         </tr>
 
                     

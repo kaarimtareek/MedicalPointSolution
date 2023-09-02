@@ -1,0 +1,67 @@
+﻿@using MedicalPoint.ViewModels.Medicines 
+@model IEnumerable<GetAllMediciensViewModel>
+
+@{
+    Layout = "~/Views/Shared/_LayoutDesignLeader.cshtml";
+}
+
+<center>
+    <div style="left: 0; margin-right: 600px; padding-bottom: 0;">
+        <p style="font-weight: bold; font-size: 20px; "> اضافة دواء جديد :- <a class="btn btn-danger" asp-action="MedicineCreate" asp-controller="SuperAdmin" style="width: 100px; height: 40px; font-weight: bold;  color: white; background-color: rgb(14, 14, 172);" href="اضافة دواء.html" role="button ">اضافة أدوية</a></p>
+
+
+    </div>
+
+    <!-- M-report -->
+
+    <div class="col-md-12 ">
+        <div class="align-items-center">
+
+
+
+            <div class="card-body pb-0">
+                <h5 class="card-title fw-bold" style="font-weight: bold; font-size: 35px;">جرد الادوية</h5>
+
+                <table class="table datatable  table-striped" style="border: 0.5px; background-color: gray; border-width: 0.5px;">
+                    <thead>
+                        <tr>
+                            <th scope="col" width="10%">#</th>
+                            <th scope="col" width="30%"> اسم الدواء</th>
+                            <th scope="col" width="30%">كمية المخزون</th>
+                            <th scope="col" width="30%">الحد الادني من المخزون</th>
+                            <th scope="col" width="30%"> تاريخ الاضافه </th>
+                            <th scope="col">التفاصيل</th>
+                            <th scope="col">تعديل</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td></td>
+                                <td><a href="#" class="fw-bold">@item.Name</a></td>
+                                <td>@item.Quantity</td>
+                                <td>@item.MinimumQuantityThreshold</td>
+                                <td>@item.CreatedAt</td>
+                                <td><a style="width: 60px; height: 30px;" class="btn btn-info btn-sm" asp-route-id="@item.Id" role="button">التفاصيل</a></td>
+                                <td><a style="width: 60px; height: 30px;" class="btn btn-warning  btn-sm" asp-route-id="@item.Id" role="button">تعديل</a></td>
+
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+    </div><!-- End M-report -->
+    </div>
+    </div>
+
+    </div>
+    </div>
+</center>

@@ -745,6 +745,7 @@ td {
     border-radius: 10px;
     background-color: var(--cold-color);
 }
+<<<<<<< HEAD
 
 
 #example.dataTable thead > tr > th.sorting {
@@ -762,3 +763,5 @@ td {
 #example > :not(caption) > * > * {
     padding: 0.1rem 0.1rem;
 }
+=======
+>>>>>>> 851fe793bc95977de65bbf6eb1b9439026c72113

@@ -1,6 +1,6 @@
-﻿namespace MedicalPoint.ViewModels.Clinics
+﻿namespace MedicalPoint.ViewModels.Degrees
 {
-    public class ClinicViewModel
+    public class DegreesViewModel
     {
         public int Id { get; set; }
         public required string Name { get; set; }

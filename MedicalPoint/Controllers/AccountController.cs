@@ -89,8 +89,11 @@ namespace MedicalPoint.Controllers
                 return View();
 
             }
-            return RedirectToAction("Index","Home");
+            return RedirectToAction("Index","SuperAdmin");
         }
+
+
+
         public async Task< IActionResult> Logout()
         {
             await HttpContext.SignOutAsync();
@@ -147,7 +150,7 @@ namespace MedicalPoint.Controllers
         //    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, authProperties);
         //    return true;
         //}
-
+        [HttpPost]
         public async Task<IActionResult> Logindoctor([FromForm] string email, [FromForm] string password)
         {
             if (HttpContext.User.Identity.IsAuthenticated)
@@ -172,11 +175,19 @@ namespace MedicalPoint.Controllers
             
             var principal = new ClaimsPrincipal(identity);
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
-            var userfromcookieE = HttpContext.User;
             return RedirectToAction("Index", "Visits");
 
         }
+        public IActionResult Logindoctor()
+        {
+            if (HttpContext.User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Visits");
+            }
+            return View();
+        }
 
+        [HttpPost]
         public async Task<IActionResult> LoginPharmacy([FromForm] string email, [FromForm] string password)
         {
             if (HttpContext.User.Identity.IsAuthenticated)
@@ -201,16 +212,28 @@ namespace MedicalPoint.Controllers
            
             var principal = new ClaimsPrincipal(identity);
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
-            var userfromcookieE = HttpContext.User;
             return RedirectToAction("Index", "Medicines");
 
         }
+        public IActionResult LoginPharmacy()
+        {
+            if (HttpContext.User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Medicines");
+            }
+            return View();
+        }
 
+        [HttpPost]
         public async Task<IActionResult> LoginSuperAdmin([FromForm] string email, [FromForm] string password)
         {
             if (HttpContext.User.Identity.IsAuthenticated)
             {
+
                 return RedirectToAction("Index", "SuperAdmin");
+
+               
+
             }
             var result = await _medicalPointUsersService.Login(email, password);
             if (!result.Success)
@@ -230,11 +253,20 @@ namespace MedicalPoint.Controllers
             
             var principal = new ClaimsPrincipal(identity);
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
-            var userfromcookieE = HttpContext.User;
             return RedirectToAction("Index", "SuperAdmin");
 
         }
+        public IActionResult LoginSuperAdmin()
+        {
+            if (HttpContext.User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "SuperAdmin");
+            }
+            return View();
+        }
+
         [HttpPost]
+
         public async Task<IActionResult> LoginRegist([FromForm] string email, [FromForm] string password)
         {
             if (HttpContext.User.Identity.IsAuthenticated)
@@ -259,7 +291,6 @@ namespace MedicalPoint.Controllers
            
             var principal = new ClaimsPrincipal(identity);
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
-            var userfromcookieE = HttpContext.User;
             return RedirectToAction("Index", "Patients");
 
         }
@@ -283,7 +314,6 @@ namespace MedicalPoint.Controllers
             
             var principal = new ClaimsPrincipal(identity);
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
-            var userfromcookieE = HttpContext.User;
             return RedirectToAction("Index", "Home");
 
         }

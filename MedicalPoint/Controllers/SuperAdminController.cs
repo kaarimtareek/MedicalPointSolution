@@ -1,6 +1,10 @@
 ﻿using MedicalPoint.Common;
+using MedicalPoint.Constants;
 using MedicalPoint.Services;
+using MedicalPoint.ViewModels.Clinics;
+using MedicalPoint.ViewModels.Degrees;
 using MedicalPoint.ViewModels.Doctors;
+using MedicalPoint.ViewModels.Medicines;
 using MedicalPoint.ViewModels.Patients;
 using MedicalPoint.ViewModels.Users;
 using MedicalPoint.ViewModels.Visits;
@@ -18,13 +22,19 @@ namespace MedicalPoint.Controllers
         private readonly IDegreesService _degreesService;
         private readonly IVisitsService _visitsService;
         private readonly IMedicalPointUsersService _medicalPointUsersService;
+        private readonly IMedicinesService _mediicinesService;
+        private readonly IClinicsServices _clinicsServices;
 
-        public SuperAdminController(IPatientsService patientsService, IDegreesService degreesService, IVisitsService visitsService , IMedicalPointUsersService medicalPointUsersService)
+
+
+        public SuperAdminController(IPatientsService patientsService, IDegreesService degreesService, IVisitsService visitsService , IMedicalPointUsersService medicalPointUsersService, IMedicinesService mediicinesService, IClinicsServices clinicsServices)
         {
             _patientsService = patientsService;
             _degreesService = degreesService;
             _visitsService = visitsService;
             _medicalPointUsersService = medicalPointUsersService;
+            _mediicinesService = mediicinesService;
+            _clinicsServices = clinicsServices;
         }
 
         public async Task<IActionResult> Index(DateTime? date)
@@ -56,6 +66,7 @@ namespace MedicalPoint.Controllers
 
 
 
+
         public async Task<IActionResult> GetUsers()
         {
             var users = await _medicalPointUsersService.GetUsers();
@@ -78,6 +89,7 @@ namespace MedicalPoint.Controllers
         public async Task<IActionResult> UserEdit(int id)
 
         {
+            ViewBag.PageName = "تعديل بيانات الحساب";
             var user = await _medicalPointUsersService.Get(id);
             if (user == null)
             {
@@ -89,6 +101,13 @@ namespace MedicalPoint.Controllers
             {
                 Text = x.Name,
                 Value = x.Id.ToString(),
+                Selected = x.Id == user.DegreeId
+            });
+            ViewBag.UserTypes = ConstantUserType.Types.Select(x => new SelectListItem
+            {
+                Text = x,
+                Value = x,
+                Selected = x== user.AccoutType
             });
             var viewModel = new UsersViewModel
             {
@@ -124,6 +143,51 @@ namespace MedicalPoint.Controllers
                 return View();
             }
             return RedirectToAction("GetUsers","SuperAdmin");
+        }
+
+
+
+
+
+        [HttpGet]
+        public IActionResult MedicineCreate()
+        {
+
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> MedicineCreate([FromForm] AddMedicinesViewModel viewModel)
+        {
+            var userId = HttpContext.GetUserId();
+            if (userId == null)
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+
+            var result = await _mediicinesService.Add(userId.Value, viewModel.Name, viewModel.Quantity, viewModel.MinimumQuantityThreshold);
+            if (!result.Success)
+            {
+                return View();
+            }
+            return RedirectToAction("GetMidicines", "SuperAdmin");
+        }
+
+
+
+        public async Task<IActionResult> GetMedicines()
+        {
+            var medicines = await _mediicinesService.GetAll();
+            var viewModel = medicines.ConvertAll(x => new GetAllMediciensViewModel
+            {
+                CreatedAt = x.CreatedAt,
+                Id = x.Id,
+                Name = x.Name,
+                LastUpdatedAt = x.LastUpdatedAt,
+                Quantity = x.Quantity,
+                MinimumQuantityThreshold = x.MinimumQuantityThreshold,
+
+            });
+            return View(viewModel);
         }
 
         // Get  data patients
@@ -239,7 +303,185 @@ namespace MedicalPoint.Controllers
             return RedirectToAction("GetPatients","SuperAdmin");
         }
 
-     
+
+
+        public async Task<IActionResult> GetClinics()
+        {
+            var clinic = _clinicsServices.GetAll();
+            var viewModel = clinic.ConvertAll(x => new ClinicViewModel
+            {
+                Id = x.Id,
+                Name = x.Name,
+            });
+            return View(viewModel);
+        }
+        //EditClinics
+
+
+        public async Task<IActionResult> EditClinics(int id)
+
+        {
+            var clinic = await _clinicsServices.GetById(id);
+            if (clinic == null)
+            {
+                return NotFound();
+            }
+
+            var viewModel = new ClinicViewModel
+            {
+
+                Name = clinic.Name,
+                Id = id,
+               
+
+            };
+            return View(viewModel);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> EditClinics([FromForm] ClinicViewModel viewModel)
+        {
+            var userIdStr = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (userIdStr == null)
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+            int userId = int.Parse(userIdStr);
+
+
+            var result = await _clinicsServices.Edit(viewModel.Id, viewModel.Name,true);
+
+            if (!result.Success)
+            {
+                return View();
+            }
+            return RedirectToAction("GetClinics", "SuperAdmin");
+        }
+
+
+        [HttpGet]
+        public IActionResult ClinicCreate()
+        {
+           
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> ClinicCreate([FromForm] AddClinicViewModel viewModel)
+        {
+            var userIdStr = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (userIdStr == null)
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+            int userId = int.Parse(userIdStr);
+            var result = await _clinicsServices.Add(viewModel.Name );
+            if (!result.Success)
+            {
+                return View();
+            }
+            return RedirectToAction("GetClinics", "SuperAdmin");
+        }
+
+
+
+
+
+
+
+
+
+
+
+        public async Task<IActionResult> GetDegrees()
+        {
+            var degrees = _degreesService.GetAll();
+            var viewModel = degrees.ConvertAll(x => new DegreesViewModel
+            {
+                Id = x.Id,
+                Name = x.Name,
+            });
+            return View(viewModel);
+        }
+        //EditClinics
+
+
+        public async Task<IActionResult> EditDegree(int id)
+
+        {
+            var clinic = await _degreesService.GetById(id);
+            if (clinic == null)
+            {
+                return NotFound();
+            }
+
+            var viewModel = new DegreesViewModel
+            {
+
+                Name = clinic.Name,
+                Id = id,
+
+
+            };
+            return View(viewModel);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> EditDegree([FromForm] EditDegreeViewModel viewModel)
+        {
+            var userIdStr = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (userIdStr == null)
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+            int userId = int.Parse(userIdStr);
+
+
+            var result = await _degreesService.Edit(viewModel.Id, viewModel.Name );
+
+            if (!result.Success)
+            {
+                return View();
+            }
+            return RedirectToAction("GetDegrees", "SuperAdmin");
+        }
+
+
+        [HttpGet]
+        public IActionResult DegreeCreate()
+        {
+
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> DegreeCreate([FromForm] AddDegreeViewModel viewModel)
+        {
+            var userIdStr = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (userIdStr == null)
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+            int userId = int.Parse(userIdStr);
+            var result = await _degreesService.Add(viewModel.Name);
+            if (!result.Success)
+            {
+                return View();
+            }
+            return RedirectToAction("GetDegrees", "SuperAdmin");
+        }
+
+
+       
+
+
+
+
+
+
+
+
+
 
 
 
