@@ -373,7 +373,7 @@ namespace MedicalPoint.Controllers
                 MedicineGivenTime = visit.MedicineGivenTime,
                 DoctorId = visit.DoctorId,
                 PatientId = visit.PatientId,
-                Notes = visit.Notes,
+                Notes = visitRest.Notes,
                 Type = visit.Type,
                 EndDate = visitRest.EndDate,
                 RestDaysNumber = visitRest.RestDaysNumber,
@@ -416,12 +416,12 @@ namespace MedicalPoint.Controllers
             return View(viewModel);
         }
         
-        public async Task<IActionResult> CreateVisitRest(int visitId)
+        public async Task<IActionResult> CreateVisitRest(int id)
         {
-            var visit = await _visitsService.Get(visitId);
+            var visit = await _visitsService.Get(id);
             if (visit == null)
                 return NotFound();
-            var visitRest = await _visitsService.GetVisitRest(visitId);
+            var visitRest = await _visitsService.GetVisitRest(id);
             if(visitRest != null)
                 return BadRequest();
             ViewBag.RestTypes = (await _visitsService.GetVisitRestTypes()).Select(x=> new SelectListItem
@@ -449,7 +449,7 @@ namespace MedicalPoint.Controllers
                 PatientId = visit.PatientId,
                 Notes = visit.Notes,
                 
-                VisitId = visitId,
+                VisitId = id,
                 VisitNumber = visit.VisitNumber,
                 Doctor = visit.Doctor == null ? null : new DoctorViewModel
                 {

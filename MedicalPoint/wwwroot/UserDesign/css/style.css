@@ -488,12 +488,15 @@ td {
     #example_length {
         display: none !important;
     }
+
     #example_filter {
         display: none !important;
     }
+
     #example_info {
         display: none !important;
     }
+
     #example_paginate {
         display: none !important;
     }
@@ -502,6 +505,7 @@ td {
     #example {
         font-size: 12px;
     }
+}
 
 .paitant-data {
     background-color: white;
@@ -745,9 +749,6 @@ td {
     border-radius: 10px;
     background-color: var(--cold-color);
 }
-<<<<<<< HEAD
-
-
 #example.dataTable thead > tr > th.sorting {
     padding-right: 0px;
 }
@@ -763,5 +764,3 @@ td {
 #example > :not(caption) > * > * {
     padding: 0.1rem 0.1rem;
 }
-=======
->>>>>>> 851fe793bc95977de65bbf6eb1b9439026c72113
