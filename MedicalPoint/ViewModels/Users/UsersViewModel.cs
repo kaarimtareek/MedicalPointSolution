@@ -10,5 +10,6 @@
         public string? PhoneNumber { get; set; }
         public int DegreeId { get; set; }
         public string DegreeName { get; set; }
+        public bool IsActive { get; set; }
     }
 }

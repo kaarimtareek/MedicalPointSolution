@@ -137,6 +137,7 @@ namespace MedicalPoint.Controllers
                     NationalNumber = visit.Patient.NationalNumber,
                     LastVisitAt = visit.Patient.LastVisitAt,
                     Degree = visit.Patient.Degree?.Name??"",
+                    RegisteredUserName = visit.Patient.RegisteredUser?.FullName??""
                 },
                 Images = visit.Images == null? null : visit.Images.Select(x=> new VisitImageViewModel
                 {
@@ -200,7 +201,7 @@ namespace MedicalPoint.Controllers
             {
                 return NotFound();
             }
-
+            var result = await _visitsService.ChangeStatus(id, userId.Value, ConstantVisitStatus.TAKING_MEDICINE);
             return RedirectToAction("Details", new { id });
         }
         [HttpPost]

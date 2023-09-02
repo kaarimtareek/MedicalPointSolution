@@ -261,7 +261,7 @@ namespace MedicalPoint.Services
             {
                 query.Where(x => x.ClinicId == clinicId);
             }
-            var result = await query.ToListAsync(cancellationToken);
+            var result = await query.OrderByDescending(x=> x.CreatedAt).ToListAsync(cancellationToken);
             return result;
         }
         public async Task<List<Visit>> GetVisitsThatNeedsToGiveMedicines(CancellationToken cancellationToken = default)
@@ -284,11 +284,13 @@ namespace MedicalPoint.Services
                 .Include(x=> x.Doctor)
                 .Include(x=> x.Patient)
                     .ThenInclude(x=> x.Degree)
+                .Include(x=> x.Patient)
+                    .ThenInclude(x => x.RegisteredUser)
                 .Include(x=> x.Medicines)
                     .ThenInclude(x=> x.Medicine)
                 .Include(x=> x.PreviousVisit)
                 .Include(x=> x.Images)
-                .Include(x=> x.History)
+                .Include(x=> x.History.OrderByDescending(x=> x.CreatedAt))
                 .FirstOrDefaultAsync(x=> x.Id == visitId, cancellationToken);
            
 

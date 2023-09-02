@@ -1,4 +1,5 @@
-﻿@model MedicalPoint.Data.MedicalPointUser
+﻿@using MedicalPoint.ViewModels.Users;
+@model AddUserViewModel
 
 @{
     Layout = "~/Views/Shared/_LayoutDesignLeader.cshtml";
@@ -58,11 +59,11 @@
                     </select>
                 </div>
 
-
+                </div>
                 <div class="row mb-3">
                     <label for="inputsp" class="col-sm-2 col-form-label" style="font-weight: bold; font-size: 18px;"> نوع الحساب </label>
                     <div class="col-sm-10">
-                        <select class="form-select" aria-label="Default select example" asp-for="AccoutType" asp-items="ViewBag.AccountTypes">
+                        <select class="form-select" aria-label="Default select example" asp-for="AccountType" asp-items="ViewBag.AccountTypes">
                             <option selected  style="font-weight: bold; font-size: 16px;"> اختر  نوع الحساب </option>
                         </select>
                     </div>

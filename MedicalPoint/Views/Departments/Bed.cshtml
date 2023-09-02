@@ -1,4 +1,6 @@
-﻿@using MedicalPoint.ViewModels.Departments;
+﻿@using MedicalPoint.Common;
+@using MedicalPoint.Constants;
+@using MedicalPoint.ViewModels.Departments;
 @model BedViewModel
 @{
     Layout = null;
@@ -30,11 +32,17 @@
         <div class="container fadeInUp-animation ">
             <div class="row  justify-content-center">
                 <div class="col-lg-6 text-center pt-5 ">
-                    <p id="nametwo">بيانات مريض الملاحظة <i class="fa-solid fa-user"></i></p>
+                    <p id="nametwo">بيانات سرير الملاحظة <i class="fa-solid fa-user"></i></p>
 
                     <table class="table  table-striped">
                         <tbody>
                             <tr>
+                                <th>اسم القسم</th>
+                                <td>@Model.DepartmentName</td>
+
+                            </tr>
+                            <tr>
+
                                 <th>رقم السرير</th>
                                 <td>@Model.Id</td>
                             </tr>
@@ -64,10 +72,14 @@
                                     <th>وقت الحجز</th>
                                     <td>@Model.EnterDate</td>
                                 </tr>
-                                <tr>
-                                    <th>تفاصيل الكشف</th>
-                                    <td><a asp-action="Details" asp-controller="Visits" asp-route-id="@Model.VisitId" id="link-green">تفاصيل الكشف  <i class="fa-regular fa-file"></i></a></td>
-                                </tr>
+                                @if(Model.VisitId.HasValue)
+                                {
+                                    <tr>
+                                        <th>تفاصيل الكشف</th>
+                                        <td><a asp-action="Details" asp-controller="Visits" asp-route-id="@Model.VisitId" id="link-green">تفاصيل الكشف  <i class="fa-regular fa-file"></i></a></td>
+                                    </tr>
+                                    
+                                }
                                 
                             }
                         </tbody>
@@ -75,7 +87,8 @@
                     @if(Model.IsAvailable)
                     {
                         <p id="bedname">لايوجد مريض <span style="color: #d42324;">(السرير فارغ)</span></p>
-                        <a asp-action="Index" asp-controller="Patients" class="my-button-green mt-2"> إضافة مريض <i class="fa-solid fa-plus"></i>
+                        <a asp-action="AddBedToPatient" asp-route-id="@Model.Id" asp-controller="Departments" class="my-button-green mt-2">
+                            إضافة مريض <i class="fa-solid fa-plus"></i>
                         </a>
                     }
                     else
@@ -91,6 +104,46 @@
                         
                     }
                 </div>
+                @if (this.Context.IsUserHasRoles(new string[] { ConstantUserType.SUPER_ADMIN }))
+                {
+
+                    <div class="row justify-content-center mt-4">
+                        <div class="col-lg-8 text-center">
+
+                            <p id="nametwo">
+                                سجل سرير الملاحظة
+                            </p>
+
+                            <table class="table  table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>مسلسل</th>
+                                        <th>متخذ الاجراء</th>
+                                        <th>التوقيت</th>
+                                        <th>نوع الاجراء</th>
+                                        <th>اسم المريض</th>
+                                        <th>الملاحظة</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var history in Model.History)
+                                    {
+                                        <tr>
+                                            <td></td>
+                                            <td>@history.DoctorName</td>
+                                            <td>@history.ActionDate</td>
+                                            <td>@history.ActionType</td>
+                                            <td>@history.PatientName</td>
+                                            <td>@history.Notes</td>
+                                        </tr>
+
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                }
 
             </div>
         </div>

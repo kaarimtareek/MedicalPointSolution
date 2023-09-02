@@ -69,6 +69,8 @@ namespace MedicalPoint.Controllers
 
         public async Task<IActionResult> GetUsers()
         {
+            var userId = HttpContext.GetUserId();
+            ViewBag.UserId = userId;
             var users = await _medicalPointUsersService.GetUsers();
             var viewModel = users.ConvertAll(x => new UsersViewModel
             {
@@ -79,6 +81,8 @@ namespace MedicalPoint.Controllers
                 DegreeName =x.Degree.Name,
                 AccountType=x.AccoutType.ToString(),
                 MilitaryNumber = x.MilitaryNumber,
+                IsActive = x.IsActive,
+                DegreeId = x.DegreeId
     
             });
             return View(viewModel);
@@ -119,6 +123,7 @@ namespace MedicalPoint.Controllers
                 DegreeName = user.Degree?.Name??"",
                 AccountType = user.AccoutType.ToString(),
                 MilitaryNumber = user.MilitaryNumber,
+                IsActive = user.IsActive
 
 
             };
@@ -127,7 +132,7 @@ namespace MedicalPoint.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> UserEdit([FromForm] UsersViewModel viewModel)
+        public async Task<IActionResult> UserEdit(int id, [FromForm] UsersViewModel viewModel)
         {
             var userId = HttpContext.GetUserId();
             if (userId == null)
@@ -136,7 +141,28 @@ namespace MedicalPoint.Controllers
             }
 
 
-            var result = await _medicalPointUsersService.Edit(userId.Value, viewModel.Email, viewModel.Name, viewModel.DegreeId, viewModel.MilitaryNumber, viewModel.PhoneNumber,viewModel.AccountType,true);
+            var result = await _medicalPointUsersService.Edit(id, viewModel.Email, viewModel.Name, viewModel.DegreeId, viewModel.MilitaryNumber, viewModel.PhoneNumber,viewModel.AccountType);
+
+            if (!result.Success)
+            {
+                return View();
+            }
+            return RedirectToAction("GetUsers","SuperAdmin");
+        }
+
+         
+        public async Task<IActionResult> ChangeAtiveStatus(int id)
+        {
+            var userId = HttpContext.GetUserId();
+            if (userId == null)
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+            if(id == userId.Value)
+                return RedirectToAction("GetUsers", "SuperAdmin");
+
+
+            var result = await _medicalPointUsersService.ChangeUserActiveStatus(id);
 
             if (!result.Success)
             {

@@ -12,6 +12,7 @@ namespace MedicalPoint.Services
         Task<List<Patient>> GetPatients(string searchValue = "", int? degree = null, CancellationToken cancellationToken = default);
         Task<Patient> GetById( int id , CancellationToken cancellationToken = default);
         bool IsUnderObservation(int id, CancellationToken cancellationToken = default);
+        Task<List<Patient>> GetAvailableToAddToBed(CancellationToken cancellationToken = default);
     }
 
     public class PatientsService : IPatientsService
@@ -40,6 +41,19 @@ namespace MedicalPoint.Services
             {
                 query = query.Where(x => x.DegreeId == degree.Value);
             }
+            var patients = await query.ToListAsync(cancellationToken);
+
+            return patients;
+        }
+        public async Task<List<Patient>> GetAvailableToAddToBed(CancellationToken cancellationToken = default)
+        {
+            var patientIds = await _context.UnderObservationBeds.AsNoTracking().Where(x=> x.PatientId !=null).Select(x=> x.PatientId.Value).ToListAsync(cancellationToken);
+
+            var query = _context.Patients.AsNoTracking()
+                .Include(x=> x.Degree)
+                .Where(x=>  !patientIds.Contains(x.Id))
+                .AsQueryable();
+            
             var patients = await query.ToListAsync(cancellationToken);
 
             return patients;

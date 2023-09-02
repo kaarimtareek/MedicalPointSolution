@@ -48,7 +48,7 @@ namespace MedicalPoint.Services
         public async Task<Medicine> Get(int medicineId, CancellationToken cancellationToken = default)
         {
             var result = await _context.Medicines
-                .Include(x => x.History)
+                .Include(x => x.History.OrderByDescending(x=> x.CreatedAt))
                     .ThenInclude(x=> x.User)
                 .AsNoTracking().FirstOrDefaultAsync(x => x.Id == medicineId, cancellationToken);
 

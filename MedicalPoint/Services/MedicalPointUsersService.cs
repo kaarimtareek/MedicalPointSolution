@@ -12,8 +12,10 @@ namespace MedicalPoint.Services
     public interface IMedicalPointUsersService
     {
         Task<OperationResult<MedicalPointUser>> ChangePassword(int userId, string oldPassword, string newPassword, CancellationToken cancellationToken = default);
+        Task<OperationResult<MedicalPointUser>> ChangePassword(int userId, string newPassword, CancellationToken cancellationToken = default);
+        Task<OperationResult<MedicalPointUser>> ChangeUserActiveStatus(int userId, CancellationToken cancellationToken = default);
         Task<OperationResult<MedicalPointUser>> Create(string email, string password, string accountType, string name, int degree, string militaryNumber, string? phonenumber, CancellationToken cancellationToken = default);
-        Task<OperationResult<MedicalPointUser>> Edit(int userId, string email, string name, int degree, string militaryNumber, string? phonenumber, string? Accounttype, bool isActive, CancellationToken cancellationToken = default);
+        Task<OperationResult<MedicalPointUser>> Edit(int userId, string email, string name, int degree, string militaryNumber, string? phonenumber, string? Accounttype, CancellationToken cancellationToken = default);
         Task<MedicalPointUser> Get(int id);
         Task<List<MedicalPointUser>> GetUsers(string searchValue = "", int? degree = null, CancellationToken cancellationToken = default);
 
@@ -114,9 +116,9 @@ namespace MedicalPoint.Services
             await _context.SaveChangesAsync(cancellationToken);
             return OperationResult<MedicalPointUser>.Succeeded(user);
         }
-        public async Task<OperationResult<MedicalPointUser>> Edit(int userId, string email, string name, int degree, string militaryNumber, string? phonenumber, string?Accounttype,bool isActive, CancellationToken cancellationToken = default)
+        public async Task<OperationResult<MedicalPointUser>> Edit(int userId, string email, string name, int degree, string militaryNumber, string? phonenumber, string?Accounttype, CancellationToken cancellationToken = default)
         {
-            var user = QueryFinder.GetUserById(_context, userId);
+            var user = await _context.Users.FirstOrDefaultAsync(x=> x.Id == userId);
             if (user == null)
             {
                 return OperationResult<MedicalPointUser>.Failed("");
@@ -139,7 +141,7 @@ namespace MedicalPoint.Services
             user.MilitaryNumber = militaryNumber;
             user.FullName = name;
             user.DegreeId = degree;
-            user.IsActive = isActive;
+          
             await _context.SaveChangesAsync(cancellationToken);
             return OperationResult<MedicalPointUser>.Succeeded(user);
         }
@@ -157,6 +159,36 @@ namespace MedicalPoint.Services
             var generatedSalt = GenerateRandomSalt(saltSize);
             var generatedHash = HashPassword(newPassword, generatedSalt);
             user.Password = generatedHash;
+            await _context.SaveChangesAsync(cancellationToken);
+
+            return OperationResult<MedicalPointUser>.Succeeded(user);
+
+        }
+        public async Task<OperationResult<MedicalPointUser>> ChangePassword(int userId,  string newPassword, CancellationToken cancellationToken = default)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == userId, cancellationToken);
+            if (user == null)
+            {
+                return OperationResult<MedicalPointUser>.Failed("");
+            }
+            
+            var generatedSalt = GenerateRandomSalt(saltSize);
+            var generatedHash = HashPassword(newPassword, generatedSalt);
+            user.Password = generatedHash;
+            await _context.SaveChangesAsync(cancellationToken);
+
+            return OperationResult<MedicalPointUser>.Succeeded(user);
+
+        }
+        public async Task<OperationResult<MedicalPointUser>> ChangeUserActiveStatus(int userId,  CancellationToken cancellationToken = default)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == userId, cancellationToken);
+            if (user == null)
+            {
+                return OperationResult<MedicalPointUser>.Failed("");
+            }
+
+            user.IsActive = !user.IsActive;
             await _context.SaveChangesAsync(cancellationToken);
 
             return OperationResult<MedicalPointUser>.Succeeded(user);
