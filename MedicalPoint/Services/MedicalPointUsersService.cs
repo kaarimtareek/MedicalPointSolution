@@ -13,10 +13,8 @@ namespace MedicalPoint.Services
     {
         Task<OperationResult<MedicalPointUser>> ChangePassword(int userId, string oldPassword, string newPassword, CancellationToken cancellationToken = default);
         Task<OperationResult<MedicalPointUser>> Create(string email, string password, string accountType, string name, int degree, string militaryNumber, string? phonenumber, CancellationToken cancellationToken = default);
-        Task<OperationResult<MedicalPointUser>> Edit(int userId, string email, string name, int degree, string militaryNumber, string? phonenumber, string? Accounttype, bool isActive, CancellationToken cancellationToken = default);
+        Task<OperationResult<MedicalPointUser>> Edit(int userId, string email, string name, int degree, string militaryNumber, string? phonenumber, bool isActive, CancellationToken cancellationToken = default);
         Task<MedicalPointUser> Get(int id);
-        Task<List<MedicalPointUser>> GetUsers(string searchValue = "", int? degree = null, CancellationToken cancellationToken = default);
-
         Task<OperationResult<MedicalPointUser>> Login(string email, string password);
     }
 
@@ -28,28 +26,6 @@ namespace MedicalPoint.Services
         public MedicalPointUsersService(ApplicationDbContext context)
         {
             _context = context;
-        }
-
-
-        public async Task<List<MedicalPointUser>> GetUsers(string searchValue = "", int? degree = null, CancellationToken cancellationToken = default)
-        {
-            var query = _context.Users.AsNoTracking()
-                .Include(x => x.Degree)
-                .AsQueryable();
-            if (!string.IsNullOrWhiteSpace(searchValue))
-            {
-                query = query.Where(x => x.FullName.Contains(searchValue));
-                query = query.Where(x => x.Email.Contains(searchValue));
-                query = query.Where(x => x.MilitaryNumber.Contains(searchValue));
-
-            }
-            if (degree.HasValue)
-            {
-                query = query.Where(x => x.DegreeId == degree.Value);
-            }
-            var users = await query.ToListAsync(cancellationToken);
-
-            return users;
         }
         public async Task<MedicalPointUser> Get(int id)
         {
@@ -114,7 +90,7 @@ namespace MedicalPoint.Services
             await _context.SaveChangesAsync(cancellationToken);
             return OperationResult<MedicalPointUser>.Succeeded(user);
         }
-        public async Task<OperationResult<MedicalPointUser>> Edit(int userId, string email, string name, int degree, string militaryNumber, string? phonenumber, string?Accounttype,bool isActive, CancellationToken cancellationToken = default)
+        public async Task<OperationResult<MedicalPointUser>> Edit(int userId, string email, string name, int degree, string militaryNumber, string? phonenumber, bool isActive, CancellationToken cancellationToken = default)
         {
             var user = QueryFinder.GetUserById(_context, userId);
             if (user == null)

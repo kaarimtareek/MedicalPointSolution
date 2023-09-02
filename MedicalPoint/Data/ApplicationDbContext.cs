@@ -102,7 +102,5 @@ namespace MedicalPoint.Data
         public DbSet<VisitImage> VisitImages { get; set; }
         public DbSet<VisitMedicine> VisitMedicines { get; set; }
         public DbSet<VisitRest> VisitRests { get; set; }
-        public DbSet<MedicalPoint.ViewModels.Medicines.GetAllMediciensViewModel> GetAllMediciensViewModel { get; set; } = default!;
-        public DbSet<MedicalPoint.ViewModels.Users.UsersViewModel> UsersViewModel { get; set; } = default!;
     }
 }
