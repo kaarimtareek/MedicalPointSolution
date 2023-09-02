@@ -172,8 +172,7 @@ namespace MedicalPoint.Controllers
             return RedirectToAction("GetMidicines", "SuperAdmin");
         }
 
-
-
+     
         public async Task<IActionResult> GetMedicines()
         {
             var medicines = await _mediicinesService.GetAll();
@@ -189,6 +188,47 @@ namespace MedicalPoint.Controllers
             });
             return View(viewModel);
         }
+
+
+        public async Task<IActionResult> MedicinesDetails(int id)
+        {
+
+            var medicine = await _mediicinesService.Get(id);
+
+
+
+            if (medicine == null)
+            {
+                return NotFound();
+            }
+            //Creating the View model
+            var viewModel = new MedicineViewModel
+            {
+
+                Name = medicine.Name,
+                Id = id,
+                CreatedAt = medicine.CreatedAt,
+                LastUpdatedAt = medicine.LastUpdatedAt,
+                Quantity = medicine.Quantity,
+                MinimumQuantityThreshold = medicine.MinimumQuantityThreshold,
+                History = medicine.History.Select(x => new MedicineHistoryViewModel
+                {
+
+                    ActionType = x.ActionType,
+                    CreatedAt = x.CreatedAt,
+                    Id = x.Id,
+                    MedicineId = x.Id,
+                    MedicineName = x.MedicineName,
+                    MedicineQuantity = x.MedicineQuantity,
+                    MinimumQuantityThreshold = x.MinimumQuantityThreshold,
+                    UserId = x.UserId,
+                    UserName = x.User?.FullName ?? string.Empty,
+                }).ToList()
+
+            };
+            return View(viewModel);
+        }
+
 
         // Get  data patients
 

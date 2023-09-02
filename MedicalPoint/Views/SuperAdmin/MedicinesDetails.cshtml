@@ -1,0 +1,98 @@
+﻿@using MedicalPoint.Constants;
+@using MedicalPoint.Common;
+@model MedicalPoint.ViewModels.Medicines.MedicineViewModel
+
+@{
+    ViewData["Title"] = "MedicinesDetails";
+    Layout = "~/Views/Shared/_LayoutDesignLeader.cshtml";
+}
+
+<div class="landing-three ">
+    <div class="container fadeInUp-animation ">
+        <div class="row  justify-content-center">
+            <div class="col-lg-6 text-center pt-5 ">
+                <p class="card-title" style="text-align: center; font-weight: bold;">تفاصيل الدواء <i class="fa-solid fa-prescription-bottle-medical"></i></p>
+
+                <table class="table  table-striped" style="border: 0.5px; background-color: gray; border-width: 0.5px;">
+                    <tbody>
+                        <tr>
+                            <th>اسم الدواء</th>
+                            <td>@Html.DisplayFor(model=>model.Name)</td>
+                        </tr>
+                        <tr>
+                            <th>تاريخ الاضافة</th>
+                            <td>@Html.DisplayFor(model=>model.CreatedAt)</td>
+                        </tr>
+                        <tr>
+                            <th>الكمية الموجودة</th>
+                            <td>@Html.DisplayFor(model=>model.Quantity)</td>
+                        </tr>
+
+                        <tr>
+                            <th>الحد الادنى للاكتفاء</th>
+                            <td>@Html.DisplayFor(model=>model.MinimumQuantityThreshold)</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+
+            </div>
+
+        </div>
+        </div>
+
+            <div class="row justify-content-center mt-4">
+                <div class="col-lg-8 text-center">
+
+                <p class="card-title" style="text-align: center; font-weight: bold;">
+                        سجل الدواء
+                    </p>
+
+                    <table class="table  table-striped">
+                        <thead>
+                            <tr>
+                                <th>مسلسل</th>
+                                <th>متخذ الاجراء</th>
+                                <th>التوقيت</th>
+                                <th>نوع الاجراء</th>
+                                <th>اسم الدواء</th>
+                                <th>الكمية</th>
+                                <th>الحد الادني من الاكتفاء</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var history in Model.History)
+                            {
+                                <tr>
+                                    <td></td>
+                                    <td>@history.UserName</td>
+                                    <td>@history.CreatedAt</td>
+                                    <td>@history.ActionType</td>
+                                    <td>@history.MedicineName</td>
+                                    <td>@history.MedicineQuantity</td>
+                                    <td>@history.MinimumQuantityThreshold</td>
+                                </tr>
+
+                            }
+                        </tbody>
+                    </table>
+
+
+                </div>
+
+        <div class="row justify-content-center mt-4">
+            <div class="col-lg-12 text-center">
+
+
+                <a class="my-button-green mt-2 mb-2 btn btn-danger" asp-action="GetMedicines" asp-controller="SuperAdmin" styl>
+                    الرجوع الي الصفحه الادويه  <i class="fa-solid fa-right-from-bracket"></i>
+                </a>
+            </div>
+        </div>
+
+
+
+    </div>
+
+</div>
