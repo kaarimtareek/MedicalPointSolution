@@ -20,14 +20,14 @@
         <div class="container">
             <div> 
                 <a asp-action="Logout" asp-controller="Account" class="my-button">تسجيل الخروج <i class="fa-solid fa-right-from-bracket"></i></a>
-                <button class="my-button-blue" onclick="window.print()">طباعة اورنيك <i class="fa-solid fa-print"></i></button>
+               
                 <a asp-action="Index" asp-controller="Medicines" class="my-button-blue">العودة للرئيسية <i class="fa-solid fa-house"></i></a>
 
             </div>
             <img src="~/userDesign/img/logo.png" alt="logo">
         </div>
     </nav>
-    <div class="landing-three ">
+    <div class="landing-three print ">
         <div class="container fadeInUp-animation ">
             <div class="row  justify-content-center align-items-center">
                 <div class="col-lg-4 text-center ">
@@ -53,7 +53,7 @@
                            <tr>
                                 <th>نوع الراحة</th>
                                 <td  >
-                                    <select asp-items="ViewBag.RestTypes" required asp-for="RestTypeId">
+                                    <select class="w-100" asp-items="ViewBag.RestTypes" required asp-for="RestTypeId">
                                         <option selected> اختر نوع الراحة</option>
                                     </select>
 
@@ -61,11 +61,11 @@
                             </tr>
                             <tr>
                                 <th>تاريخ بداية الراحة</th>
-                                <td> <input  type="datetime-local" value="@DateTime.Now" asp-for=StartDate required class=""/> </td>
+                                <td> <input  type="datetime-local" value="@DateTime.Now" asp-for=StartDate required class="w-100"/> </td>
                             </tr>
                             <tr>
                                 <th>عدد ايام الراحة</th>
-                                <td><input  type="number" asp-for=RestDaysNumber required class=""/></td>
+                                <td><input  type="number" asp-for=RestDaysNumber required class="w-100"/></td>
                             </tr>
                            
                             <tr>
@@ -81,11 +81,11 @@
                             
                             <tr>
                                 <th>ملاحظات</th>
-                                <td><input type="text" asp-for="Notes" /></td>
+                                <td><input type="text"class="w-100" placeholder="الملاحظات" asp-for="Notes" /></td>
                             </tr>
                         </tbody>
-                        <input type="submit" value="انشاء اورنيك"  />
                     </table>
+                        <input class="my-button-blue mb-3" type="submit" value="انشاء اورنيك"  />
                     </form>
                     @if(Model.Medicines.Count> 0)
                     {

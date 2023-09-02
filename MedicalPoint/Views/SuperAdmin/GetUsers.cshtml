@@ -36,7 +36,7 @@
                         <th scope="col">الرقم العسكري</th>
                         <th scope="col">نوع الحساب</th>
                         <th scope="col">تعديل</th>
-                        <th scope="col">ايقاف</th>
+                        <th scope="col">تغيير الحالة الحساب</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -52,9 +52,24 @@
                         <td>@item.Email</td>
                         <td>@item.MilitaryNumber</td>
                         <td class="fw-bold">@item.AccountType  </td>
-                        
-                        <td><a class="btn btn-warning  btn-sm" asp-action="UserEdit" asp-controller="SuperAdmin" asp-route-id="@item.Id" role="button">تعديل </a></td>
-                            <td><a class="btn btn-danger  btn-sm" asp-controller="SuperAdmin" asp-route-id="@item.Id" role="button">ايفاف  </a></td>
+                         <td><a class="btn btn-warning  btn-sm" asp-action="UserEdit" asp-controller="SuperAdmin" asp-route-id="@item.Id" role="button">تعديل </a></td>
+                         @if( item.Id != ViewBag.UserId )
+                            {
+                                
+                                @if (item.IsActive )
+                                {
+
+                                    <td><a class="btn btn-danger  btn-sm" asp-controller="SuperAdmin" asp-action="ChangeAtiveStatus" asp-route-id="@item.Id" role="button">ايقاف  </a></td>
+                                }
+                                else
+                                {
+                                    <td><a class="btn btn-success  btn-sm" asp-controller="SuperAdmin" asp-action="ChangeAtiveStatus" asp-route-id="@item.Id" role="button">تفعيل  </a></td>
+                                }
+                            }
+                            else
+                            {
+                                <td>-----</td>
+                            }
 
                     </tr>
                     }

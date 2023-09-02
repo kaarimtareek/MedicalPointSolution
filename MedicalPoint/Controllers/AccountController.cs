@@ -163,9 +163,9 @@ namespace MedicalPoint.Controllers
                 return View();
             }
             var user = result.Data;
-            if (user.AccoutType != "")
+            if (!(user.AccoutType == ConstantUserType.Doctor || user.AccoutType == ConstantUserType.SUPER_ADMIN))
             {
-                //return RedirectToAction(nameof(AccessDenied));
+                return RedirectToAction(nameof(AccessDenied));
             }
             var identity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme);
             identity.AddClaim(new Claim(ClaimTypes.Name, user.FullName));
@@ -200,9 +200,9 @@ namespace MedicalPoint.Controllers
                 return View();
             }
             var user = result.Data;
-            if (user.AccoutType != "")
+            if (!(user.AccoutType == ConstantUserType.Pharmacist || user.AccoutType == ConstantUserType.SUPER_ADMIN))
             {
-                //return RedirectToAction(nameof(AccessDenied));
+                return RedirectToAction(nameof(AccessDenied));
             }
             var identity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme);
             identity.AddClaim(new Claim(ClaimTypes.Name, user.FullName));
@@ -215,6 +215,34 @@ namespace MedicalPoint.Controllers
             return RedirectToAction("Index", "Medicines");
 
         }
+        [HttpPost]
+        public async Task<IActionResult> LoginDepartment([FromForm] string email, [FromForm] string password)
+        {
+            if (HttpContext.User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Medicines");
+            }
+            var result = await _medicalPointUsersService.Login(email, password);
+            if (!result.Success)
+            {
+                return View();
+            }
+            var user = result.Data;
+            if (!(user.AccoutType == ConstantUserType.Doctor || user.AccoutType == ConstantUserType.SUPER_ADMIN || user.AccoutType == ConstantUserType.Recieptionist))
+            {
+                return RedirectToAction(nameof(AccessDenied));
+            }
+            var identity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme);
+            identity.AddClaim(new Claim(ClaimTypes.Name, user.FullName));
+            identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()));
+            identity.AddClaim(new Claim(ClaimTypes.Email, user.Email));
+            identity.AddClaim(new Claim(ClaimTypes.Role, user.AccoutType));
+           
+            var principal = new ClaimsPrincipal(identity);
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+            return RedirectToAction("Index", "Departments");
+
+        }
         public IActionResult LoginPharmacy()
         {
             if (HttpContext.User.Identity.IsAuthenticated)
@@ -223,6 +251,16 @@ namespace MedicalPoint.Controllers
             }
             return View();
         }
+
+        public async Task<IActionResult> LoginDepartment()
+        {
+            if (HttpContext.User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Departments");
+            }
+                return View();
+        }
+  
 
         [HttpPost]
         public async Task<IActionResult> LoginSuperAdmin([FromForm] string email, [FromForm] string password)
@@ -241,9 +279,9 @@ namespace MedicalPoint.Controllers
                 return View();
             }
             var user = result.Data;
-            if (user.AccoutType != "")
+            if (user.AccoutType != ConstantUserType.SUPER_ADMIN)
             {
-                //return RedirectToAction(nameof(AccessDenied));
+                return RedirectToAction(nameof(AccessDenied));
             }
             var identity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme);
             identity.AddClaim(new Claim(ClaimTypes.Name, user.FullName));
@@ -279,9 +317,9 @@ namespace MedicalPoint.Controllers
                 return View();
             }
             var user = result.Data;
-            if (user.AccoutType != "")
+            if (!( user.AccoutType == ConstantUserType.SUPER_ADMIN || user.AccoutType == ConstantUserType.Recieptionist))
             {
-                //return RedirectToAction(nameof(AccessDenied));
+                return RedirectToAction(nameof(AccessDenied));
             }
             var identity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme);
             identity.AddClaim(new Claim(ClaimTypes.Name, user.FullName));

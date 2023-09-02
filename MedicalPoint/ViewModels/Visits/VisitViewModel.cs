@@ -2,6 +2,7 @@
 using MedicalPoint.ViewModels.Patients;
 using MedicalPoint.ViewModels.Doctors;
 using MedicalPoint.ViewModels.Clinics;
+using MedicalPoint.Constants;
 
 namespace MedicalPoint.ViewModels.Visits
 {
@@ -37,6 +38,10 @@ namespace MedicalPoint.ViewModels.Visits
         public DateTime? MedicineGivenTime { get; set; }
         public bool IsFollowingVisit => PreviousVisitId != null;
         public bool HasVisitRest { get; set; }
+        public bool IsFinished => Status == ConstantVisitStatus.FINISHED;
+        public bool IsFinishedDiagnosis => Status == ConstantVisitStatus.FINISHED || Status == ConstantVisitStatus.TAKING_MEDICINE;
+        public bool CanEditDiagnosis => Status == ConstantVisitStatus.IN_CLINIC_DIAGNOSIS || Status == ConstantVisitStatus.IN_RECIEPTION;
+        public bool CanAddMedicines => Status == ConstantVisitStatus.IN_RECIEPTION || Status == ConstantVisitStatus.IN_CLINIC_DIAGNOSIS || Status == ConstantVisitStatus.IN_CLINIC_MEDICINES;
     }
     public class VisitImageViewModel
     {

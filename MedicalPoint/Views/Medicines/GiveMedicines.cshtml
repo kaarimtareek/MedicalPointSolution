@@ -55,6 +55,10 @@
                                 <th>نوع الكشف</th>
                                 <td>@Model.Type</td>
                             </tr>
+                            <tr>
+                                <th>التشخيص</th>
+                                <td>@Model.Diagnosis</td>
+                            </tr>
                            
                             <tr>
                                 <th>العيادة</th>
@@ -92,7 +96,7 @@
                     @if(!Model.IsMedicinesGiven)
                     {
                         <form method="post" asp-action="GiveVisitMedicines" asp-controller="Medicines" asp-route-id="@Model.Id">
-                         <button type="submit"  class="my-button-blue print">اصرف الأدوية <i class="fa-solid fa-house"></i>
+                         <button type="submit"  class="my-button-blue print">صرف الأدوية <i class="fa-solid fa-plus"></i>
                              </button>
                         </form>
 

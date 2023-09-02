@@ -114,7 +114,7 @@
 
 
         <li>
-            <a asp-action="UserEdit" asp-controller="SuperAdmin" asp-route-id="@ViewBag.UserId"  class="dropdown-item d-flex align-items-center">
+            <a asp-action="UserEdit"  asp-controller="SuperAdmin" asp-route-id="@ViewBag.UserId"  class="dropdown-item d-flex align-items-center">
                 <i class="bi bi-gear"></i>
                 <span>اعدادات الحساب</span>
             </a>
@@ -246,7 +246,7 @@
 
 
         <li class="nav-item">
-            <a class="nav-link collapsed" href="اعدادات الحساب.html">
+                <a class="nav-link collapsed" asp-action="UserEdit" asp-controller="SuperAdmin" asp-route-id="@ViewBag.UserId">
                 <i class="bi bi-gear"></i>
                 <span>اعدادات الحساب</span>
             </a>

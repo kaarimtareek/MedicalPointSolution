@@ -9,9 +9,9 @@ namespace MedicalPoint.Services
     public interface IUnderObservationBedsService
     {
         Task<OperationResult<UnderObservationBed>> AddBedToDepartment(int departmentId, CancellationToken cancellationToken = default);
-        Task<OperationResult<UnderObservationBed>> AddPatientToBed(int bedId, int visitId, int patientId, int doctorId, string notes, DateTime? enterDate, CancellationToken cancellationToken = default);
+        Task<OperationResult<UnderObservationBed>> AddPatientToBed(int bedId,  int patientId, int doctorId, string notes, DateTime? enterDate = null, int? visitId = null, CancellationToken cancellationToken = default);
         Task<OperationResult<UnderObservationBed>> Edit(int bedId, int doctorId, string notes, DateTime? enterDate, CancellationToken cancellationToken = default);
-        Task<UnderObservationBed> Get(int id, CancellationToken cancellationToken = default);
+        Task<UnderObservationBed> Get(int id, bool withHistory = true, CancellationToken cancellationToken = default);
         Task<List<UnderObservationBed>> GetAll(int departmentId, CancellationToken cancellationToken = default);
         Task<List<UnderObservationBed>> GetAllAvailable(int departmentId, CancellationToken cancellationToken = default);
         Task<List<UnderObservationBed>> GetAllAvailable(List<int> departmentsIds, CancellationToken cancellationToken = default);
@@ -44,19 +44,28 @@ namespace MedicalPoint.Services
             return result;
         }
 
-        public async Task<UnderObservationBed> Get(int id, CancellationToken cancellationToken = default)
+        public async Task<UnderObservationBed> Get(int id, bool withHistory = true, CancellationToken cancellationToken = default)
         {
-            var result = await _context.UnderObservationBeds
+            var query = _context.UnderObservationBeds
                 .AsNoTracking()
-                .Include(x => x.History)
+
                 .Include(x => x.Patient)
                     .ThenInclude(x => x.Degree)
-                .Include(x=> x.Doctor)
-                    .ThenInclude(x=> x.Degree)
-                .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+                .Include(x => x.Doctor)
+                    .ThenInclude(x => x.Degree)
+                    .Include(x => x.Department)
+                    .AsQueryable();
+            if (withHistory)
+            { query = query
+                    .Include(x => x.History.OrderByDescending(x=> x.ActionDate))
+                        .ThenInclude(x => x.Patient)
+                    .Include(x => x.History.OrderByDescending(x => x.ActionDate))
+                        .ThenInclude(x => x.Doctor);
+            }
+              var result = await query.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
             return result;
         }
-        public async Task<OperationResult<UnderObservationBed>> AddPatientToBed(int bedId, int visitId, int patientId, int doctorId, string notes, DateTime? enterDate, CancellationToken cancellationToken = default)
+        public async Task<OperationResult<UnderObservationBed>> AddPatientToBed(int bedId,  int patientId, int doctorId, string notes, DateTime? enterDate = null, int? visitId = null, CancellationToken cancellationToken = default)
         {
             var bed = await _context.UnderObservationBeds.FirstOrDefaultAsync(x => x.Id == bedId, cancellationToken);
             if (bed == null || !bed.CanAddPatient)

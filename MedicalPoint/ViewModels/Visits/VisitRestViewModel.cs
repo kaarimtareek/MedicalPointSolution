@@ -1,4 +1,5 @@
-﻿using MedicalPoint.ViewModels.Clinics;
+﻿using MedicalPoint.Constants;
+using MedicalPoint.ViewModels.Clinics;
 using MedicalPoint.ViewModels.Doctors;
 using MedicalPoint.ViewModels.Patients;
 
@@ -31,6 +32,7 @@ namespace MedicalPoint.ViewModels.Visits
         public List<VisitMedicineViewModel> Medicines { get; set; } 
         public bool IsMedicinesGiven { get; set; }
         public DateTime? MedicineGivenTime { get; set; }
+        
     }
   
 }

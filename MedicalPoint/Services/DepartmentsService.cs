@@ -37,7 +37,7 @@ namespace MedicalPoint.Services
         public async Task<UnderObservationDepartment> Get(int id)
         {
             var result = await _context.UnderObservationDepartments
-                .Include(x => x.Beds)
+                .Include(x => x.Beds.OrderBy(x=> x.BedNumber))
                     .ThenInclude(x=> x.Patient)
                 .Include(x=> x.Beds)
                 .ThenInclude(x=> x.Doctor)

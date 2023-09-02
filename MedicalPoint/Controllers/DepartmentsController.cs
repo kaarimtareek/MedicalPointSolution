@@ -4,11 +4,13 @@ using MedicalPoint.ViewModels.Beds;
 using MedicalPoint.ViewModels.Departments;
 using MedicalPoint.ViewModels.Patients;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace MedicalPoint.Controllers
 {
+    [Authorize]
     public class DepartmentsController : Controller
     {
         private readonly IDepartmentsService _departmentsService;
@@ -87,6 +89,7 @@ namespace MedicalPoint.Controllers
             {
                 BedNumber = bed.BedNumber,
                 DepartmentId = bed.DepartmentId,
+                DepartmentName = bed.Department?.Name??"",
                 DoctorDegree = bed.Doctor?.Degree?.Name??"",
                 DoctorId = bed.DoctorId,
                 DoctorName = bed.Doctor?.FullName??"",
@@ -98,6 +101,21 @@ namespace MedicalPoint.Controllers
                 VisitId = bed.VisitId,
                 PatientDegree = bed.Patient?.Degree?.Name??"",
                 PatientName = bed.Patient?.Name??"",
+                History = bed.History?.Select(x=> new BedHistoryViewModel 
+                {
+                    Id = x.Id,
+                    ActionDate = x.ActionDate,
+                    ActionType = x.ActionType,
+                    BedId = x.BedId,
+                    DoctorId= x.DoctorId,
+                    Notes = x.Notes??"",
+                    PatientId = x.PatientId,
+                    VisitId = x.VisitId,
+                    DoctorName = x.Doctor?.FullName??"",
+                    PatientName = x.Patient?.Name??"",
+                    EnterDate = x.EnterDate,
+
+                }).ToList(),
             };
             return View(viewModel);
         }
@@ -153,6 +171,42 @@ namespace MedicalPoint.Controllers
           
             return View(viewModel);
         }
+       //bed id
+        public async Task<IActionResult> AddBedToPatient(int id)
+        {
+            var patient = await _patientsService.GetAvailableToAddToBed();
+            var viewModel = new AddBedToPatientViewModel
+            {
+                Id = id,
+                Patients = patient.ConvertAll(x => new PatientViewModel
+                {
+                    Id = x.Id,
+                    CreatedAt = x.CreatedAt,
+                    Name = x.Name,
+                    GeneralNumber = x.GeneralNumber,
+                    DegreeId = x.DegreeId,
+                    Degree = x.Degree?.Name ?? string.Empty,
+                    MilitaryNumber = x.MilitaryNumber,
+                }),
+            };
+
+            return View(viewModel);
+        }
+        [HttpPost]
+        public async Task<IActionResult> AddBedToPatient(int id, [FromForm] int patientId, [FromForm] string notes)
+        {
+            var userId = HttpContext.GetUserId();
+            if (!userId.HasValue)
+            {
+                return NotFound();
+            }
+            var result = await _underObservationBedsService.AddPatientToBed(id,  patientId, userId.Value, notes);
+            if(!result.Success)
+            {
+
+            }
+            return RedirectToAction("Bed", "Departments", new { id });
+        }
        
         public async Task<IActionResult> RemovePatient(int id)
         {
@@ -176,12 +230,12 @@ namespace MedicalPoint.Controllers
             {
                 return NotFound();
             }
-            var result = await _underObservationBedsService.AddPatientToBed(id, 0, viewModel.PatientId, userId.Value, viewModel.Notes, null);
+            var result = await _underObservationBedsService.AddPatientToBed(id,  viewModel.PatientId, userId.Value, viewModel.Notes, null);
             if(!result.Success)
             { 
                 return BadRequest();
             }
-            return RedirectToAction("Details", "Patients", new {id = viewModel.PatientId});
+            return RedirectToAction("Bed", "Departments", new {id });
         }
         public async Task<IActionResult> CreateBed(int id)
         {
