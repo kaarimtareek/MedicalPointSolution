@@ -200,7 +200,6 @@ namespace MedicalPoint.Controllers
             {
                 return NotFound();
             }
-            var result = await _visitsService.ChangeStatus(id, userId.Value, ConstantVisitStatus.TAKING_MEDICINE);
 
             return RedirectToAction("Details", new { id });
         }

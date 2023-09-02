@@ -19,6 +19,8 @@ namespace MedicalPoint.Services
 
     public class VisitMedicinesService : IVisitMedicinesService
     {
+      
+
         private readonly ApplicationDbContext _context;
 
         public VisitMedicinesService(ApplicationDbContext context)
