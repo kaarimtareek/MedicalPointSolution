@@ -1,7 +1,5 @@
 ﻿@using MedicalPoint.ViewModels.Beds;
-
 @model AddPatientToBedViewModel
-
 @{
     Layout = null;
 }
@@ -14,67 +12,121 @@
     <link rel="stylesheet" href="~/UserDesign/css/bootstrap.min.css">
     <link rel="stylesheet" href="~/UserDesign/css/bootstrap.min.css.map">
     <link rel="stylesheet" href="~/UserDesign/css/style.css">
-    <title>تعديل دواء</title>
+    <title>حجز مريض</title>
     <link rel="icon" href="~/UserDesign/img/logo.png">
 </head>
 <body class="background-with-color">
     <nav class="navbar navbar-expand-lg navbar-light d-none d-lg-block ">
         <div class="container ">
             <div>
-                <a  asp-controller="Account" asp-action="Logout" class="my-button ml-2">تسجيل الخروج <i class="fa-solid fa-right-from-bracket"></i></a>
-                <a  asp-controller="Medicines" asp-action="Index" class="my-button-blue">العودة للرئيسية <i class="fa-solid fa-house"></i></a>
+                <a class="my-button ml-2">تسجيل الخروج <i class="fa-solid fa-right-from-bracket"></i></a>
+                <a class="my-button-blue">العودة للرئيسية <i class="fa-solid fa-house"></i></a>
             </div>
             <img src="~/UserDesign/img/logo.png" alt="logo">
         </div>
     </nav>
-
-
     <div class="landing-three ">
         <div class="container  fadeInUp-animation">
             <div class="row justify-content-center ">
-                <form action="Edit" method="post">
-                    <div class="col-lg-12 text-center ">
-                        <img src="~/UserDesign/img/medicine.gif" alt="">
-                        <p id="name">تعديل دواء</p>
-                    </div>
-                    <div class="row justify-content-center">
-                        <div class="col-lg-4 text-center ">
-                            <input asp-for=PatientId hidden class="my-input customewidth" type="number" value="@Model.PatientId">
+                <div class="col-lg-12 text-center ">
 
+                    <p id="name">حجز مريض <i class="fa-solid fa-bed"></i></p>
+                </div>
+                <p id="nametwo">الاقسام المتاحة</p>
+                @foreach(var department in Model.Departments)
+                {
+
+                    <div class="row justify-content-center  p-4" id="group">
+
+                        <div class="col-lg-12">
+                            <p>
+                                <a class="my-button-blue"  data-bs-toggle="collapse" href="#collapse-@department.Id" role="button" aria-expanded="false" aria-controls="collapse-@department.Id">@department.Name</a>
+                            </p>
                         </div>
-                        <div class="col-lg-4 text-center ">
-                            <select id="select-department" asp-for=SelectedDepartmentId  value=" class="my-input customewidth" asp-items="@Model.Departments.ConvertAll(x=> new SelectListItem{Text = x.Name, Value = x.Id.ToString(), Selected = Model.SelectedDepartmentId  == x.Id})"  >
-                            </select>
+                        <div class="col-lg-12">
+                            <div class="collapse multi-collapse" data-parent="#group" id="collapse-@department.Id">
+                                <div class="beds-container" style="border-radius: 15px; background-color: #dfdfdf;">
+                                    <div class="beds">
+                                        @foreach(var bed in department.Beds)
+                                        {
+                                            @if(!bed.IsAvailable)
+                                            {
+                                                <div class="text-center">
+                                                    <img class="filled-bed" src="~/UserDesign/img/bed with paitant.png">
+                                                    <p id="bedname">السرير رقم(@bed.BedNumber)</p>
+                                                    <p id="nametwo" style="color:red">محجوز</p>
+
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <form style="display:none" id="formAddPatient-@bed.Id" method="post" asp-route-id="@bed.Id" asp-action="AddPatientToBed" asp-controller="Departments"></form>
+                                           
+                                                <div class="text-center">
+                                                    <img class="empty-bed" src="~/UserDesign/img/empty bed.png">
+                                                    <p id="bedname">السرير رقم(@bed.BedNumber)</p>
+                                                    <input id="input-notes-@bed.Id" form="formAddPatient-@bed.Id" name="Notes" style="display:none" />
+                                                    <input id="input-bedId-@bed.Id" form="formAddPatient-@bed.Id" name="PatientId" value="@Model.PatientId" type="number" readonly style="display:none" />
+
+
+                                                    <input type="submit" class="table-button-blue" id="button-save-@bed.Id" value="تأكيد الحجز" form="formAddPatient-@bed.Id" style="display:none" />
+                                               
+
+                                                    <input type="button" value="إلغاء" style="display:none" id="button-cancel-@bed.Id"
+                                                           onclick="enableDisable({ids: ['button-add-patient-@bed.Id', 'button-save-@bed.Id','button-cancel-@bed.Id', 'input-notes-@bed.Id'] } )"
+                                                           class="table-button-red"/>
+
+                                                    <input type="button" value="حجز هنا" id="button-add-patient-@bed.Id" 
+                                                    onclick="enableDisable({ids: ['button-add-patient-@bed.Id', 'button-save-@bed.Id','button-cancel-@bed.Id', 'input-notes-@bed.Id'] } )" 
+                                                    class="table-button-red"/>
+                                               
+                                                </div>
+
+                                                
+                                            }
+                                            
+                                        }
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-lg-4 text-center ">
-                            <select id="select-bed" asp-for=SelectedBedId  value=" class="my-input customewidth" asp-items="@Model.Beds.Where(x=> x.DepartmentId == Model.SelectedDepartmentId).ToList().ConvertAll(x=> new SelectListItem{Text = "سرير رقم: " + x.Id, Value = x.Id.ToString(),  Selected = Model.SelectedBedId  == x.Id})"  >
-                            </select>
-                        </div>
-                        
                     </div>
 
+                }
 
-                    <div class="col-lg-12 text-center ">
-                        <button type="submit" class="my-button  mt-3">حفظ التعديل <i class="fa-solid fa-floppy-disk"></i></button>
-                        <a class="my-button  mt-3" asp-action="index" asp-controller="Medicines"> الرجوع <i class="fa-solid fa-floppy-disk"></i></a>
-
-                    </div>
-                </form>
             </div>
         </div>
     </div>
+    <script>
+        function enableDisable({ ids }) {
+            console.log("Clicked!!")
+
+            if(ids ==null)
+            {
+                console.log("ids are null")
+                return;
+
+            }
+            for(i=0 ; i< ids.length; i++ )
+            {
+                var id = ids[i];
+                var element = document.getElementById(id);
+                if(element == null)
+                {
+                    console.log("elemet with id:" + id  +" is null");
+                    continue;
+                }
+                console.log("element with id:" + id + " is NOT null null!!!");
+
+                element.style.display = element.style.display == "none"? "" : "none";
+            }
+           
+        }
+    </script>
 </body>
+
 <script src="~/UserDesign/js/all.min.js"></script>
 <script src="~/UserDesign/js/bootstrap.bundle.min.js"></script>
-<script>
-    function changeDepartmentSelectedItem(beds){
-        var selectedId = document.getElementById('select-department').value;
-        var departmentId = parseInt(selectedId);
-
-    }
-
-</script>
 <!-- <script src="js/bootstrap.bundle.min.js.map"></script> -->
 
 </html>
-

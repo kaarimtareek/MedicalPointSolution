@@ -45,7 +45,7 @@
                         <div class="text-center" >
                        <a asp-action="Bed" asp-controller="Departments" asp-route-id="@bed.Id"><img class="@imgClass" src="~/UserDesign/img/@imgName" ></a> 
                         
-                            @if (bed.IsAvailable)
+                            @if (!bed.IsAvailable)
                             {
                                 <p id="bedname">سرير رقم (@bed.BedNumber) <span id="bedname" style="color:red"> مشغول</span> </p>
 

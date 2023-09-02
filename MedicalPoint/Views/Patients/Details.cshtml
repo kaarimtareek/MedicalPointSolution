@@ -79,7 +79,7 @@
                         {
                             @if(this.Context.IsUserHasRoles(new string[] { ConstantUserType.Doctor, ConstantUserType.SUPER_ADMIN}))
                             {
-                                <a asp-controller="Departments" asp-action="AddPatientToBed" asp-route-patientId="@Model.Id" class="my-button mt-2 mb-2"> حجز المريض <i class="fa-solid fa-pen-to-square"></i></a>
+                                <a asp-controller="Departments" asp-action="AddPatientToBed" asp-route-id="@Model.Id" class="my-button mt-2 mb-2"> حجز المريض <i class="fa-solid fa-pen-to-square"></i></a>
                             }
                             
                         }

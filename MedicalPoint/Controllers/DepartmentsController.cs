@@ -1,4 +1,5 @@
-﻿using MedicalPoint.Services;
+﻿using MedicalPoint.Common;
+using MedicalPoint.Services;
 using MedicalPoint.ViewModels.Beds;
 using MedicalPoint.ViewModels.Departments;
 using MedicalPoint.ViewModels.Patients;
@@ -100,9 +101,9 @@ namespace MedicalPoint.Controllers
             };
             return View(viewModel);
         }
-        public async Task<IActionResult> AddPatientToBed(int patientId)
+        public async Task<IActionResult> AddPatientToBed(int id)
         {
-            var patient = await _patientsService.GetById(patientId);
+            var patient = await _patientsService.GetById(id);
             if(patient == null)
             {
                 return NotFound();
@@ -113,53 +114,33 @@ namespace MedicalPoint.Controllers
             {
                 return NotFound();
             }
-            var departmentsIds = availableDepartments.Select(x=> x.Id).ToList();
-            var beds = await _underObservationBedsService.GetAllAvailable(departmentsIds);
-            if(beds.Count == 0)
-            {
-                return BadRequest();
-            }
-            ViewBag.Departments = availableDepartments.ConvertAll(x => new SelectListItem
-            {
-                Text = x.Name,
-                Value = x.Id.ToString()
-            });
-            ViewBag.AvailableBeds = beds.ConvertAll(x => new SelectListItem
-            {
-                Text = "سرير رقم " + x.BedNumber,
-                Value = x.Id.ToString(),
-                Group = new SelectListGroup
-                {
-                    Name = x.DepartmentId.ToString(),
-                }
-            });
-            var firstDepartment = availableDepartments.First();
-            ViewBag.SelectListBeds = beds.Where(x => x.DepartmentId == firstDepartment.Id).Select(x => new SelectListItem
-            {
-                Text = "سرير رقم: " + x.BedNumber,
-                Value = x.Id.ToString(),
-                Group = new SelectListGroup
-                {
-                    Name = x.DepartmentId.ToString(),
-                }
-            }).ToList();
+            //var departmentsIds = availableDepartments.Select(x=> x.Id).ToList();
+            //var beds = await _underObservationBedsService.GetAllAvailable(departmentsIds);
+            //if(beds.Count == 0)
+            //{
+            //    return BadRequest();
+            //}
+            
+            
             var viewModel =  new AddPatientToBedViewModel{
-                Beds = beds.ConvertAll(x=> new BedsViewModel
-                {
-                    BedNumber = x.BedNumber,
-                    DepartmentId = x.DepartmentId,
-                    DoctorId = x.DoctorId,
-                    Id = x.Id,
-                }),
+                
                 Departments = availableDepartments.ConvertAll(x=> new DepartmentsViewModel
                 {
                     Id = x.Id,
                     AvailableBedsCount = x.AvailableBedsCount,
                     BedsCount = x.BedsCount,
                     Name = x.Name,
+                     Beds = x.Beds.Select(x => new BedsViewModel
+                     {
+                         PatientId= x.PatientId,
+                         BedNumber = x.BedNumber,
+                         DepartmentId = x.DepartmentId,
+                         DoctorId = x.DoctorId,
+                         Id = x.Id,
+                     }).ToList(),
                 }),
-                SelectedDepartmentId = firstDepartment.Id,
-                PatientId = patientId,
+                
+                PatientId = id,
               Patient = new PatientViewModel
             {
                 Id = patient.Id,
@@ -171,6 +152,36 @@ namespace MedicalPoint.Controllers
             }};
           
             return View(viewModel);
+        }
+       
+        public async Task<IActionResult> RemovePatient(int id)
+        {
+            var userId = HttpContext.GetUserId();
+            if (!userId.HasValue)
+            {
+                return NotFound();
+            }
+            var result = await _underObservationBedsService.RemovePatientFromBed(id, userId.Value);
+            if(!result.Success)
+            {
+
+            }
+            return RedirectToAction(nameof(Bed), new {id });
+        }
+        [HttpPost]
+        public async Task<IActionResult> AddPatientToBed(int id, [FromForm] AddPatientToBedFormViewModel viewModel)
+        {
+            var userId = HttpContext.GetUserId();
+            if(!userId.HasValue)
+            {
+                return NotFound();
+            }
+            var result = await _underObservationBedsService.AddPatientToBed(id, 0, viewModel.PatientId, userId.Value, viewModel.Notes, null);
+            if(!result.Success)
+            { 
+                return BadRequest();
+            }
+            return RedirectToAction("Details", "Patients", new {id = viewModel.PatientId});
         }
         public async Task<IActionResult> CreateBed(int id)
         {

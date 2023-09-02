@@ -10,7 +10,6 @@ namespace MedicalPoint.ViewModels.Beds
         public int PatientId { get; set; }
         public PatientViewModel Patient { get; set; }
         public List<DepartmentsViewModel> Departments { get; set; }
-        public List<BedsViewModel> Beds { get; set; }
         public int SelectedDepartmentId { get; set; }
         public int SelectedBedId { get; set;}
         public string? Notes { get; set; }
