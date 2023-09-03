@@ -43,14 +43,7 @@
         </div>
         <div class="landing-two">
             <div class="row justify-content-center">
-               @* @if (this.Context.User.Identity.IsAuthenticated)
-                {
-                <div class="col-lg-2 text-center">
-                    <a asp-controller="Account" asp-action="Index"> <img src="~/UserDesign/img/استقبال.png" class="avatar" alt=""></a>
-                    <p>بياناتي</p>
-                </div>
 
-                }*@
                 <div class="col-lg-2 text-center">
                     <a asp-action="LoginRegist" asp-controller="Account"> <img src="~/UserDesign/img/استقبال.png" class="avatar" alt=""></a>
                     <p>إستقبال المرضى</p>
@@ -73,6 +66,14 @@
                     <a asp-action="LoginDepartment" asp-controller="Account"> <img src="~/UserDesign/img/bed.png" class="avatar" alt=""></a>
                     <p>قسم الملاحظة</p>
                 </div>
+                @if (this.Context.User.Identity.IsAuthenticated)
+                {
+                <div class="col-lg-2 text-center">
+                    <a asp-controller="Account" asp-action="MyProfile"> <img src="~/UserDesign/img/اعدادات.png" class="avatar" alt=""></a>
+                    <p>بياناتي</p>
+                </div>
+
+                }
             </div>
         </div>
     </div>

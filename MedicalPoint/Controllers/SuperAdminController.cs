@@ -179,6 +179,43 @@ namespace MedicalPoint.Controllers
 
 
         [HttpGet]
+        public async Task<IActionResult> ChangeUserPassword(int id)
+        {
+            var user = await _medicalPointUsersService.Get(id);
+            if(user == null)
+            {
+                return NotFound();
+            }
+            var viewModel = new UserViewModel
+            {
+                AccountType = user.AccoutType,
+                DegreeName = user.Degree?.Name ?? "",
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                Name = user.FullName,
+                Id = user.Id,
+                MilitaryNumber = user.MilitaryNumber,
+                
+            };
+            return View(viewModel);
+        }
+        [HttpPost]
+        public async Task<IActionResult> ChangeUserPassword([FromForm] int id, [FromForm] string password)
+        {
+            var userId = HttpContext.GetUserId();
+            if (userId == null)
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+
+            var result = await _medicalPointUsersService.ChangePassword(id, password);
+            if (!result.Success)
+            {
+                return View();
+            }
+            return RedirectToAction(nameof(GetUsers), "SuperAdmin");
+        }
+        [HttpGet]
         public IActionResult MedicineCreate()
         {
 

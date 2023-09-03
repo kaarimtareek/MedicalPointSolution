@@ -1,4 +1,6 @@
-﻿@using MedicalPoint.ViewModels.Visits;
+﻿@using MedicalPoint.Common;
+@using MedicalPoint.Constants;
+@using MedicalPoint.ViewModels.Visits;
 @model IEnumerable<VisitsViewModel>
 @{
     Layout = null;
@@ -29,9 +31,14 @@
             <div> <a asp-action="Logout" asp-controller="Account" class="my-button">تسجيل الخروج <i class="fa-solid fa-right-from-bracket"></i></a>
                 @*<a asp-action="Create" class="my-button-green">إضافة كشف جديد <i class="fa-solid fa-user"></i></a>*@
                 <a asp-action="Index" asp-controller="Patients" class="my-button-green">بيانات المرضى <i class="fa-solid fa-user"></i></a>
+                 <a asp-action="Create" asp-controller="Patients" class="my-button-green">إضافة مريض جديد <i class="fa-solid fa-user"></i></a>
                 <a class="my-button-blue" onclick="window.print()"  >طباعة البيانات <i class="fa-solid fa-print"></i></a>
 
-                <a asp-action="Index" asp-route-date="@DateTime.Today" class="my-button-green" >كشوفات اليوم <i class="fa-solid fa-user"></i></a>
+                @if(this.Context.IsUserHasRoles(new string[]{ConstantUserType.Doctor, ConstantUserType.SUPER_ADMIN, ConstantUserType.Recieptionist}))
+                {
+                    <a asp-action="Index" asp-controller="Departments"  class="my-button" >أقسام الملاحظة <i class="fa-solid fa-user"></i></a>
+                    
+                }
 
                @* <button class="my-button-blue">العودة للرئيسية <i class="fa-solid fa-house"></i></button>
 *@

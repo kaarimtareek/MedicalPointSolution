@@ -1,0 +1,78 @@
+﻿@using MedicalPoint.ViewModels.Users;
+@model UserViewModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="~/UserDesign/css/all.min.css">
+    <link rel="stylesheet" href="~/UserDesign/css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/UserDesign/css/style.css">
+    <title>الصفحة الشخصية</title>
+    <link rel="icon" href="~/UserDesign/img/logo.png">
+</head>
+<body class="background-with-color">
+    <nav class="navbar navbar-expand-lg navbar-light ">
+        <div class="container">
+            <div>
+                <a asp-action="Logout" asp-controller="Account" class="my-button ml-2">تسجيل الخروج <i class="fa-solid fa-right-from-bracket"></i></a>
+                <a asp-action="Index" asp-controller="Home" class="my-button-blue">العودة للرئيسية <i class="fa-solid fa-house"></i></a>
+            </div>
+            <img src="~/UserDesign/img/logo.png" alt="logo">
+        </div>
+    </nav>
+    <div class="landing-three ">
+        <div class="container fadeInUp-animation ">
+            <div class="row  justify-content-center">
+                <div class="col-lg-6 text-center pt-5 ">
+                    <p id="nametwo">الصفحة الشخصية <i class="fa-solid fa-user"></i></p>
+
+                    <table class="table  table-striped">
+                        <tbody>
+
+                            <tr>
+                                <th>الدرجة \ الرتبة</th>
+                                <td>@Model.DegreeName</td>
+                            </tr>
+                            <tr>
+                                <th>الإسم</th>
+                                <td>@Model.Name</td>
+                            </tr>
+                            <tr>
+                                <th>اسم المستخدم \ البريد الالكتروني </th>
+                                <td>@Model.Email</td>
+                            </tr>
+
+                             <tr>
+                                <th>الرقم العسكري</th>
+                                <td>@Model.MilitaryNumber</td>
+                            </tr>
+                            <tr>
+                                <th>رقم الهاتف </th>
+                                <td>@Model.PhoneNumber</td>
+                            </tr>
+                            <tr>
+                                <th>نوع الحساب</th>
+                                <td>@Model.AccountType </td>
+                            </tr>
+
+
+
+                        </tbody>
+                    </table>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+<script src="~/UserDesign/js/all.min.js"></script>
+<script src="~/UserDesign/js/bootstrap.bundle.min.js"></script>
+<!-- <script src="js/bootstrap.bundle.min.js.map"></script> -->
+
+</html>

@@ -20,8 +20,8 @@
     <nav class="navbar navbar-expand-lg navbar-light d-none d-lg-block ">
         <div class="container ">
             <div>
-                <button class="my-button ml-2">تسجيل الخروج <i class="fa-solid fa-right-from-bracket"></i></button>
-                <button class="my-button-blue">العودة للرئيسية <i class="fa-solid fa-house"></i></button>
+                <a asp-action="Logout" asp-controller="Account" class="my-button ml-2">تسجيل الخروج <i class="fa-solid fa-right-from-bracket"></i></a>
+                <a asp-action="Index" asp-controller="Departments" class="my-button-blue">العودة للرئيسية <i class="fa-solid fa-house"></i></a>
             </div>
             <img src="~/UserDesign/img/logo.png" alt="logo">
         </div>
