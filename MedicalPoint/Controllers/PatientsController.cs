@@ -31,9 +31,19 @@ namespace MedicalPoint.Controllers
             _underObservationBedsService = underObservationBedsService;
         }
       
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchValue,int? degreeId = null, string? checkHasVisit = null)
         {
-            var patients = await _patientsService.GetPatients();
+            var hasVisit = !string.IsNullOrEmpty(checkHasVisit);
+            var patients = await _patientsService.GetPatients(searchValue, degreeId, hasVisit);
+            ViewBag.Degrees = _degreesService.GetAll().ConvertAll(x => new SelectListItem
+            {
+                Text = x.Name,
+                Value = x.Id.ToString(),
+                Selected = degreeId.HasValue && degreeId.Value == x.Id,
+            });
+            ViewBag.SelectedDegree = degreeId;
+            ViewBag.SearchValue = searchValue;
+            ViewBag.CheckHasVisit = hasVisit;
             var viewModel = patients.ConvertAll(x => new PatientViewModel
             {
                 CreatedAt = x.CreatedAt,

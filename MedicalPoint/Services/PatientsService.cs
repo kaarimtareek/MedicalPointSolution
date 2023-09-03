@@ -9,7 +9,7 @@ namespace MedicalPoint.Services
     {
         Task<OperationResult<Patient>> Add(string name, int degreeId, string militaryNumber = "", string nationalNumber = "", string generalNumber = "", string sarayNumber = "", string major = "", int? userId = null, CancellationToken cancellationToken = default);
         Task<OperationResult<Patient>> Edit(int id, string name, int degreeId, string militaryNumber = "", string nationalNumber = "", string generalNumber = "", string sarayNumber = "", string major = "", int? userId = null, CancellationToken cancellationToken = default);
-        Task<List<Patient>> GetPatients(string searchValue = "", int? degree = null, CancellationToken cancellationToken = default);
+        Task<List<Patient>> GetPatients(string searchValue = "", int? degree = null, bool? hasCheckVisit = null, CancellationToken cancellationToken = default);
         Task<Patient> GetById( int id , CancellationToken cancellationToken = default);
         bool IsUnderObservation(int id, CancellationToken cancellationToken = default);
         Task<List<Patient>> GetAvailableToAddToBed(CancellationToken cancellationToken = default);
@@ -24,23 +24,21 @@ namespace MedicalPoint.Services
             _context = context;
         }
 
-        public async Task<List<Patient>> GetPatients(string searchValue = "", int? degree = null, CancellationToken cancellationToken = default)
+        public async Task<List<Patient>> GetPatients(string searchValue = "", int? degree = null, bool? hasCheckVisit = null, CancellationToken cancellationToken = default)
         {
             var query = _context.Patients.AsNoTracking()
-                .Include(x=> x.Degree)
-                .Include(x=> x.RegisteredUser)
+                .Include(x => x.Degree)
+                .Include(x => x.RegisteredUser)
                 .AsQueryable();
             if (!string.IsNullOrWhiteSpace(searchValue))
             {
-                query = query.Where(x => x.GeneralNumber.Contains(searchValue));
-                query = query.Where(x => x.MilitaryNumber.Contains(searchValue));
-                query = query.Where(x => x.NationalNumber.Contains(searchValue));
-                query = query.Where(x => x.Name.Contains(searchValue));
+                query = query.Where(x => x.GeneralNumber.Contains(searchValue) || x.MilitaryNumber.Contains(searchValue) || x.NationalNumber.Contains(searchValue) || x.Name.Contains(searchValue));
             }
             if (degree.HasValue)
             {
                 query = query.Where(x => x.DegreeId == degree.Value);
             }
+            var queryString = query.ToQueryString();
             var patients = await query.ToListAsync(cancellationToken);
 
             return patients;

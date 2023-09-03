@@ -769,3 +769,14 @@ td {
     font-weight: bold;
 }
 
+
+#filter-select {
+    width: 40%;
+    padding-right: 2vh;
+    padding-left: 2vh;
+    padding-top: 0.5vh;
+    padding-bottom: 0.5vh;
+    border-radius: 15px;
+    text-indent: 2px;
+    margin-left: 5px;
+}
