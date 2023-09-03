@@ -59,6 +59,7 @@ namespace MedicalPoint.Services
                 Notes = string.Empty,
                 RegisteredUserId = userId,
                 
+                
             };
             await _context.Visits.AddAsync(visit, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
@@ -139,10 +140,16 @@ namespace MedicalPoint.Services
             {
                 return OperationResult<Visit>.Failed(nameof(Visit));
             }
+            if(status == ConstantVisitStatus.TAKING_MEDICINE)
+            {
+                if (!await _context.VisitMedicines.AnyAsync(x => x.VisitId == visitId))
+                    status = ConstantVisitStatus.FINISHED;
+            }
             visit.Status = status;
+           
             if(status == ConstantVisitStatus.FINISHED)
             {
-                visit.VisitTime = DateTime.Now;
+                visit.ExitTime = DateTime.Now;
             }    
             var visitHistory = new VisitHistory
             {
@@ -274,7 +281,7 @@ namespace MedicalPoint.Services
                 .AsNoTracking().AsQueryable();
 
            
-            var result = await query.Where(x=> !x.IsMedicinesGiven && ( x.Status == ConstantVisitStatus.TAKING_MEDICINE || x.Status == ConstantVisitStatus.FINISHED) ).ToListAsync(cancellationToken);
+            var result = await query.Where(x=> x.Medicines.Count > 0 &&   !x.IsMedicinesGiven && ( x.Status == ConstantVisitStatus.TAKING_MEDICINE || x.Status == ConstantVisitStatus.FINISHED) ).ToListAsync(cancellationToken);
             return result;
         }
         public async Task<Visit> Get(int visitId, CancellationToken cancellationToken = default)

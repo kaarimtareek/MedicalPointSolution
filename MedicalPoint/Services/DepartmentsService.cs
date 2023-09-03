@@ -8,7 +8,7 @@ namespace MedicalPoint.Services
 {
     public interface IDepartmentsService
     {
-        Task<OperationResult<UnderObservationDepartment>> Create(string name, int bedsCount = 0);
+        Task<OperationResult<UnderObservationDepartment>> Create(string name, int userId, int bedsCount = 0);
         Task<UnderObservationDepartment> Get(int id);
         Task<List<UnderObservationDepartment>> GetAll();
         Task<List<UnderObservationDepartment>> GetAllAvailable();
@@ -44,7 +44,7 @@ namespace MedicalPoint.Services
                 .AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
             return result;
         }
-        public async Task<OperationResult<UnderObservationDepartment>> Create(string name, int bedsCount = 0)
+        public async Task<OperationResult<UnderObservationDepartment>> Create(string name, int userId, int bedsCount = 0)
         {
             var department = new UnderObservationDepartment
             {
@@ -61,6 +61,7 @@ namespace MedicalPoint.Services
                     Department = department,
                     IsActive = true,
                     Notes= "",
+                    DoctorId = userId,
                 };
                 await _context.UnderObservationBeds.AddAsync(bed);
                 var history = new UnderObservationBedHistory
@@ -69,6 +70,7 @@ namespace MedicalPoint.Services
                     ActionType = ConstantObservationBedActionType.CREATE,
                     Bed = bed,
                     Notes = "",
+                    DoctorId = userId,
                 };
                 await _context.UnderObservationBedHistories.AddAsync(history);
             }

@@ -10,6 +10,7 @@ namespace MedicalPoint.ViewModels.Medicines
         [MaxLength(100)]
         
         public string Name { get; set; }
+        public string Status { get; set; }
         public int Quantity { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime LastUpdatedAt { get; set; }

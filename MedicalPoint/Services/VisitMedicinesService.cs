@@ -189,6 +189,8 @@ namespace MedicalPoint.Services
                 Type = "",
             };
             visit.Status = ConstantVisitStatus.FINISHED;
+            if (visit.ExitTime == null)
+                visit.ExitTime = DateTime.Now;
             visit.IsMedicinesGiven = true;
             visit.MedicineGivenTime = DateTime.Now;
             await _context.VisitHistories.AddAsync(visitHistory);

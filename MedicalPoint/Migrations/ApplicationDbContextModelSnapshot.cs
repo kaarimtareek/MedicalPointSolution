@@ -500,7 +500,7 @@ namespace MedicalPoint.Migrations
                         .HasMaxLength(300)
                         .HasColumnType("nvarchar(300)");
 
-                    b.Property<int>("PatientId")
+                    b.Property<int?>("PatientId")
                         .HasColumnType("int");
 
                     b.Property<int?>("VisitId")
@@ -512,8 +512,7 @@ namespace MedicalPoint.Migrations
 
                     b.HasIndex("DoctorId");
 
-                    b.HasIndex("PatientId")
-                        .IsUnique();
+                    b.HasIndex("PatientId");
 
                     b.ToTable("UnderObservationBedHistories");
                 });
@@ -922,10 +921,8 @@ namespace MedicalPoint.Migrations
                         .IsRequired();
 
                     b.HasOne("MedicalPoint.Data.Patient", "Patient")
-                        .WithOne()
-                        .HasForeignKey("MedicalPoint.Data.UnderObservationBedHistory", "PatientId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .WithMany()
+                        .HasForeignKey("PatientId");
 
                     b.Navigation("Bed");
 

@@ -8,12 +8,15 @@ using MedicalPoint.ViewModels.Medicines;
 using MedicalPoint.ViewModels.Patients;
 using MedicalPoint.ViewModels.Users;
 using MedicalPoint.ViewModels.Visits;
+
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Security.Claims;
 
 namespace MedicalPoint.Controllers
 {
+    [Authorize(Roles = $"{ConstantUserType.SUPER_ADMIN}")]
     public class SuperAdminController : Controller
     {
 
@@ -195,7 +198,7 @@ namespace MedicalPoint.Controllers
             {
                 return View();
             }
-            return RedirectToAction("GetMidicines", "SuperAdmin");
+            return RedirectToAction("GetMedicines", "SuperAdmin");
         }
 
      

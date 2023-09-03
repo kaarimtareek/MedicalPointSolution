@@ -33,6 +33,14 @@
                     <p id="name">حجز مريض <i class="fa-solid fa-bed"></i></p>
                 </div>
                 <p id="nametwo">الاقسام المتاحة</p>
+                @if(Model.Departments.Count == 0)
+                {
+                    <div class="text-center row col-lg-2 justify-content-center ">
+                        <p class="text-center" style="color:red"> لا يوجد اقسام متاحة</p>
+                        <a asp-action="Create" asp-controller="Departments" class="my-button-blue"> إضافة قسم </a>
+
+                    </div>
+                }
                 @foreach(var department in Model.Departments)
                 {
 

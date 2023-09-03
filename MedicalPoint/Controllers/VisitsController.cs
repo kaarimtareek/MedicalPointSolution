@@ -14,7 +14,7 @@ using System.Linq;
 
 namespace MedicalPoint.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = $"{ConstantUserType.Recieptionist},{ConstantUserType.SUPER_ADMIN},{ConstantUserType.Doctor}")]
     public class VisitsController : Controller
     {
         private readonly IVisitsService _visitsService;

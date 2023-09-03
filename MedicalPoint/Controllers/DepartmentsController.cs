@@ -1,4 +1,5 @@
 ﻿using MedicalPoint.Common;
+using MedicalPoint.Constants;
 using MedicalPoint.Services;
 using MedicalPoint.ViewModels.Beds;
 using MedicalPoint.ViewModels.Departments;
@@ -10,7 +11,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace MedicalPoint.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = $"{ConstantUserType.Recieptionist},{ConstantUserType.SUPER_ADMIN},{ConstantUserType.Doctor}")]
     public class DepartmentsController : Controller
     {
         private readonly IDepartmentsService _departmentsService;
@@ -43,7 +44,12 @@ namespace MedicalPoint.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromForm] AddDepartmentViewModel viewModel)
         {
-            var result = await _departmentsService.Create(viewModel.Name, viewModel.BedsCount);
+            var userId = HttpContext.GetUserId();
+            if(userId==null)
+            {
+                return View();
+            }
+            var result = await _departmentsService.Create(viewModel.Name, userId.Value, viewModel.BedsCount);
             if(!result.Success)
                 return View();
             return RedirectToAction(nameof(Index));
@@ -128,10 +134,7 @@ namespace MedicalPoint.Controllers
             }
 
             var availableDepartments = await _departmentsService.GetAllAvailable();
-            if(availableDepartments.Count == 0)
-            {
-                return NotFound();
-            }
+            
             //var departmentsIds = availableDepartments.Select(x=> x.Id).ToList();
             //var beds = await _underObservationBedsService.GetAllAvailable(departmentsIds);
             //if(beds.Count == 0)

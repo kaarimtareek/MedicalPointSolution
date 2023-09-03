@@ -6,7 +6,7 @@ namespace MedicalPoint.ViewModels.Departments
     {
         public int Id { get; set; }
         public int BedId { get; set; }
-        public int PatientId { get; set; }
+        public int? PatientId { get; set; }
         public string PatientName { get; set; }
         public int? VisitId { get; set; }
         //The doctor id that took that action

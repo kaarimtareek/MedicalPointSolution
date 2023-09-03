@@ -2,6 +2,7 @@
 using System.Security.Claims;
 
 using MedicalPoint.Common;
+using MedicalPoint.Constants;
 using MedicalPoint.Data;
 using MedicalPoint.Services;
 using MedicalPoint.ViewModels.Patients;
@@ -13,7 +14,8 @@ using NuGet.Protocol.Plugins;
 
 namespace MedicalPoint.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = $"{ConstantUserType.Recieptionist},{ConstantUserType.SUPER_ADMIN},{ConstantUserType.Doctor}")]
+
     public class PatientsController : Controller
     {
         private readonly IPatientsService _patientsService;
