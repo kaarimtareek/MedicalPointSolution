@@ -26,19 +26,6 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     });
 
 
-
-//builder.Services.AddAuthorization(options =>
-//{
-//    options.AddPolicy("ContentsEditor", policy =>
-//    {
-//        policy.AddAuthenticationSchemes("Cookie, Bearer");
-//        policy.RequireAuthenticatedUser();
-//        policy.RequireRole("Admin");
-//        policy.RequireClaim("editor", "contents");
-//    });
-//    options.add
-//});
-
 builder.Services.AddHttpContextAccessor();
 
 
