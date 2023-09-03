@@ -1,3 +1,5 @@
+using System;
+
 using MedicalPoint.Data;
 using MedicalPoint.Services;
 
@@ -23,19 +25,6 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.AccessDeniedPath = "/Account/AccessDenied";
     });
 
-
-
-//builder.Services.AddAuthorization(options =>
-//{
-//    options.AddPolicy("ContentsEditor", policy =>
-//    {
-//        policy.AddAuthenticationSchemes("Cookie, Bearer");
-//        policy.RequireAuthenticatedUser();
-//        policy.RequireRole("Admin");
-//        policy.RequireClaim("editor", "contents");
-//    });
-//    options.add
-//});
 
 builder.Services.AddHttpContextAccessor();
 
@@ -64,6 +53,19 @@ if (app.Environment.IsDevelopment())
 else
 {
     app.UseExceptionHandler("/Home/Error");
+}
+// Migrate latest database changes during startup
+if(app.Configuration.GetValue<bool>("Properties:AutoMigrateOnStartup"))
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var dbContext = scope.ServiceProvider
+            .GetRequiredService<ApplicationDbContext>();
+
+        // Here is the migration executed
+        dbContext.Database.Migrate();
+    }
+
 }
 app.UseStaticFiles();
 app.UseAuthentication();
