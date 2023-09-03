@@ -1,3 +1,5 @@
+using System;
+
 using MedicalPoint.Data;
 using MedicalPoint.Services;
 
@@ -64,6 +66,19 @@ if (app.Environment.IsDevelopment())
 else
 {
     app.UseExceptionHandler("/Home/Error");
+}
+// Migrate latest database changes during startup
+if(app.Configuration.GetValue<bool>("Properties:AutoMigrateOnStartup"))
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var dbContext = scope.ServiceProvider
+            .GetRequiredService<ApplicationDbContext>();
+
+        // Here is the migration executed
+        dbContext.Database.Migrate();
+    }
+
 }
 app.UseStaticFiles();
 app.UseAuthentication();
