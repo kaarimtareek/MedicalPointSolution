@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 
+using MedicalPoint.Common;
 using MedicalPoint.Constants;
 using MedicalPoint.Data;
 using MedicalPoint.Services;
@@ -24,15 +25,14 @@ namespace MedicalPoint.Controllers
             _degreesService = degreesService;
         }
         [Authorize]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> MyProfile()
         {
-            var userIdString = HttpContext.User.Claims.FirstOrDefault(x=> x.Type == ClaimTypes.NameIdentifier)?.Value;
-            if(string.IsNullOrEmpty(userIdString))
+            var userId = HttpContext.GetUserId();
+            if(!userId.HasValue)
             {
-                return RedirectToAction("Index","Home");
+                return RedirectToAction(nameof(AccessDenied));
             }
-            var userId = int.Parse(userIdString);
-            var user = await _medicalPointUsersService.Get(userId);
+            var user = await _medicalPointUsersService.Get(userId.Value);
             var userViewMode = new UserViewModel
             {
                 AccountType = user.AccoutType,
@@ -41,7 +41,7 @@ namespace MedicalPoint.Controllers
                 MilitaryNumber = user.MilitaryNumber,
                 Name = user.FullName,
                 PhoneNumber = user.PhoneNumber,
-                DegreeName = user.Degree.Name,
+                DegreeName = user.Degree?.Name??"",
             };
          
             return View(userViewMode);

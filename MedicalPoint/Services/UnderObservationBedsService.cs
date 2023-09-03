@@ -84,7 +84,7 @@ namespace MedicalPoint.Services
             }
             bed.PatientId = patientId;
             bed.EnterDate = enterDate ?? DateTime.Now;
-            bed.Notes = notes;
+            bed.Notes = notes??"";
             bed.DoctorId = doctorId;
             bed.VisitId = visitId;
 

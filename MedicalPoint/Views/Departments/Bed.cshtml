@@ -66,7 +66,9 @@
                                 </tr>
                                 <tr>
                                     <th>الملاحظات</th>
-                                    <td>@Model.Notes</td>
+                                    <td>
+                                       @* <input type="text" placeholder="أدخل االملاحظة"class="w-100">*@
+                                        @Model.Notes</td>
                                 </tr>
                                 <tr>
                                     <th>وقت الحجز</th>
@@ -96,10 +98,10 @@
                         <div>
                             @if (this.Context.IsUserHasRoles(new string[] { ConstantUserType.SUPER_ADMIN, ConstantUserType.Doctor }))
                             {
-                                <button class="my-button mt-2 mb-2" asp-action="EditBed" asp-controller="Departments" asp-route-id="@Model.Id">
+                               @* <button class="my-button mt-2 mb-2" asp-action="EditBed" asp-controller="Departments" asp-route-id="@Model.Id">
                                     تعديل <i class="fa-solid fa-pen-to-square"></i>
                                 </button>
-                                
+                                *@
                             }
                             <a class="my-button-blue mt-2 mb-2" asp-action="RemovePatient" asp-controller="Departments" asp-route-id="@Model.Id">
                                 خروج للمريض <i class="fa-solid fa-right-from-bracket"></i>

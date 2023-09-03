@@ -34,7 +34,7 @@
 @*                 <a  asp-action="GetDataPatientToPrint" asp-controller="Patients" class="my-button-blue"  id="printConfirm">طباعة البيانات <i class="fa-solid fa-print"></i></a> 
  *@                <button  class="my-button-blue" onclick="window.print()">طباعة البيانات <i class="fa-solid fa-print"></i></button>
                 <a asp-action="Index" asp-controller="Visits" class="my-button-green">الكشوفات <i class="fa-solid fa-user"></i></a>
-                
+                 <a asp-action="Index" asp-controller="Departments" class="my-button-blue">اقسام الملاحظة<i class="fa-solid fa-house"></i></a>
             </div>
             <img src="~/userdesign/img/logo.png" alt="logo">
         </div>
@@ -47,7 +47,7 @@
                     <p id="nametwo">بيانات المرضى <i class="fa-solid fa-user-group"></i></p id="name">
                         <form asp-action="Index" method="get" id="formFilterPatients" style="display:none">
                         </form>
-                        <div class="row justify-content-center mb-4"> 
+                        <div class="row justify-content-center mb-4 print"> 
                             <div class="col-lg-12 text-center">
                                 <div>
                                     @*addd clear button*@
@@ -64,8 +64,8 @@
                                     }
 
                                     </select>
-                                    <label id="label-checkbox" for="check-input">لديهم كشوفات</label>
-                                    <input  type="checkbox"   checked="@ViewBag.CheckHasVisit" form="formFilterPatients" name="checkHasVisit" id="check-input"/>
+                                    @*<label id="label-checkbox" for="check-input">لديهم كشوفات</label>
+                                    <input  type="checkbox"   checked="@ViewBag.CheckHasVisit" form="formFilterPatients" name="checkHasVisit" id="check-input"/>*@
 
                                     <input id="search-input" type="text" name="searchValue" value="@ViewBag.SearchValue" style="width:40%; padding-right: 2vh; padding-left: 2vh; padding-top: 0.5vh; padding-bottom: 0.5vh; border-radius:15px; text-indent:2px; margin-left:5px;" form="formFilterPatients"  placeholder="كلمة البحث" />
                         <input type="button" class="table-button-red"  value="مسح البحث" onClick="ResetFilters(['select-degrees','search-input', 'check-input'])"/>

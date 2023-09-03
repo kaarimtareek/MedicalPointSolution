@@ -33,7 +33,7 @@
                 <a  asp-action="Index" asp-controller="Medicines" class="my-button-blue">العودة للرئيسية <i class="fa-solid fa-house"></i></a>
                 <a class="my-button-blue" onclick="window.print()">طباعة الأدوية <i class="fa-solid fa-print"></i></a>
                 <a class="my-button-blue" asp-action="VisitsMedicines" asp-controller="Medicines">صرف الأدوية <i class="fa-solid fa-print"></i></a>
-                @if(this.Context.IsUserHasRoles(new string[]{ConstantUserType.SUPER_ADMIN}))
+                @if (this.Context.IsUserHasRoles(new string[] { ConstantUserType.SUPER_ADMIN, ConstantUserType.Pharmacist}))
                 {
                     <a  asp-action="Create" asp-controller="Medicines" class="my-button-blue">إضافة دواء جديد <i class="fa-solid fa-add"></i></a>
                 }
