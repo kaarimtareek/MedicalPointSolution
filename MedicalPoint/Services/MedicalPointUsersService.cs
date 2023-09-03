@@ -175,6 +175,7 @@ namespace MedicalPoint.Services
             var generatedSalt = GenerateRandomSalt(saltSize);
             var generatedHash = HashPassword(newPassword, generatedSalt);
             user.Password = generatedHash;
+            user.Salt = generatedSalt;
             await _context.SaveChangesAsync(cancellationToken);
 
             return OperationResult<MedicalPointUser>.Succeeded(user);

@@ -1,5 +1,5 @@
 ﻿@using MedicalPoint.ViewModels.Visits;
-@model VisitRestViewModel
+@model CreateVisitRestViewModel
 @{
     Layout = null;
 }
@@ -20,23 +20,26 @@
         <div class="container">
             <div> 
                 <a asp-action="Logout" asp-controller="Account" class="my-button">تسجيل الخروج <i class="fa-solid fa-right-from-bracket"></i></a>
-                <button class="my-button-blue" onclick="window.print()">طباعة اورنيك <i class="fa-solid fa-print"></i></button>
-                <a asp-action="Index" asp-controller="Visits" class="my-button-blue">العودة للرئيسية <i class="fa-solid fa-house"></i></a>
+               
+                <a asp-action="Index" asp-controller="Medicines" class="my-button-blue">العودة للرئيسية <i class="fa-solid fa-house"></i></a>
 
             </div>
             <img src="~/userDesign/img/logo.png" alt="logo">
         </div>
     </nav>
-    <div class="landing-three ">
+    <div class="landing-three print ">
         <div class="container fadeInUp-animation ">
             <div class="row  justify-content-center align-items-center">
                 <div class="col-lg-4 text-center ">
+                    <form asp-action="CreateVisitRest" method="post">
+                        <input  hidden asp-for="VisitId"/>
+                        <input  hidden asp-for="PatientId"/>
                     <table class="table  table-striped">
                         <p id="nametwo">اورنيك<i class="fa-solid fa-user-doctor"></i></p id="name">
                         <tbody >
                             <tr>
                                 <th>الدرجة / الرتبة </th>
-                                <td>@Model.Patient?.Degree</td>
+                                <td> @Model.Patient?.Degree</td>
                             </tr>
                             <tr>
                                 <th>اسم المريض</th>
@@ -49,28 +52,27 @@
                         
                            <tr>
                                 <th>نوع الراحة</th>
-                                <td  >@Model.RestType</td>
+                                <td  >
+                                    <select class="w-100" asp-items="ViewBag.RestTypes" required asp-for="RestTypeId">
+                                        <option selected> اختر نوع الراحة</option>
+                                    </select>
+
+                                </td>
                             </tr>
                             <tr>
                                 <th>تاريخ بداية الراحة</th>
-                                <td>@Model.StartDate</td>
+                                <td> <input  type="datetime-local" value="@DateTime.Now" asp-for=StartDate required class="w-100"/> </td>
                             </tr>
                             <tr>
                                 <th>عدد ايام الراحة</th>
-                                <td>@Model.RestDaysNumber</td>
+                                <td><input  type="number" asp-for=RestDaysNumber required class="w-100"/></td>
                             </tr>
-                            <tr>
-                                <th>تاريخ انتهاء الراحة</th>
-                                <td>@Model.EndDate</td>
-                            </tr>
+                           
                             <tr>
                                 <th>رقم الكشف</th>
                                 <td>@Model.VisitNumber</td>
                             </tr>
-                             <tr>
-                                <th>نوع الكشف</th>
-                                <td>@Model.Type</td>
-                            </tr>
+                            
                            
                             <tr>
                                 <th>العيادة</th>
@@ -79,10 +81,12 @@
                             
                             <tr>
                                 <th>ملاحظات</th>
-                                <td>@Model.Notes</td>
+                                <td><input type="text"class="w-100" placeholder="الملاحظات" asp-for="Notes" /></td>
                             </tr>
                         </tbody>
                     </table>
+                        <input class="my-button-blue mb-3" type="submit" value="انشاء اورنيك"  />
+                    </form>
                     @if(Model.Medicines.Count> 0)
                     {
                         
@@ -115,25 +119,9 @@
             </div>
         </div>
     </div>
-     <footer style="page-break-before:avoid">
-        <!-- Copyright -->
-        <div class="container">
-            <div class="row ">
-                <div class="col-lg-12 mb-10" style="border: 2px solid gray !important; width:20%; padding:0.2rem 0.2rem 1rem 0rem; ">
-                    <p id="footer-text">
-                        توقيع المسؤول
-                    </p> <p id="footer-text">
-                        التوقيع/
-                    </p>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Copyright -->
-      </footer>
-    
 </body>
 <script src="~/userDesign/js/all.min.js"></script>
 <script src="~/userDesign/js/bootstrap.bundle.min.js"></script>
+<script src="~/userDesign/js/fullscreen.js"></script>
 <!-- <script src="js/bootstrap.bundle.min.js.map"></script> -->
 </html>

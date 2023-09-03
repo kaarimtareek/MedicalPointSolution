@@ -115,13 +115,13 @@
                                     <div style="background-color: #c9c6c6; border-radius: 10px; padding: 10px;">
                                         <p id="nametwo"> إضافة صورة <i class="fa-solid fa-image"></i></p>
 
-                                        <form enctype="multipart/form-data" id="formUploadVisitImage" method="post" asp-action="UploadVisitImage" asp-controller="Visits" asp-route-id=@Model.Id>
+                                        <form enctype="multipart/form-data" id="formUploadVisitImage" style="display:none" method="post" asp-action="UploadVisitImage" asp-controller="Visits" asp-route-id=@Model.Id>
 
-                                            <input style="width:35%;" type="file" name="image" form="formUploadVisitImage">
-
-                                            <input value="@Model.Id" type="number" style="display:none; !important" name="id" hidden form="formUploadVisitImage" />
+                                            <input value="@Model.Id" form="formUploadVisitImage" type="number" style="display:none; !important" name="id" hidden form="formUploadVisitImage" />
                                         </form>
-                                        <input type="submit" value="رفع الصورة" asp-action="UploadVisitImage" asp-controller="Visits" class="table-button-blue mt-4" form="formUploadVisitImage" asp-route-id=@Model.Id />
+                                        <input  form="formUploadVisitImage" class="my-button col-lg-4 text-center" placeholder="اختر صورة" type="file" name="image" value="اختر صورة" />
+
+                                        <input type="submit"  value="رفع الصورة" asp-action="UploadVisitImage" asp-controller="Visits" class="table-button-blue col-lg-4" form="formUploadVisitImage" asp-route-id=@Model.Id />
                                     </div>
 
                                 </div>
