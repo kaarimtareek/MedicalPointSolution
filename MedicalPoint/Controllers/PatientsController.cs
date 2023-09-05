@@ -33,11 +33,11 @@ namespace MedicalPoint.Controllers
             _underObservationBedsService = underObservationBedsService;
         }
       
-        public async Task<IActionResult> Index(string searchValue,int? degreeId = null, string? checkHasVisit = null)
+        public async Task<IActionResult> Index(string searchValue,int? degreeId = null, string? checkHasVisit = null, int pageNumber = 1, int pageSize = 20)
         {
             var hasVisit = !string.IsNullOrEmpty(checkHasVisit);
            
-            var patients = await _patientsService.GetPatients(1,20, searchValue, degreeId, hasVisit);
+            var patients = await _patientsService.GetPatients( pageNumber, pageSize, searchValue, degreeId, hasVisit);
             ViewBag.Degrees = _degreesService.GetAll().ConvertAll(x => new SelectListItem
             {
                 Text = x.Name,
@@ -47,6 +47,12 @@ namespace MedicalPoint.Controllers
             ViewBag.SelectedDegree = degreeId;
             ViewBag.SearchValue = searchValue;
             ViewBag.CheckHasVisit = hasVisit;
+            ViewBag.PageSizeList = new List<int>() { 10, 20, 50, 100 }.Select(x => new SelectListItem
+            {
+                Text = x.ToString(),
+                Value = x.ToString(),
+                Selected = pageSize == x
+            });
             var viewModel = patients.ConvertAll(x => new PatientViewModel
             {
                 CreatedAt = x.CreatedAt,
@@ -63,7 +69,8 @@ namespace MedicalPoint.Controllers
                 Degree = x.Degree?.Name ?? string.Empty,
                 RegisteredUserName = x.RegisteredUser?.FullName ?? string.Empty,
             });
-            return View(viewModel);
+            var paginatedViewModel = PaginatedList<PatientViewModel>.Create(viewModel, pageNumber, pageSize);
+            return View(paginatedViewModel);
         }
         public IActionResult Create()
         {

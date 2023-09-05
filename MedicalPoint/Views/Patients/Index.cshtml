@@ -1,5 +1,6 @@
-﻿@using MedicalPoint.ViewModels.Patients;
-@model List<PatientViewModel>
+﻿@using MedicalPoint.Common;
+@using MedicalPoint.ViewModels.Patients;
+@model PaginatedList<PatientViewModel>
 @{
     Layout = null;
 
@@ -120,6 +121,93 @@
           
                       
                     </table>
+                                         <!-- pagenation -->
+                    <div class="row">
+                     <form style="display:none" id="formPatientsPagination" method="get" asp-action="Index" asp-asp-controller="Visits"></form>
+                     <input form="formPatientsPagination" value="@ViewBag.SearchValue" style="display:none" name="searchValue"  />
+                     <input form="formPatientsPagination" value="@ViewBag.SelectedDegree" style="display:none" name="degreeId"  />
+                        <div class="col-lg-12">
+                            <div class="row">
+                               <div class="col-lg-8">
+                                <div class="row">
+                                    <div class="col-lg-1">
+                                        <input type="number" class="my-table-input" form="formPatientsPagination" name="pageNumber" min="1" value="@Model.PageNumber" max="@Model.TotalPages">
+                                    </div>
+                                    <div class="col-lg-1">
+                                      <h6 style="margin: 0;
+                                       margin-top: 0.5rem !important;">مـــــن</h6>
+                                    </div>
+                                    <div class="col-lg-1">
+                                        <input  value="@Model.TotalPages" class="my-table-input" readonly style="background-color: rgb(209, 209, 209);"> 
+                                    </div>
+                                     <div class="col-lg-1">
+                                       <h6 style="    margin: 0;
+                                       margin-top: 0.5rem !important;">عدد العناصر</h6>
+                                    </div>
+                                    <div class="col-lg-2">
+                                       <select name="pageSize" asp-items="@ViewBag.PageSizeList"  form="formPatientsPagination" class="my-table-select"> 
+                                       </select>
+                                    </div>
+                                    <div class="col-lg-1">
+                                     <input type="submit" form="formPatientsPagination" class="table-button-blue" value="إذهب"/>
+                                    </div>
+                                </div>
+                               </div>
+                                <div class="col-lg-4">
+                                <div class="row"style="justify-content: left;">
+                                    @if(Model.HasPrevious)
+                                        {
+                                        <div class="col-lg-2">
+                                    <a  class="table-button-red"
+                                    asp-action="Index" asp-asp-controller="Patients" 
+                                    asp-route-pageNumber="@Model.PageNumber-1"
+                                    asp-route-pageSize = "@Model.PageSize"
+                                    asp-route-searchValue = "@ViewBag.SearchValue"
+                                    asp-route-degreeId = "@ViewBag.SelectedDegree"
+                                    
+                                    style="width: 90%;">السابق</a>
+                                    </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="col-lg-2">
+                                    <a  class="table-button-red"
+                                        id="disablelink"
+                                    style="width: 90%;">السابق</a>
+                                    </div>
+                                                
+                                                
+                                        }
+                                        @if(Model.HasNext)
+                                        {
+                                                
+                                        <div class="col-lg-2">
+                                    <a class="table-button-blue" asp-action="Index" asp-asp-controller="Patients" 
+                                    asp-route-pageNumber="@Model.PageNumber+1"
+                                    asp-route-pageSize = "@Model.PageSize"
+                                    asp-route-searchValue = "@ViewBag.SearchValue"
+                                    asp-route-degreeId = "@ViewBag.SelectedDegree"
+                                   
+                                    style="width: 90%;">التالي</a>
+                                    </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="col-lg-2">
+                                    <a   class="table-button-blue"
+                                        id="disablelink"
+                                    style="width: 90%;">التالي</a>
+                                    </div>
+                                                
+                                                
+                                        }
+                                </div>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                    <!-- pagenation -->
 
 
                 </div>

@@ -15,6 +15,7 @@
     -webkit-box-shadow: none !important;
     box-shadow: none !important;
     border: none !important;
+    outline: none !important;
 }
 
 
@@ -644,8 +645,7 @@ td {
 .beds {
     display: grid;
     grid-template-areas: "a a a a";
-    grid-gap: 20px;
-    padding: 30px;
+    grid-gap: 10px;
     grid-auto-rows: auto;
 }
 
@@ -775,11 +775,11 @@ td {
 }
 
     #my-table th {
-        padding: 0px !important;
+        padding: 0.1rem !important;
     }
 
     #my-table td {
-        padding: 0px !important;
+        padding: 0.1rem !important;
     }
 
     #my-table > tbody > tr:nth-of-type(odd) > * {
@@ -790,7 +790,7 @@ td {
     border-radius: 15px;
     padding: 0.3rem;
     padding-right: 0.6rem;
-    width: 90%;
+    width: 100%;
 }
 
 .my-table-select {
@@ -805,5 +805,45 @@ td {
     #my-table {
         font-size: 12px;
     }
+
+    .background-with-color {
+        background-color: white;
+    }
+
+    footer {
+        margin-top: 89.59px;
+    }
 }
 
+.beds-containerTwo {
+    grid-auto-rows: 80px;
+}
+
+.bedsTwo {
+    display: grid;
+    grid-template-areas: "a a a a a";
+    grid-gap: 10px;
+    grid-auto-rows: auto;
+}
+
+.beds-containerThree {
+    grid-auto-rows: 80px;
+}
+
+.bedsThree {
+    display: grid;
+    grid-template-areas: "a a";
+    grid-gap: 10px;
+    grid-auto-rows: auto;
+}
+
+.card-text {
+    font-weight: bold;
+    font-size: 20px;
+}
+
+
+#disablelink {
+    pointer-events: none !important;
+    background-color: var(--gray-color) !important;
+}
