@@ -1,6 +1,7 @@
 ﻿using System.IO.Compression;
 
 using MedicalPoint.Common;
+using MedicalPoint.Constants;
 using MedicalPoint.Data;
 
 using Microsoft.EntityFrameworkCore;
@@ -39,15 +40,15 @@ namespace MedicalPoint.Services
             var visit = QueryFinder.GetVisitById(_context, visitId);
             if (visit == null || visit.IsDeleted)
             {
-                return OperationResult<VisitImage>.Failed("");
+                return OperationResult<VisitImage>.Failed(ConstantMessageCodes.VisitNotFound);
             }
             if (!visit.CanEditVisit())
             {
-                return OperationResult<VisitImage>.Failed("");
+                return OperationResult<VisitImage>.Failed(ConstantMessageCodes.CannotEditVisit);
             }
             if (image == null || image.Length == 0)
             {
-                return OperationResult<VisitImage>.Failed("");
+                return OperationResult<VisitImage>.Failed(ConstantMessageCodes.ImageNotFound);
 
             }
 
@@ -58,7 +59,7 @@ namespace MedicalPoint.Services
                 // Upload the file if less than 2 MB
                 if (memoryStream.Length >= 2097152)
                 {
-                    return OperationResult<VisitImage>.Failed("");
+                    return OperationResult<VisitImage>.Failed(ConstantMessageCodes.CannotUploadImageMoreThan2mb);
                 }
                 var visitImage = new VisitImage()
                 {
@@ -81,20 +82,20 @@ namespace MedicalPoint.Services
             var visitImage = await _context.VisitImages.FirstOrDefaultAsync(x => x.Id == visitImageId, cancellationToken);
             if (visitImage == null)
             {
-                return OperationResult<VisitImage>.Failed("");
+                return OperationResult<VisitImage>.Failed(ConstantMessageCodes.ImageNotFound);
             }
             var visit = QueryFinder.GetVisitById(_context, visitImage.VisitId);
             if (visit == null || visit.IsDeleted)
             {
-                return OperationResult<VisitImage>.Failed("");
+                return OperationResult<VisitImage>.Failed(ConstantMessageCodes.VisitNotFound);
             }
             if (!visit.CanEditVisit())
             {
-                return OperationResult<VisitImage>.Failed("");
+                return OperationResult<VisitImage>.Failed(ConstantMessageCodes.CannotEditVisit);
             }
             if (image == null || image.Length > 0)
             {
-                return OperationResult<VisitImage>.Failed("");
+                return OperationResult<VisitImage>.Failed(ConstantMessageCodes.ImageNotFound);
 
             }
             using (var memoryStream = new MemoryStream())
@@ -104,7 +105,7 @@ namespace MedicalPoint.Services
                 // Upload the file if less than 2 MB
                 if (memoryStream.Length >= 2097152)
                 {
-                    return OperationResult<VisitImage>.Failed("");
+                    return OperationResult<VisitImage>.Failed(ConstantMessageCodes.CannotUploadImageMoreThan2mb);
                 }
                 visitImage.Format = image.ContentType;
                 visitImage.Name = image.Name;
@@ -121,16 +122,16 @@ namespace MedicalPoint.Services
             var visitImage = await _context.VisitImages.FirstOrDefaultAsync(x => x.Id == visitImageId, cancellationToken);
             if (visitImage == null)
             {
-                return OperationResult<VisitImage>.Failed("");
+                return OperationResult<VisitImage>.Failed(ConstantMessageCodes.ImageNotFound);
             }
             var visit = QueryFinder.GetVisitById(_context, visitImage.VisitId);
             if (visit == null || visit.IsDeleted)
             {
-                return OperationResult<VisitImage>.Failed("");
+                return OperationResult<VisitImage>.Failed(ConstantMessageCodes.VisitNotFound);
             }
             if (!visit.CanEditVisit())
             {
-                return OperationResult<VisitImage>.Failed("");
+                return OperationResult<VisitImage>.Failed(ConstantMessageCodes.CannotEditVisit);
             }
 
             _context.VisitImages.Remove(visitImage);

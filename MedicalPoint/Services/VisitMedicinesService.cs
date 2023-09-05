@@ -45,19 +45,19 @@ namespace MedicalPoint.Services
             var visit = await _context.Visits.FirstOrDefaultAsync(x => x.Id == visitId, cancellationToken);
             if (visit == null)
             {
-                return OperationResult<VisitMedicine>.Failed("");
+                return OperationResult<VisitMedicine>.Failed(ConstantMessageCodes.VisitNotFound);
             }
             if (!visit.CanEditVisit())
             {
-                return OperationResult<VisitMedicine>.Failed("");
+                return OperationResult<VisitMedicine>.Failed(ConstantMessageCodes.CannotEditVisit);
             }
             if(string.IsNullOrEmpty(visit.Diagnosis))
             {
-                return OperationResult<VisitMedicine>.Failed("");
+                return OperationResult<VisitMedicine>.Failed(ConstantMessageCodes.VisitDiagnosisIsNotWritten);
             }
             if (await _context.VisitMedicines.AnyAsync(x => x.VisitId == visitId && x.MedicineId == medicineId, cancellationToken))
             {
-                return OperationResult<VisitMedicine>.Failed("");
+                return OperationResult<VisitMedicine>.Failed(ConstantMessageCodes.VisitMedicineAlreadyExist);
             }
             visit.DoctorId ??= userId;
             if(visit.Status == ConstantVisitStatus.IN_RECIEPTION  || visit.Status == ConstantVisitStatus.IN_CLINIC_DIAGNOSIS)
@@ -91,20 +91,20 @@ namespace MedicalPoint.Services
         public async Task<OperationResult<VisitMedicine>> Edit(int userId, int visitMedicineId, int quantity, string? notes, bool forceChange = false, CancellationToken cancellationToken = default)
         {
             if (quantity < 1)
-                return OperationResult<VisitMedicine>.Failed("");
+                return OperationResult<VisitMedicine>.Failed(ConstantMessageCodes.InvalidQuantity);
             var visitMedicine = await _context.VisitMedicines.FirstOrDefaultAsync(x => x.Id == visitMedicineId, cancellationToken);
             if (visitMedicine == null)
             {
-                return OperationResult<VisitMedicine>.Failed("");
+                return OperationResult<VisitMedicine>.Failed(ConstantMessageCodes.VisitMedicineNotFound);
             }
             var visit = await _context.Visits.FirstOrDefaultAsync(x => x.Id == visitMedicine.VisitId, cancellationToken);
             if (visit == null || visit.IsDeleted)
             {
-                return OperationResult<VisitMedicine>.Failed("");
+                return OperationResult<VisitMedicine>.Failed(ConstantMessageCodes.VisitNotFound);
             }
             if (!visit.CanEditVisit(forceChange))
             {
-                return OperationResult<VisitMedicine>.Failed("");
+                return OperationResult<VisitMedicine>.Failed(ConstantMessageCodes.CannotEditVisit);
             }
             visit.DoctorId ??= userId;
 
@@ -121,33 +121,33 @@ namespace MedicalPoint.Services
             var visitMedicine = await _context.VisitMedicines.FirstOrDefaultAsync(x => x.Id == visitMedicineId, cancellationToken);
             if (visitMedicine == null)
             {
-                return OperationResult<VisitMedicine>.Failed("");
+                return OperationResult<VisitMedicine>.Failed(ConstantMessageCodes.VisitMedicineNotFound);
             }
             var visit = await _context.Visits.FirstOrDefaultAsync(x => x.Id == visitMedicine.VisitId, cancellationToken);
             if (visit == null || visit.IsDeleted)
             {
-                return OperationResult<VisitMedicine>.Failed("");
+                return OperationResult<VisitMedicine>.Failed(ConstantMessageCodes.VisitNotFound);
             }
             if (!visit.CanEditVisit(forceChange))
             {
-                return OperationResult<VisitMedicine>.Failed("");
+                return OperationResult<VisitMedicine>.Failed(ConstantMessageCodes.CannotEditVisit);
             }
             visit.DoctorId ??= userId;
             _context.VisitMedicines.Remove(visitMedicine);
             await _context.SaveChangesAsync(cancellationToken);
-            return OperationResult<VisitMedicine>.Succeeded(visitMedicine, "");
+            return OperationResult<VisitMedicine>.Succeeded(visitMedicine);
         }
         public async Task<OperationResult> GiveMedicines(int visitId, int userId, CancellationToken cancellationToken = default)
         {
             var visit = await _context.Visits.FirstOrDefaultAsync(x=> x.Id == visitId, cancellationToken);
             if(visit == null || visit.IsDeleted)
             {
-                return OperationResult.Failed("");
+                return OperationResult.Failed(ConstantMessageCodes.VisitNotFound);
             }
             var visitMedicines = await _context.VisitMedicines.Where(x=> x.VisitId == visitId ).ToListAsync(cancellationToken);
             if (visitMedicines.Count ==0 && visitMedicines.All(x=> x.IsGiven))
             {
-                return OperationResult.Failed("");
+                return OperationResult.Failed(ConstantMessageCodes.NoVisitMedicinesOrAlreadyGiven);
             }
             var medicinesIds = visitMedicines.Select(x=> x.MedicineId).ToList();
             var medicines = await _context.Medicines.Where(x => medicinesIds.Contains(x.Id)).ToListAsync(cancellationToken);
@@ -157,11 +157,11 @@ namespace MedicalPoint.Services
                 var medicine = medicines.FirstOrDefault(x => x.Id == visitMedicine.MedicineId);
                 if (medicine == null || medicine.IsDeleted)
                 {
-                    return OperationResult.Failed("");
+                    return OperationResult.Failed(ConstantMessageCodes.MedicineNotFound);
                 }
                 if(medicine.Quantity < visitMedicine.Quantity)
                 {
-                    return OperationResult.Failed("");
+                    return OperationResult.Failed(ConstantMessageCodes.VisitMedicineQuantityMoreThanMedicineQuantity);
                 }
                 medicine.Quantity -= visitMedicine.Quantity;
                 var medicineHistory = new MedicineHistory

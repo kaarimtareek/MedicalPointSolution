@@ -1,4 +1,5 @@
 ﻿using MedicalPoint.Common;
+using MedicalPoint.Constants;
 using MedicalPoint.Data;
 
 using Microsoft.EntityFrameworkCore;
@@ -40,7 +41,7 @@ namespace MedicalPoint.Services
             name = name.Trim();
             if(await _context.Degrees.AnyAsync(x=> x.Name == name, cancellationToken))
             {
-                return OperationResult<Degree>.Failed("");
+                return OperationResult<Degree>.Failed(ConstantMessageCodes.DegreeAlreadyExist);
             }
             var degree = new Degree
             {
@@ -55,12 +56,12 @@ namespace MedicalPoint.Services
             name = name.Trim();
             if (await _context.Degrees.AnyAsync(x => x.Name == name && x.Id != id, cancellationToken))
             {
-                return OperationResult<Degree>.Failed("");
+                return OperationResult<Degree>.Failed(ConstantMessageCodes.DegreeAlreadyExist);
             }
             var degree = await _context.Degrees.FirstOrDefaultAsync(x=> x.Id == id, cancellationToken);
             if (degree == null)
             {
-                return OperationResult<Degree>.Failed("");
+                return OperationResult<Degree>.Failed(ConstantMessageCodes.DegreeAlreadyExist);
             }
             degree.Name = name;
             await _context.SaveChangesAsync(cancellationToken);
@@ -73,7 +74,7 @@ namespace MedicalPoint.Services
             var degree = await _context.Degrees.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
             if (degree == null)
             {
-                return OperationResult<Degree>.Failed("");
+                return OperationResult<Degree>.Failed(ConstantMessageCodes.DegreeNotFound);
             }
             _context.Degrees.Remove(degree);
             await _context.SaveChangesAsync(cancellationToken);

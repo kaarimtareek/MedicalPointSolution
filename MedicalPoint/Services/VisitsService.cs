@@ -16,7 +16,7 @@ namespace MedicalPoint.Services
         Task<OperationResult<Visit>> Delete(int visitId, int userId, CancellationToken cancellationToken = default);
         Task<OperationResult<Visit>> Edit(int visitId, int userId,  string notes, DateTime? exitTime = null, DateTime? visitTime = null, int? clinicId = null, int? doctorId = null, string? type = null, int? previousVisitId = null, DateTime? followDate = null, bool hasFollowingVisit = false, CancellationToken cancellationToken = default);
         Task<Visit> Get(int visitId, CancellationToken cancellationToken = default);
-        Task<List<Visit>> GetAll(int? doctorId = null, int? patientId = null, DateTime? from = null, DateTime? to = null, string? type = null, int? clinicId = null, CancellationToken cancellationToken = default);
+        Task<PaginatedList<Visit>> GetAll(int pageNumber = 1, int pageSize = 20, int? doctorId = null, int? patientId = null, DateTime? from = null, DateTime? to = null, string? type = null, int? clinicId = null, string? searchValue = null, CancellationToken cancellationToken = default);
         Task<VisitRest> GetVisitRest(int visitId, CancellationToken cancellationToken = default);
         Task<List<LookupVisitRestType>> GetVisitRestTypes(CancellationToken cancellationToken = default);
         Task<List<Visit>> GetVisitsThatNeedsToGiveMedicines(CancellationToken cancellationToken = default);
@@ -32,13 +32,24 @@ namespace MedicalPoint.Services
         {
             _context = context;
         }
+        
 
         public async Task<OperationResult<Visit>> Create(int userId, int patientId, DateTime? visitTime = null, int? clinicId = null, int? doctorId = null, string? type = null, int? previousVisitId = null, CancellationToken cancellationToken = default)
         {
             //check if user has already active visit
+            if(!clinicId.HasValue ||  !await _context.Clinics.AnyAsync(x=> x.Id == clinicId))
+            {
+                return OperationResult<Visit>.Failed(ConstantMessageCodes.ClinicNotFound);
+
+            }
+            if (string.IsNullOrEmpty(type) || !ConstantVisitType.ALL.Contains(type))
+            {
+                return OperationResult<Visit>.Failed(ConstantMessageCodes.VisitTypeNotFound);
+
+            }
             if (QueryValidator.PatientHasAlreadyActiveVisit(_context, patientId))
             {
-                return OperationResult<Visit>.Failed("");
+                return OperationResult<Visit>.Failed(ConstantMessageCodes.PatientHasAlreadyActiveVisit);
             }
             var numberOfVisitsToday = QueryFinder.GetVisitsCountForDay(_context);
             var currentVisitNumber = ++numberOfVisitsToday;
@@ -134,14 +145,19 @@ namespace MedicalPoint.Services
             var visit = await _context.Visits.FindAsync(new object?[] { visitId }, cancellationToken: cancellationToken);
             if (visit == null)
             {
-                return OperationResult<Visit>.Failed(nameof(Visit));
+                return OperationResult<Visit>.Failed(ConstantMessageCodes.VisitNotFound);
             }
             if (!forceChange && !ConstantVisitStatus.CanChangeStatus(visit.Status, status))
             {
-                return OperationResult<Visit>.Failed(nameof(Visit));
+                return OperationResult<Visit>.Failed(ConstantMessageCodes.CannotChangeVisitStatus);
             }
             if(status == ConstantVisitStatus.TAKING_MEDICINE)
             {
+                if (string.IsNullOrEmpty(visit.Diagnosis))
+                {
+                    return OperationResult<Visit>.Failed(ConstantMessageCodes.VisitDiagnosisIsNotWritten);
+
+                }
                 if (!await _context.VisitMedicines.AnyAsync(x => x.VisitId == visitId))
                     status = ConstantVisitStatus.FINISHED;
             }
@@ -149,6 +165,11 @@ namespace MedicalPoint.Services
            
             if(status == ConstantVisitStatus.FINISHED)
             {
+                if(string.IsNullOrEmpty(visit.Diagnosis))
+                {
+                    return OperationResult<Visit>.Failed(ConstantMessageCodes.VisitDiagnosisIsNotWritten);
+
+                }
                 visit.ExitTime = DateTime.Now;
             }    
             var visitHistory = new VisitHistory
@@ -170,19 +191,19 @@ namespace MedicalPoint.Services
         
         public async Task<OperationResult<Visit>> WriteDiagnosis(int visitId, int userId, string diagnosis, bool forceChange = false, CancellationToken cancellationToken = default)
         {
-            if(string.IsNullOrEmpty(diagnosis))
+            if(string.IsNullOrEmpty(diagnosis) || string.IsNullOrWhiteSpace(diagnosis.Trim()))
             {
-                return OperationResult<Visit>.Failed(nameof(Visit));
+                return OperationResult<Visit>.Failed(ConstantMessageCodes.VisitDiagnosisIsNotWritten);
             }
             //check if user has already active visit
             var visit = await _context.Visits.FindAsync(new object?[] { visitId }, cancellationToken: cancellationToken);
             if (visit == null)
             {
-                return OperationResult<Visit>.Failed(nameof(Visit));
+                return OperationResult<Visit>.Failed(ConstantMessageCodes.VisitNotFound);
             }
             if (!forceChange && !visit.CanEditVisit(forceChange))
             {
-                return OperationResult<Visit>.Failed(nameof(Visit));
+                return OperationResult<Visit>.Failed(ConstantMessageCodes.CannotChangeVisitStatus);
             }
             visit.Diagnosis = diagnosis;
             visit.DoctorId = userId;
@@ -213,7 +234,7 @@ namespace MedicalPoint.Services
             var visit = await _context.Visits.FindAsync(new object?[] { visitId }, cancellationToken: cancellationToken);
             if (visit == null)
             {
-                return OperationResult<Visit>.Failed(nameof(Visit));
+                return OperationResult<Visit>.Failed(ConstantMessageCodes.VisitNotFound);
             }
 
             visit.IsDeleted = true;
@@ -233,7 +254,7 @@ namespace MedicalPoint.Services
             await _context.SaveChangesAsync(cancellationToken);
             return OperationResult<Visit>.Succeeded(visit);
         }
-        public async Task<List<Visit>> GetAll(int? doctorId = null, int? patientId = null, DateTime? from = null, DateTime? to = null, string? type = null, int? clinicId = null, CancellationToken cancellationToken = default)
+        public async Task<PaginatedList<Visit>> GetAll(int pageNumber =1, int pageSize = 20, int? doctorId = null, int? patientId = null, DateTime? from = null, DateTime? to = null, string? type = null, int? clinicId = null, string? searchValue = null, CancellationToken cancellationToken = default)
         {
             var query = _context.Visits
                 .Include(x=> x.Doctor)
@@ -262,13 +283,19 @@ namespace MedicalPoint.Services
             }
             if (type != null)
             {
-                query.Where(x => x.Type == type);
+                query = query.Where(x => x.Type == type);
             }
             if (clinicId != null)
             {
-                query.Where(x => x.ClinicId == clinicId);
+                query = query.Where(x => x.ClinicId == clinicId);
             }
-            var result = await query.OrderByDescending(x=> x.CreatedAt).ToListAsync(cancellationToken);
+            if(searchValue != null)
+            {
+                query = query.Where(x=> x.Patient.Name
+                .Contains(searchValue) || x.Patient.MilitaryNumber.Contains(searchValue) || x.Patient.NationalNumber.Contains(searchValue) || x.Patient.SaryaNumber.Contains(searchValue) || x.Patient.GeneralNumber.Contains(searchValue));
+            }
+            query = query.OrderByDescending(x => x.CreatedAt);
+            var result = await PaginatedList<Visit>.CreateAsync( query, pageNumber, pageSize);
             return result;
         }
         public async Task<List<Visit>> GetVisitsThatNeedsToGiveMedicines(CancellationToken cancellationToken = default)

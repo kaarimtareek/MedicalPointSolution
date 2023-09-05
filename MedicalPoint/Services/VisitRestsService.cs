@@ -1,4 +1,5 @@
 ﻿using MedicalPoint.Common;
+using MedicalPoint.Constants;
 using MedicalPoint.Data;
 
 using Microsoft.AspNetCore.Http.Features;
@@ -60,17 +61,17 @@ namespace MedicalPoint.Services
         {
             if (numberOfRestDays < 1)
             {
-                return OperationResult<VisitRest>.Failed("");
+                return OperationResult<VisitRest>.Failed(ConstantMessageCodes.InvalidRestDaysNumber);
             }
             var visit = QueryFinder.GetVisitById(_context, visitId);
             if (visit == null || visit.IsDeleted)
             {
-                return OperationResult<VisitRest>.Failed("");
+                return OperationResult<VisitRest>.Failed(ConstantMessageCodes.VisitNotFound);
             }
             //return if there's already visit rest for this visit
             if (await _context.VisitRests.AnyAsync(x => x.VisitId == visitId, cancellationToken))
             {
-                return OperationResult<VisitRest>.Failed("");
+                return OperationResult<VisitRest>.Failed(ConstantMessageCodes.VisitRestAlreadyExist);
             }
             var visitRest = new VisitRest
             {
@@ -92,21 +93,21 @@ namespace MedicalPoint.Services
         {
             if (numberOfRestDays < 1)
             {
-                return OperationResult<VisitRest>.Failed("");
+                return OperationResult<VisitRest>.Failed(ConstantMessageCodes.InvalidRestDaysNumber);
             }
             var visitRest = await _context.VisitRests.FirstOrDefaultAsync(x => x.Id == visitRestId, cancellationToken);
             if (visitRest == null)
             {
-                return OperationResult<VisitRest>.Failed("");
+                return OperationResult<VisitRest>.Failed(ConstantMessageCodes.VisitRestNotFound);
             }
             var visit = QueryFinder.GetVisitById(_context, visitRest.VisitId);
             if (visit == null || visit.IsDeleted)
             {
-                return OperationResult<VisitRest>.Failed("");
+                return OperationResult<VisitRest>.Failed(ConstantMessageCodes.VisitNotFound);
             }
             if (!visit.CanEditVisit())
             {
-                return OperationResult<VisitRest>.Failed("");
+                return OperationResult<VisitRest>.Failed(ConstantMessageCodes.CannotEditVisit);
             }
             visitRest.Notes = notes??"";
             visitRest.StartDate = startTime;

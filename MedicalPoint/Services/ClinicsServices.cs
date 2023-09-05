@@ -1,4 +1,5 @@
 ﻿using MedicalPoint.Common;
+using MedicalPoint.Constants;
 using MedicalPoint.Data;
 
 using Microsoft.EntityFrameworkCore;
@@ -41,7 +42,7 @@ namespace MedicalPoint.Services
             name = name.Trim();
             if (await _context.Clinics.AnyAsync(x => x.Name == name, cancellationToken))
             {
-                return OperationResult<Clinic>.Failed("");
+                return OperationResult<Clinic>.Failed(ConstantMessageCodes.DegreeAlreadyExist);
             }
             var clinic = new Clinic
             {
@@ -57,12 +58,12 @@ namespace MedicalPoint.Services
             name = name.Trim();
             if (await _context.Clinics.AnyAsync(x => x.Name == name && x.Id != id, cancellationToken))
             {
-                return OperationResult<Clinic>.Failed("");
+                return OperationResult<Clinic>.Failed(ConstantMessageCodes.ClinicNameAlreadyExist);
             }
             var clinic = await _context.Clinics.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
             if (clinic == null)
             {
-                return OperationResult<Clinic>.Failed("");
+                return OperationResult<Clinic>.Failed(ConstantMessageCodes.ClinicNotFound);
             }
             clinic.Name = name;
             clinic.IsActive = isActive;
@@ -77,7 +78,7 @@ namespace MedicalPoint.Services
             var clinic = await _context.Clinics.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
             if (clinic == null)
             {
-                return OperationResult<Clinic>.Failed("");
+                return OperationResult<Clinic>.Failed(ConstantMessageCodes.ClinicNotFound);
             }
             _context.Clinics.Remove(clinic);
             await _context.SaveChangesAsync(cancellationToken);

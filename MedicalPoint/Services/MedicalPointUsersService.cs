@@ -2,6 +2,7 @@
 using System.Text;
 
 using MedicalPoint.Common;
+using MedicalPoint.Constants;
 using MedicalPoint.Data;
 
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
@@ -68,11 +69,11 @@ namespace MedicalPoint.Services
             var user = QueryFinder.GetUserByEmail(_context, email);
             if (user == null || !VerifyHashedPassword(password, user.Password, user.Salt))
             {
-                return OperationResult<MedicalPointUser>.Failed("");
+                return OperationResult<MedicalPointUser>.Failed(ConstantMessageCodes.UserNameOrPasswordIsIncorrect);
             }
             if (!user.IsActive)
             {
-                return OperationResult<MedicalPointUser>.Failed("");
+                return OperationResult<MedicalPointUser>.Failed(ConstantMessageCodes.UserIsInActive);
             }
             //if (user.AccoutType != accountType)
             //{
@@ -88,15 +89,15 @@ namespace MedicalPoint.Services
             //check if military number, email or phonenumber already exist
             if (QueryValidator.IsUserEmailExist(_context, email))
             {
-                return OperationResult<MedicalPointUser>.Failed("");
+                return OperationResult<MedicalPointUser>.Failed(ConstantMessageCodes.UserIsInActive);
             }
             if (QueryValidator.IsUserMilitaryNumberExist(_context, militaryNumber))
             {
-                return OperationResult<MedicalPointUser>.Failed("");
+                return OperationResult<MedicalPointUser>.Failed(ConstantMessageCodes.MilitaryNumberAlreadyExist);
             }
             if (!string.IsNullOrEmpty(phonenumber) && QueryValidator.IsUserPhoneNumberExist(_context, phonenumber))
             {
-                return OperationResult<MedicalPointUser>.Failed("");
+                return OperationResult<MedicalPointUser>.Failed(ConstantMessageCodes.PhoneNumberAlreadyExist);
             }
             var generatedSalt = GenerateRandomSalt(saltSize);
             var hashedPassword = HashPassword(password, generatedSalt);
@@ -121,20 +122,20 @@ namespace MedicalPoint.Services
             var user = await _context.Users.FirstOrDefaultAsync(x=> x.Id == userId);
             if (user == null)
             {
-                return OperationResult<MedicalPointUser>.Failed("");
+                return OperationResult<MedicalPointUser>.Failed(ConstantMessageCodes.UserNotFound);
             }
             //check if military number, email or phonenumber already exist
             if (QueryValidator.IsUserEmailExist(_context, email, userId))
             {
-                return OperationResult<MedicalPointUser>.Failed("");
+                return OperationResult<MedicalPointUser>.Failed(ConstantMessageCodes.EmailAlreadyExist);
             }
             if (QueryValidator.IsUserMilitaryNumberExist(_context, militaryNumber, userId))
             {
-                return OperationResult<MedicalPointUser>.Failed("");
+                return OperationResult<MedicalPointUser>.Failed(ConstantMessageCodes.MilitaryNumberAlreadyExist);
             }
             if (!string.IsNullOrEmpty(phonenumber) && QueryValidator.IsUserPhoneNumberExist(_context, phonenumber, userId))
             {
-                return OperationResult<MedicalPointUser>.Failed("");
+                return OperationResult<MedicalPointUser>.Failed(ConstantMessageCodes.PhoneNumberAlreadyExist);
             }
             user.Email = email;
             user.PhoneNumber = phonenumber??"";
@@ -169,7 +170,7 @@ namespace MedicalPoint.Services
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == userId, cancellationToken);
             if (user == null)
             {
-                return OperationResult<MedicalPointUser>.Failed("");
+                return OperationResult<MedicalPointUser>.Failed(ConstantMessageCodes.UserNotFound);
             }
             
             var generatedSalt = GenerateRandomSalt(saltSize);

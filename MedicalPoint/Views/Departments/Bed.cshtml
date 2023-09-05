@@ -22,6 +22,10 @@
         <div class="container">
             <div>
                 <a asp-action="Logout" asp-controller="Account" class="my-button ml-2">تسجيل الخروج <i class="fa-solid fa-right-from-bracket"></i></a>
+                <a onClick="window.location.reload()" href=""
+                   class="my-button-green">
+                    تحديث الصفحة  <i class="fa-solid fa-arrows-rotate"></i>
+                </a>
                 <a asp-action="Details" asp-route-id="@Model.DepartmentId" asp-controller="Departments" class="my-button-blue">العودة للقسم <i class="fa-solid fa-house"></i></a>
                 <a asp-action="Index"  asp-controller="Departments" class="my-button-blue">العودة للرئيسية <i class="fa-solid fa-house"></i></a>
             </div>
@@ -67,8 +71,10 @@
                                 <tr>
                                     <th>الملاحظات</th>
                                     <td>
-                                       @* <input type="text" placeholder="أدخل االملاحظة"class="w-100">*@
-                                        @Model.Notes</td>
+                                        <form style="display:none" method="post" asp-action="EditBed" asp-controller="Departments" asp-route-id="@Model.Id" id="formEditBed"></form>
+                                        <input type="text" id="input-bed-notes" style="display:none" form="formEditBed" name="Notes" placeholder="أدخل االملاحظة" class="w-100">
+                                        <span id="span-bed-notes">   @Model.Notes </span>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <th>وقت الحجز</th>
@@ -98,12 +104,13 @@
                         <div>
                             @if (this.Context.IsUserHasRoles(new string[] { ConstantUserType.SUPER_ADMIN, ConstantUserType.Doctor }))
                             {
-                               @* <button class="my-button mt-2 mb-2" asp-action="EditBed" asp-controller="Departments" asp-route-id="@Model.Id">
+                                <button id="button-show-edit-bed" onclick="enableDisable({ids:['button-show-edit-bed', 'input-bed-notes', 'button-save-edit-bed', 'span-bed-notes' ,'button-cancel-edit-bed']})" class="my-button mt-2 mb-2 print" asp-action="EditBed" asp-controller="Departments" asp-route-id="@Model.Id">
                                     تعديل <i class="fa-solid fa-pen-to-square"></i>
                                 </button>
-                                *@
+                                <input type="submit" style="display:none" id="button-save-edit-bed" value="حفظ" form="formEditBed" class="my-button-green mt-2 mb-2 print" />
+                                <input style="display:none" type="button" onClick="enableDisable({ids:['button-show-edit-bed', 'input-bed-notes', 'button-save-edit-bed', 'span-bed-notes' ,'button-cancel-edit-bed']})" id="button-cancel-edit-bed" value="إلغاء" form="formEditBed" class="my-button mt-2 mb-2 print" />
                             }
-                            <a class="my-button-blue mt-2 mb-2" asp-action="RemovePatient" asp-controller="Departments" asp-route-id="@Model.Id">
+                            <a class="my-button-blue mt-2 mb-2 print" asp-action="RemovePatient" asp-controller="Departments" asp-route-id="@Model.Id">
                                 خروج للمريض <i class="fa-solid fa-right-from-bracket"></i>
                             </a>
                         </div>
@@ -154,6 +161,75 @@
             </div>
         </div>
     </div>
+
+    <button type="button" id="popoutButton" class="my-button" data-bs-toggle="modal"
+            data-bs-target="#exampleModal" style="display: none;"></button>
+    <div class="modal fade text-center" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+
+
+                    <div class="row justify-content-center">
+                        <div class="col-lg-12">
+
+                            <div class="col-lg-12">
+                                <i style="color: var(--red-color); font-size: 80px; margin-bottom:15px;"
+                                   class="fa-solid fa-circle-exclamation fa-beat-fade"></i>
+                            </div>
+                            <div class="col-lg-12">
+                                <h4 id="errorText">هناك خطأ ما</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+        <!--popout div-->
+        <div class="text-center">
+            <button type="button" id="popoutButton" class="my-button" data-bs-toggle="modal"
+                    data-bs-target="#exampleModal" style="display: none;"></button>
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+
+
+                            <div class="row justify-content-center">
+                                <div class="col-lg-12">
+
+                                    <div class="col-lg-12">
+                                        <i style="color: var(--red-color); font-size: 80px; margin-bottom:15px;"
+                                           class="fa-solid fa-circle-exclamation fa-beat-fade"></i>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <h4 id="errorText">هناك خطأ ما</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
 </body>
 <footer>
     <!-- Copyright -->
@@ -164,8 +240,17 @@
 
     <!-- Copyright -->
 </footer>
+<script src="~/userdesign/js/enabledisableelements.js"></script>
 <script src="~/UserDesign/js/all.min.js"></script>
 <script src="~/UserDesign/js/bootstrap.bundle.min.js"></script>
+<script src="~/userdesign/js/popouterror.js"></script>
+@if (ViewBag.ErrorMessage is string s)
+{
+    if (!string.IsNullOrEmpty(s))
+    {
+        <script>popout({ error: '@s' })</script>
+    }
+}
 <!-- <script src="js/bootstrap.bundle.min.js.map"></script> -->
 
 </html>

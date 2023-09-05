@@ -1,4 +1,5 @@
 ﻿using MedicalPoint.Common;
+using MedicalPoint.Constants;
 using MedicalPoint.Data;
 
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +10,7 @@ namespace MedicalPoint.Services
     {
         Task<OperationResult<Patient>> Add(string name, int degreeId, string militaryNumber = "", string nationalNumber = "", string generalNumber = "", string sarayNumber = "", string major = "", int? userId = null, CancellationToken cancellationToken = default);
         Task<OperationResult<Patient>> Edit(int id, string name, int degreeId, string militaryNumber = "", string nationalNumber = "", string generalNumber = "", string sarayNumber = "", string major = "", int? userId = null, CancellationToken cancellationToken = default);
-        Task<List<Patient>> GetPatients(string searchValue = "", int? degree = null, bool? hasCheckVisit = null, CancellationToken cancellationToken = default);
+        Task<PaginatedList<Patient>> GetPatients(int pageNumber = 1, int pageSize = 20, string searchValue = "", int? degree = null, bool? hasCheckVisit = null, CancellationToken cancellationToken = default);
         Task<Patient> GetById( int id , CancellationToken cancellationToken = default);
         bool IsUnderObservation(int id, CancellationToken cancellationToken = default);
         Task<List<Patient>> GetAvailableToAddToBed(CancellationToken cancellationToken = default);
@@ -24,7 +25,7 @@ namespace MedicalPoint.Services
             _context = context;
         }
 
-        public async Task<List<Patient>> GetPatients(string searchValue = "", int? degree = null, bool? hasCheckVisit = null, CancellationToken cancellationToken = default)
+        public async Task<PaginatedList<Patient>> GetPatients(int pageNumber = 1, int pageSize = 20, string searchValue = "", int? degree = null, bool? hasCheckVisit = null, CancellationToken cancellationToken = default)
         {
             var query = _context.Patients.AsNoTracking()
                 .Include(x => x.Degree)
@@ -34,12 +35,11 @@ namespace MedicalPoint.Services
             {
                 query = query.Where(x => x.GeneralNumber.Contains(searchValue) || x.MilitaryNumber.Contains(searchValue) || x.NationalNumber.Contains(searchValue) || x.Name.Contains(searchValue));
             }
-            if (degree.HasValue)
+            if (degree.HasValue && degree !=0)
             {
                 query = query.Where(x => x.DegreeId == degree.Value);
             }
-            var queryString = query.ToQueryString();
-            var patients = await query.ToListAsync(cancellationToken);
+            var patients = await PaginatedList<Patient>.CreateAsync(query, pageNumber, pageSize);
 
             return patients;
         }
@@ -60,26 +60,26 @@ namespace MedicalPoint.Services
         {
             if(userId ==null)
             {
-                return OperationResult<Patient>.Failed("Name Already exist");
+                return OperationResult<Patient>.Failed(ConstantMessageCodes.NameAlreadyExist);
 
             }
             if (QueryValidator.IsPatientNameExist(_context, name))
             {
-                return OperationResult<Patient>.Failed("Name Already exist");
+                return OperationResult<Patient>.Failed(ConstantMessageCodes.NameAlreadyExist);
             }
             if (!string.IsNullOrEmpty(militaryNumber) && QueryValidator.IsPatientMilitaryNumberExist(_context, militaryNumber))
             {
-                return OperationResult<Patient>.Failed("Name Already exist");
+                return OperationResult<Patient>.Failed(ConstantMessageCodes.MilitaryNumberAlreadyExist);
             }
 
             if (!string.IsNullOrEmpty(generalNumber) && QueryValidator.IsPatientGeneralNumberExist(_context, generalNumber))
             {
-                return OperationResult<Patient>.Failed("Name Already exist");
+                return OperationResult<Patient>.Failed(ConstantMessageCodes.GeneralNumberAlreadyExist);
             }
 
             if (!string.IsNullOrEmpty(nationalNumber) && QueryValidator.IsPatientNationalNumberExist(_context, nationalNumber))
             {
-                return OperationResult<Patient>.Failed("Name Already exist");
+                return OperationResult<Patient>.Failed(ConstantMessageCodes.NationalNumberAlreadyExist);
             }
             var patient = new Patient
             {
@@ -98,32 +98,32 @@ namespace MedicalPoint.Services
             await _context.Patients.AddAsync(patient, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
 
-            return OperationResult<Patient>.Succeeded(patient, "");
+            return OperationResult<Patient>.Succeeded(patient);
         }
         public async Task<OperationResult<Patient>> Edit(int id, string name, int degreeId, string militaryNumber = "", string nationalNumber = "", string generalNumber = "", string sarayNumber = "", string major = "", int? userId = null, CancellationToken cancellationToken = default)
         {
             var patient = QueryFinder.GetPatientById(_context, id);
             if (patient == null)
             {
-                return OperationResult<Patient>.Failed("patient not found");
+                return OperationResult<Patient>.Failed(ConstantMessageCodes.PatientNotFound);
             }
             if (QueryValidator.IsPatientNameExist(_context, name, id))
             {
-                return OperationResult<Patient>.Failed("Name Already exist");
+                return OperationResult<Patient>.Failed(ConstantMessageCodes.NameAlreadyExist);
             }
             if (!string.IsNullOrEmpty(militaryNumber) && QueryValidator.IsPatientMilitaryNumberExist(_context, militaryNumber, id))
             {
-                return OperationResult<Patient>.Failed("Name Already exist");
+                return OperationResult<Patient>.Failed(ConstantMessageCodes.MilitaryNumberAlreadyExist);
             }
 
             if (!string.IsNullOrEmpty(generalNumber) && QueryValidator.IsPatientGeneralNumberExist(_context, generalNumber, id))
             {
-                return OperationResult<Patient>.Failed("Name Already exist");
+                return OperationResult<Patient>.Failed(ConstantMessageCodes.GeneralNumberAlreadyExist);
             }
 
             if (!string.IsNullOrEmpty(nationalNumber) && QueryValidator.IsPatientNationalNumberExist(_context, nationalNumber, id))
             {
-                return OperationResult<Patient>.Failed("Name Already exist");
+                return OperationResult<Patient>.Failed(ConstantMessageCodes.NationalNumberAlreadyExist);
             }
             patient.Major = major??"";
             patient.SaryaNumber = sarayNumber??"";
@@ -137,7 +137,7 @@ namespace MedicalPoint.Services
             _context.Patients.Update(patient);
             await _context.SaveChangesAsync(cancellationToken);
 
-            return OperationResult<Patient>.Succeeded(patient, "");
+            return OperationResult<Patient>.Succeeded(patient);
         }
 
         public async Task<Patient> GetById(int id, CancellationToken cancellationToken = default)

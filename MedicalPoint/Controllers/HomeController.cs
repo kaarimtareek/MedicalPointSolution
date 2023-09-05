@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 
+using MedicalPoint.Constants;
 using MedicalPoint.Models;
 
 using Microsoft.AspNetCore.Authorization;
@@ -18,14 +19,19 @@ namespace MedicalPoint.Controllers
 
         public IActionResult Index()
         {
-
+            SendErrorMessageToViewBagAndResetTempData();
             return View();
         }
       
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+       
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+        private void SendErrorMessageToViewBagAndResetTempData()
+        {
+            ViewBag.ErrorMessage = TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY];
+            TempData.Clear();
         }
     }
 }

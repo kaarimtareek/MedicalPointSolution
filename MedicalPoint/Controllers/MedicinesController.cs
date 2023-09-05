@@ -1,6 +1,7 @@
 ﻿using MedicalPoint.Common;
 using MedicalPoint.Constants;
 using MedicalPoint.Data;
+using MedicalPoint.Models;
 using MedicalPoint.Services;
 using MedicalPoint.ViewModels.Doctors;
 using MedicalPoint.ViewModels.Medicines;
@@ -40,6 +41,7 @@ namespace MedicalPoint.Controllers
                MinimumQuantityThreshold = x.MinimumQuantityThreshold,
 
             });
+            SendErrorMessageToViewBagAndResetTempData();
             return View(viewModel);
         }
 
@@ -47,6 +49,7 @@ namespace MedicalPoint.Controllers
         public IActionResult Create()
         {
             
+            SendErrorMessageToViewBagAndResetTempData();
             return View();
         }
         [HttpPost]
@@ -61,6 +64,7 @@ namespace MedicalPoint.Controllers
             var result = await _medicinesService.Add(userId.Value, viewModel.Name, viewModel.Quantity,viewModel.MinimumQuantityThreshold);
             if (!result.Success)
             {
+                TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY] = result.Message;
                 return View();
             }
             return RedirectToAction(nameof(Index), "Medicines");
@@ -78,7 +82,7 @@ namespace MedicalPoint.Controllers
             var result = await _medicinesService.AddQauntity(userId.Value, MedicineId,  Quantity);
             if (!result.Success)
             {
-                return View();
+                TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY] = result.Message;
             }
             return RedirectToAction(nameof(Index), "Medicines");
         }
@@ -87,12 +91,16 @@ namespace MedicalPoint.Controllers
         {
 
             var medicine = await _medicinesService.Get(id);
-
-            
-
             if (medicine == null)
             {
-                return NotFound();
+                var errorViewModel = new ErrorViewModel
+                {
+                    ActionPath = nameof (Index),
+                    ErrorMessage = ConstantMessageCodes.MedicineNotFound,
+                     ControllerPath= nameof (MedicinesController),
+                    
+                };
+                return NotFound(errorViewModel);
             }
             //Creating the View model
             var viewModel = new MedicineViewModel
@@ -119,6 +127,7 @@ namespace MedicalPoint.Controllers
                }).ToList()
               
             };
+            SendErrorMessageToViewBagAndResetTempData();
             return View(viewModel);
         }
 
@@ -131,14 +140,24 @@ namespace MedicalPoint.Controllers
             var userId = HttpContext.GetUserId();
             if(userId == null)
             {
-                return NotFound();
+                return RedirectToAction("AccessDenied","Account");
             }
             if (medicine == null)
             {
-                return NotFound();
+                var errorViewModel = new ErrorViewModel
+                {
+                    ActionPath = nameof(Index),
+                    ErrorMessage = ConstantMessageCodes.MedicineNotFound,
+                    ControllerPath = nameof(MedicinesController),
+
+                };
+                return NotFound(errorViewModel);
             }
-            await _medicinesService.Delete(userId.Value, id);
-           
+           var result=  await _medicinesService.Delete(userId.Value, id);
+           if(!result.Success)
+            {
+                TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY] = result.Message;
+            }
             return RedirectToAction("Index","Medicines");
         }
 
@@ -152,7 +171,14 @@ namespace MedicalPoint.Controllers
             var medicines = await _medicinesService.Get(id);
             if (medicines == null)
             {
-                return NotFound();
+                var errorViewModel = new ErrorViewModel
+                {
+                    ActionPath = nameof(Index),
+                    ErrorMessage = ConstantMessageCodes.MedicineNotFound,
+                    ControllerPath = nameof(MedicinesController),
+
+                };
+                return NotFound(errorViewModel);
             }
 
            
@@ -169,6 +195,7 @@ namespace MedicalPoint.Controllers
                 
 
             };
+            SendErrorMessageToViewBagAndResetTempData();
             return View(viewModel);
         }
 
@@ -185,6 +212,7 @@ namespace MedicalPoint.Controllers
 
             if (!result.Success)
             {
+                TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY] = result.Message;
                 return View();
             }
             return RedirectToAction(nameof(Index));
@@ -226,7 +254,15 @@ namespace MedicalPoint.Controllers
             var visit = await _visitsService.Get(id);
             if (visit == null)
             {
-                return NotFound();
+
+                var errorViewModel = new ErrorViewModel
+                {
+                    ActionPath = nameof(Index),
+                    ErrorMessage = ConstantMessageCodes.VisitNotFound,
+                    ControllerPath = nameof(MedicinesController),
+
+                };
+                return NotFound(errorViewModel);
             }
             var visitMedicines = await _visitMedicinesService.GetMedicinesForVisit(id);
            
@@ -287,6 +323,7 @@ namespace MedicalPoint.Controllers
                 }).ToList()
 
             };
+            SendErrorMessageToViewBagAndResetTempData();
             return View(viewModel);
         }
 
@@ -303,13 +340,18 @@ namespace MedicalPoint.Controllers
 
             if (!result.Success)
             {
+                TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY] = result.Message;
                 RedirectToAction(nameof(GiveMedicines), new {id});
             }
             return RedirectToAction(nameof(VisitsMedicines));
         }
+        private void SendErrorMessageToViewBagAndResetTempData()
+        {
+            ViewBag.ErrorMessage = TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY];
+            TempData.Clear();
+        }
 
     }
-
 
 
 }

@@ -41,6 +41,12 @@ builder.Services.AddScoped<IVisitRestsService, VisitRestsService>();
 builder.Services.AddScoped<IUnderObservationBedsService, UnderObservationBedsService>();
 builder.Services.AddScoped<IMedicalPointUsersService, MedicalPointUsersService>();
 builder.Services.AddScoped<IDepartmentsService, DepartmentsService>();
+builder.Services.AddScoped<ICacheService, CacheService>();
+builder.Services.AddScoped<IUploadService, UploadService>();
+builder.Services.AddScoped<IReportsService, ReportsService>();
+
+builder.Services.AddSingleton<CacheData>();
+
 builder.Services.AddRazorPages();
 
 var app = builder.Build();
@@ -67,6 +73,7 @@ if(app.Configuration.GetValue<bool>("Properties:AutoMigrateOnStartup"))
     }
 
 }
+app.UseStatusCodePagesWithReExecute("/Error/");
 app.UseStaticFiles();
 app.UseAuthentication();
 

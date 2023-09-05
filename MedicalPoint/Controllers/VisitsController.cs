@@ -1,6 +1,9 @@
-﻿using MedicalPoint.Common;
+﻿using DocumentFormat.OpenXml.Office2010.Excel;
+
+using MedicalPoint.Common;
 using MedicalPoint.Constants;
 using MedicalPoint.Data;
+using MedicalPoint.Models;
 using MedicalPoint.Services;
 using MedicalPoint.ViewModels.Doctors;
 using MedicalPoint.ViewModels.Medicines;
@@ -23,8 +26,10 @@ namespace MedicalPoint.Controllers
         private readonly IVisitImagesService _visitImagesService;
         private readonly IVisitMedicinesService _visitMedicinesService;
         private readonly IVisitRestsService _visitRestsService;
+        private readonly ICacheService _cacheService;
+        private readonly IUploadService _uploadService;
 
-        public VisitsController(IVisitsService visitsService, IPatientsService patientsService, IClinicsServices clinicsServices, IVisitImagesService visitImagesService, IVisitMedicinesService visitMedicinesService, IVisitRestsService visitRestsService)
+        public VisitsController(IVisitsService visitsService, IPatientsService patientsService, IClinicsServices clinicsServices, IVisitImagesService visitImagesService, IVisitMedicinesService visitMedicinesService, IVisitRestsService visitRestsService, ICacheService cacheService, IUploadService uploadService)
         {
             _visitsService = visitsService;
             _patientsService = patientsService;
@@ -32,10 +37,35 @@ namespace MedicalPoint.Controllers
             _visitImagesService = visitImagesService;
             _visitMedicinesService = visitMedicinesService;
             _visitRestsService = visitRestsService;
+            _cacheService = cacheService;
+            _uploadService = uploadService;
         }
-        public async Task<IActionResult> Index(DateTime? date)
+        public async Task<IActionResult> Index( string? searchValue, DateTime? date, string? type, int? clinicId = null, int? doctorId = null, int pageNumber = 1, int pageSize = 20 )
         {
-            var visits = await _visitsService.GetAll(null, null, date, date.HasValue? date.Value.AddDays(1): null);
+            type = !string.IsNullOrEmpty(type) && type == "null" ? null : type;
+            var visits = await _visitsService.GetAll(pageNumber, pageSize, doctorId, null, date, date.HasValue? date.Value.AddDays(1): null, type, clinicId, searchValue);
+            var clinics = _cacheService.GetClinics();
+            ViewBag.SearchValue = searchValue;
+            ViewBag.Clinics = clinics.ConvertAll(x => new SelectListItem
+            {
+                Text = x.Name,
+                Value = x.Id.ToString(),
+                Selected = clinicId.HasValue &&  x.Id == clinicId.Value
+            });
+            ViewBag.SelectedClinic = clinicId;
+            ViewBag.VisitTypes = ConstantVisitType.ALL.Select(x => new SelectListItem
+            {
+                Text = x,
+                Value = x,
+                Selected = !string.IsNullOrEmpty(type) && type == x
+            }).ToList();
+            ViewBag.SelectedVisitType = type;
+            ViewBag.PageSizeList = new List<int>() { 10, 20, 50, 100 }.Select(x => new SelectListItem
+            {
+                Text = x.ToString(),
+                Value = x.ToString(),
+                Selected = pageSize == x
+            });
             var viewModel = visits.ConvertAll(x => new VisitsViewModel
             {
                 ClinicId = x.Id,
@@ -57,11 +87,13 @@ namespace MedicalPoint.Controllers
                 PatientName = x.Patient?.Name??"",
                 PatientDegree = x.Patient?.Degree?.Name,
             });
-            return View(viewModel);
+            var paginatedViewModel = PaginatedList< VisitsViewModel >.Create(viewModel, pageNumber, pageSize);
+            SendErrorMessageToViewBagAndResetTempData();
+            return View(paginatedViewModel);
         }
         public async Task<IActionResult> Patient(int patientId)
         {
-            var visits = await _visitsService.GetAll(null, patientId);
+            var visits = await _visitsService.GetAll(1, int.MaxValue, null, patientId);
             var viewModel = visits.ConvertAll(x => new VisitsViewModel
             {
                 ClinicId = x.Id,
@@ -89,7 +121,13 @@ namespace MedicalPoint.Controllers
         {
             var visit = await _visitsService.Get(id);
             if(visit == null)
+            {
+                TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY] = ConstantMessageCodes.VisitNotFound;
+                TempData[ConstantMessageCodes.ACTION_MESSAGE_KEY] = nameof(Index);
+                TempData[ConstantMessageCodes.CONTROLLER_MESSAGE_KEY] = nameof(VisitsController);
+
                 return NotFound();
+            }
             var hasVisitRest = await _visitsService.IsVisitHasRest(id);
             var viewModel = new VisitViewModel
             {
@@ -162,6 +200,8 @@ namespace MedicalPoint.Controllers
                 Quantity =x.Quantity,
                 Name = x.Name
             });
+            ViewBag.ErrorMessage = TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY];
+            TempData.Clear();
             return View(viewModel);
         }
         public async Task<IActionResult> Create(int patientId)
@@ -169,6 +209,10 @@ namespace MedicalPoint.Controllers
             var patient = await _patientsService.GetById(patientId);
             if(patient == null)
             {
+                TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY] = ConstantMessageCodes.PatientNotFound;
+                TempData[ConstantMessageCodes.ACTION_MESSAGE_KEY] = nameof(Index);
+                TempData[ConstantMessageCodes.CONTROLLER_MESSAGE_KEY] = nameof(VisitsController);
+
                 return NotFound();
             }
             ViewBag.Clinics = _clinicsServices.GetAll().Select(x => new SelectListItem
@@ -191,7 +235,8 @@ namespace MedicalPoint.Controllers
                 PatientId = patientId,
                 Patient = patientViewModel,
             };
-
+            ViewBag.ErrorMessage = TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY];
+            TempData.Clear();
             return View(viewModel);
         }
         public async Task<IActionResult> FinishVisitDiagnosis(int id)
@@ -199,9 +244,13 @@ namespace MedicalPoint.Controllers
             var userId = HttpContext.GetUserId();
             if(userId == null)
             {
-                return NotFound();
+                return View("AccessDenied","Account");
             }
             var result = await _visitsService.ChangeStatus(id, userId.Value, ConstantVisitStatus.TAKING_MEDICINE);
+            if(!result.Success)
+            {
+                TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY] = ConstantMessageCodes.VisitNotFound;
+            }
             return RedirectToAction("Details", new { id });
         }
         [HttpPost]
@@ -210,12 +259,13 @@ namespace MedicalPoint.Controllers
             var userId = HttpContext.GetUserId();
             if(userId == null)
             {
-                return NotFound();
+                return View("AccessDenied","Account");
             }
             var result = await _visitsService.Create(userId.Value, viewModel.PatientId, viewModel.VisitTime, viewModel.ClinicId, viewModel.DoctorId, viewModel.Type);
            
            if(!result.Success) 
             {
+                TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY] = result.Message;
                 return RedirectToAction("Create",new { patientId= viewModel.PatientId });
             }
             return RedirectToAction(nameof(Index));
@@ -264,8 +314,9 @@ namespace MedicalPoint.Controllers
             }
             return RedirectToAction("Details", new { id });
         }
+        
         [HttpPost]
-        public async Task<IActionResult> DeleteVisitImage( int id , [FromForm] int visitId)
+        public async Task<IActionResult> UploadExcelFile()
         {
 
             var userId = HttpContext.GetUserId();
@@ -273,11 +324,47 @@ namespace MedicalPoint.Controllers
             {
                 return NotFound();
             }
+            var file = HttpContext.Request.Form.Files.FirstOrDefault();
+            if(file == null)
+            {
+                return RedirectToAction("Index");
+            }
+            
+             await _uploadService.UploadPatients(file);
+           
+          
+            return RedirectToAction("Index");
+        }
+        
+        public async Task<IActionResult> ExportExcelFile()
+        {
+
+          
+            
+             var result = await _uploadService.ExportPatients();
+
+            if (result.Length == 0)
+            {
+                return RedirectToAction("Index");
+            }
+            Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+            return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteVisitImage( int id , [FromForm] int visitId)
+        {
+
+            var userId = HttpContext.GetUserId();
+            if(userId == null)
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
            
             var result = await _visitImagesService.Remove(id);
            if(!result.Success) 
             {
-                return RedirectToAction("Details", new {id= visitId });
+                TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY] = result.Message;
             }
             return RedirectToAction("Details", new { id = visitId });
         }
@@ -288,13 +375,13 @@ namespace MedicalPoint.Controllers
             var userId = HttpContext.GetUserId();
             if (userId == null)
             {
-                return NotFound();
+                return RedirectToAction("AccessDenied", "Account");
             }
             var result = await _visitMedicinesService.Add(userId.Value, VisitId, MedicineId, Quantity, "");
 
             if (!result.Success)
             {
-                return RedirectToAction("Details", new { id = VisitId });
+                TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY] = result.Message;
             }
             return RedirectToAction("Details", new { id = VisitId });
         }
@@ -305,22 +392,22 @@ namespace MedicalPoint.Controllers
             var userId = HttpContext.GetUserId();
             if (userId == null)
             {
-                return NotFound();
+                return RedirectToAction("AccessDenied", "Account");
             }
             var result = await _visitMedicinesService.Remove(userId.Value, id);
 
             if (!result.Success)
             {
-                return RedirectToAction("Details", new { id = visitId });
+                TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY] = result.Message;
             }
             return RedirectToAction("Details", new { id = visitId });
         }
 
-        public async Task<IActionResult> PatientVisits(int patientId)
+        public async Task<IActionResult> PatientVisits(int patientId) 
         {
 
             
-            var visits = await _visitsService.GetAll(null, patientId);
+            var visits = await _visitsService.GetAll(1, int.MaxValue, null, patientId);
             var viewModel = visits.Select(x => new VisitsViewModel
             {
                 ClinicId = x.Id,
@@ -348,10 +435,26 @@ namespace MedicalPoint.Controllers
         {
             var visit = await _visitsService.Get(id);
             if (visit == null)
-                return NotFound();
+            {
+                var errorViewModel = new ErrorViewModel {
+                ControllerPath = nameof(VisitsController),
+                ActionPath = nameof(Index),
+                ErrorMessage = ConstantMessageCodes.VisitNotFound,
+                };
+                return NotFound(errorViewModel);
+            }
             var visitRest = await _visitsService.GetVisitRest(id);
             if(visitRest == null)
-                return NotFound();
+            {
+                var errorViewModel = new ErrorViewModel
+                {
+                    ControllerPath = nameof(VisitsController),
+                    ActionPath = nameof(Details),
+                    ErrorMessage = ConstantMessageCodes.VisitRestNotFound,
+                    Id = id.ToString(),
+                };
+                return NotFound(errorViewModel);
+            }
             ViewBag.RestTypes = (await _visitsService.GetVisitRestTypes()).Select(x=> new SelectListItem
             {
                 Text = x.Name,
@@ -413,7 +516,7 @@ namespace MedicalPoint.Controllers
 
                 }).ToList(),
             };
-            
+            SendErrorMessageToViewBagAndResetTempData();
             return View(viewModel);
         }
         
@@ -421,10 +524,22 @@ namespace MedicalPoint.Controllers
         {
             var visit = await _visitsService.Get(id);
             if (visit == null)
-                return NotFound();
+            {
+                var errorViewModel = new ErrorViewModel
+                {
+                    ActionPath = nameof(Visit),
+                    Id = id.ToString(),
+                    ErrorMessage = ConstantMessageCodes.VisitNotFound,
+                    ControllerPath = nameof(VisitsController),
+                };
+                return NotFound(errorViewModel);
+            }
             var visitRest = await _visitsService.GetVisitRest(id);
             if(visitRest != null)
-                return BadRequest();
+            {
+                TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY] = ConstantMessageCodes.VisitRestAlreadyExist;
+                return RedirectToAction(nameof(Details), new {id});
+            }
             ViewBag.RestTypes = (await _visitsService.GetVisitRestTypes()).Select(x=> new SelectListItem
             {
                 Text = x.Name,
@@ -483,7 +598,7 @@ namespace MedicalPoint.Controllers
 
                 }).ToList(),
             };
-            
+            SendErrorMessageToViewBagAndResetTempData();
             return View(viewModel);
         }
         [HttpPost]
@@ -492,16 +607,21 @@ namespace MedicalPoint.Controllers
             var userId = HttpContext.GetUserId();
             if(userId == null)
             {
-                return NotFound();
+                return RedirectToAction("AccessDenied", "Account");
             }
             var result =await _visitRestsService.Add(viewModel.VisitId, userId.Value, viewModel.RestTypeId, viewModel.Notes, viewModel.StartDate, viewModel.RestDaysNumber);
             if(!result.Success)
             {
-                return BadRequest();
+                TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY] = ConstantMessageCodes.VisitRestAlreadyExist;
+                return RedirectToAction(nameof(Details), new { id = viewModel.VisitId });
             }
             
             return RedirectToAction(nameof(VisitRest), new { id = viewModel.VisitId});
         }
-
+        private void SendErrorMessageToViewBagAndResetTempData()
+        {
+            ViewBag.ErrorMessage = TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY];
+            TempData.Clear();
+        }
     }
 }

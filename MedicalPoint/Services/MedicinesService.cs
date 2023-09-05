@@ -62,7 +62,7 @@ namespace MedicalPoint.Services
 
              if(medicine == null)
             {
-                return OperationResult<Medicine>.Failed("");    
+                return OperationResult<Medicine>.Failed(ConstantMessageCodes.MedicineNotFound);    
             }
 
             medicine.IsDeleted = true;
@@ -84,7 +84,7 @@ namespace MedicalPoint.Services
         {
             if (QueryValidator.IsMedicineNameExist(_context, name))
             {
-                return OperationResult<Medicine>.Failed("");
+                return OperationResult<Medicine>.Failed(ConstantMessageCodes.NameAlreadyExist);
             }
             var medicine = new Medicine
             {
@@ -115,12 +115,12 @@ namespace MedicalPoint.Services
         {
             if(quantity < 0)
             {
-                return OperationResult<Medicine>.Failed("");
+                return OperationResult<Medicine>.Failed(ConstantMessageCodes.InvalidQuantity);
             }
             var medicine = await _context.Medicines.FirstOrDefaultAsync(x => x.Id == medicineId && !x.IsDeleted);
             if(medicine == null)
             {
-                return OperationResult<Medicine>.Failed("");
+                return OperationResult<Medicine>.Failed(ConstantMessageCodes.MedicineNotFound);
 
             }
             medicine.Quantity += quantity;
@@ -141,12 +141,12 @@ namespace MedicalPoint.Services
         {
             if (QueryValidator.IsMedicineNameExist(_context, name, medicineId))
             {
-                return OperationResult<Medicine>.Failed("");
+                return OperationResult<Medicine>.Failed(ConstantMessageCodes.NameAlreadyExist);
             }
             var medicine = await _context.Medicines.FirstOrDefaultAsync(x => x.Id == medicineId && !x.IsDeleted, cancellationToken);
             if (medicine == null)
             {
-                return OperationResult<Medicine>.Failed("");
+                return OperationResult<Medicine>.Failed(ConstantMessageCodes.MedicineNotFound);
 
             }
             medicine.Name = name;

@@ -25,3 +25,11 @@ Admin123
 - Work on visit rest
 - work on give medicines ui
 - work on add patient to bed , from patient details page & from bed details page
+
+========
+3-9-2023
+========
+
+- work on numerical reports.
+- work on database backup for each group.
+- work on filters.

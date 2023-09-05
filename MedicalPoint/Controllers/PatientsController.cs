@@ -1,6 +1,8 @@
 ﻿using System.Net;
 using System.Security.Claims;
 
+using DocumentFormat.OpenXml.Math;
+
 using MedicalPoint.Common;
 using MedicalPoint.Constants;
 using MedicalPoint.Data;
@@ -34,7 +36,8 @@ namespace MedicalPoint.Controllers
         public async Task<IActionResult> Index(string searchValue,int? degreeId = null, string? checkHasVisit = null)
         {
             var hasVisit = !string.IsNullOrEmpty(checkHasVisit);
-            var patients = await _patientsService.GetPatients(searchValue, degreeId, hasVisit);
+           
+            var patients = await _patientsService.GetPatients(1,20, searchValue, degreeId, hasVisit);
             ViewBag.Degrees = _degreesService.GetAll().ConvertAll(x => new SelectListItem
             {
                 Text = x.Name,
@@ -65,11 +68,13 @@ namespace MedicalPoint.Controllers
         public IActionResult Create()
         {
             var degrees =  _degreesService.GetAll();
+           
             ViewBag.Degrees = degrees.ConvertAll(x=> new SelectListItem
             {
                 Text = x.Name,
                 Value = x.Id.ToString(),
             });
+            SendErrorMessageToViewBagAndResetTempData();
             return View();
         }
         [HttpPost]
@@ -83,8 +88,9 @@ namespace MedicalPoint.Controllers
             int userId = int.Parse(userIdStr);
             var result = await _patientsService.Add(viewModel.Name, viewModel.DegreeId, viewModel.MilitaryNumber, viewModel.NationalNumber, viewModel.GeneralNumber, viewModel.SaryaNumber, viewModel.Major, userId);
             if(!result.Success)
-            { 
-                return View();
+            {
+                TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY] = result.Message;
+                return RedirectToAction(nameof(Create), "Patients");
             }
             return RedirectToAction(nameof(Index), "Patients");
         }
@@ -117,6 +123,7 @@ namespace MedicalPoint.Controllers
                  BedId = bedId,
                  RegisteredUserName = patient.RegisteredUser?.FullName??string.Empty,
             };
+            SendErrorMessageToViewBagAndResetTempData();
             return View(viewModel);
         }
         [HttpGet]
@@ -137,7 +144,6 @@ namespace MedicalPoint.Controllers
             });
             var viewModel = new PatientViewModel
             {
-
                 Name = patient.Name,
                 Id = id,
                 Major = patient.Major,
@@ -148,9 +154,8 @@ namespace MedicalPoint.Controllers
                 DegreeId = patient.DegreeId,
                 NationalNumber = patient.NationalNumber,
                 GeneralNumber = patient.GeneralNumber,
-
-
             };
+            SendErrorMessageToViewBagAndResetTempData();
             return View(viewModel);
         }
 
@@ -170,14 +175,16 @@ namespace MedicalPoint.Controllers
            
             if (!result.Success)
             {
-                return View();
+                TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY] = result.Message;
+                return RedirectToAction(nameof(Edit), new {id = viewModel.Id});
             }
             return RedirectToAction(nameof(Index));
         }
+        private void SendErrorMessageToViewBagAndResetTempData()
+        {
+            ViewBag.ErrorMessage = TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY];
+            TempData.Clear();
+        }
 
-
-
-        
-       
     }
 }

@@ -37,6 +37,10 @@ namespace MedicalPoint.Common
         {
             return  _getClinics(context, activeOnly);
         }
+         public static List<LookupVisitRestType> GetVisitRestTypes(ApplicationDbContext context)
+        {
+            return _visitRestTypes(context);
+        }
 
         private static readonly Func<ApplicationDbContext, int, Patient> _getPatientById = EF.CompileQuery<ApplicationDbContext, int, Patient>((context, id) => context.Patients.AsNoTracking().FirstOrDefault(x => x.Id == id));
         private static readonly Func<ApplicationDbContext, int, MedicalPointUser> _getUserById = EF.CompileQuery<ApplicationDbContext, int, MedicalPointUser>((context, id) => context.Users.AsNoTracking().FirstOrDefault(x => x.Id == id));
@@ -54,6 +58,9 @@ namespace MedicalPoint.Common
 
         private static readonly Func<ApplicationDbContext, bool, List<Clinic>> _getClinics = EF.CompileQuery<ApplicationDbContext, bool, List<Clinic>>(
             (context, activeOnly) => context.Clinics.AsNoTracking().ToList());
+
+        private static readonly Func<ApplicationDbContext,  List<LookupVisitRestType>> _visitRestTypes = EF.CompileQuery<ApplicationDbContext,  List<LookupVisitRestType>>(
+            (context) => context.LookupVisitRestTypes.AsNoTracking().ToList());
 
 
 
