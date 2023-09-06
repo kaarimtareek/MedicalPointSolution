@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
+using static System.Formats.Asn1.AsnWriter;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -50,6 +52,11 @@ builder.Services.AddSingleton<CacheData>();
 builder.Services.AddRazorPages();
 
 var app = builder.Build();
+using (var scope = app.Services.CreateScope())
+{
+    var loggers = scope.ServiceProvider.GetService<ILogger>();
+    loggers.LogInformation("app is built");
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -67,9 +74,9 @@ if(app.Configuration.GetValue<bool>("Properties:AutoMigrateOnStartup"))
     {
         var dbContext = scope.ServiceProvider
             .GetRequiredService<ApplicationDbContext>();
-
         // Here is the migration executed
         dbContext.Database.Migrate();
+
     }
 
 }

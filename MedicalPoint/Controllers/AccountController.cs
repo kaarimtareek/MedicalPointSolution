@@ -47,6 +47,28 @@ namespace MedicalPoint.Controllers
             return View(userViewMode);
         }
 
+                public async Task<IActionResult> Index()
+        {
+            var userId = HttpContext.GetUserId();
+            if(!userId.HasValue)
+            {
+                return RedirectToAction(nameof(AccessDenied));
+            }
+            var user = await _medicalPointUsersService.Get(userId.Value);
+            var userViewMode = new UserViewModel
+            {
+                AccountType = user.AccoutType,
+                Email = user.Email,
+                Id = user.Id,
+                MilitaryNumber = user.MilitaryNumber,
+                Name = user.FullName,
+                PhoneNumber = user.PhoneNumber,
+                DegreeName = user.Degree?.Name??"",
+            };
+         
+            return View(userViewMode);
+        }
+
 
         
 

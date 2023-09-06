@@ -38,10 +38,9 @@ namespace MedicalPoint.Services
         {
             if (CacheData.NeedDegreeUpdate)
             {
-                lock (CacheData.Degrees)
-                {
+                
                     CacheData.Update(QueryFinder.GetDegrees(_context));
-                }
+               
             }
             return CacheData.Degrees;
         }
@@ -49,33 +48,25 @@ namespace MedicalPoint.Services
         {
             if (CacheData.NeedVisitRestTypeUpdate)
             {
-                lock (CacheData.VisitRestTypes)
-                {
+              
                     CacheData.Update(QueryFinder.GetVisitRestTypes(_context));
-                }
+                
             }
             return CacheData.VisitRestTypes;
         }
         public void UpdateClinics()
         {
-            lock (CacheData.Clinics)
-            {
+           
                 CacheData.Update(QueryFinder.GetClinics(_context));
-            }
+            
         }
         public void UpdateDegrees()
         {
-            lock (CacheData.Degrees)
-            {
-                CacheData.Update(QueryFinder.GetDegrees(_context));
-            }
+            CacheData.Update(QueryFinder.GetDegrees(_context));
         }
         public void UpdateVisitRestTypes()
         {
-            lock (CacheData.VisitRestTypes)
-            {
-                CacheData.Update(QueryFinder.GetVisitRestTypes(_context));
-            }
+            CacheData.Update(QueryFinder.GetVisitRestTypes(_context));
         }
     }
     public class CacheData
