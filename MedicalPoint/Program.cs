@@ -52,11 +52,6 @@ builder.Services.AddSingleton<CacheData>();
 builder.Services.AddRazorPages();
 
 var app = builder.Build();
-using (var scope = app.Services.CreateScope())
-{
-    var loggers = scope.ServiceProvider.GetService<ILogger>();
-    loggers.LogInformation("app is built");
-}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
