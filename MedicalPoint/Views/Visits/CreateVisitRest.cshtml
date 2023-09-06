@@ -21,7 +21,8 @@
             <div> 
                 <a asp-action="Logout" asp-controller="Account" class="my-button">تسجيل الخروج <i class="fa-solid fa-right-from-bracket"></i></a>
                
-                <a asp-action="Index" asp-controller="Medicines" class="my-button-blue">العودة للرئيسية <i class="fa-solid fa-house"></i></a>
+                <a asp-action="Index" asp-controller="Visits" class="my-button-blue">العودة للرئيسية <i class="fa-solid fa-house"></i></a>
+                <a asp-action="Details" asp-route-id="@Model.VisitId" asp-controller="Visits" class="my-button-blue">العودة  <i class="fa-solid fa-forward"></i></a>
 
             </div>
             <img src="~/userDesign/img/logo.png" alt="logo">

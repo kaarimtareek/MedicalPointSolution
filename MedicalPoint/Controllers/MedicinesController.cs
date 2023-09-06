@@ -124,6 +124,51 @@ namespace MedicalPoint.Controllers
                    MinimumQuantityThreshold = x.MinimumQuantityThreshold,
                    UserId = x.UserId,
                    UserName = x.User?.FullName?? string.Empty,
+                   VisitId = x.VisitId,
+               }).ToList()
+              
+            };
+            SendErrorMessageToViewBagAndResetTempData();
+            return View(viewModel);
+        }
+        public async Task<IActionResult> DetailsHistory(int id)
+        {
+
+            var medicine = await _medicinesService.Get(id, true);
+            if (medicine == null)
+            {
+                var errorViewModel = new ErrorViewModel
+                {
+                    ActionPath = nameof (Index),
+                    ErrorMessage = ConstantMessageCodes.MedicineNotFound,
+                     ControllerPath= nameof (MedicinesController),
+                    
+                };
+                return NotFound(errorViewModel);
+            }
+            //Creating the View model
+            var viewModel = new MedicineViewModel
+            {
+
+                Name = medicine.Name,
+                Id = id,
+                CreatedAt = medicine.CreatedAt,
+                LastUpdatedAt = medicine.LastUpdatedAt,
+            Quantity = medicine.Quantity,
+               MinimumQuantityThreshold = medicine.MinimumQuantityThreshold,
+               History = medicine.History.Select(x=> new MedicineHistoryViewModel
+               {
+
+                   ActionType = x.ActionType,
+                   CreatedAt = x.CreatedAt,
+                   Id = x.Id,
+                   MedicineId = x.Id,
+                   MedicineName = x.MedicineName,
+                   MedicineQuantity = x.MedicineQuantity,
+                   MinimumQuantityThreshold = x.MinimumQuantityThreshold,
+                   UserId = x.UserId,
+                   UserName = x.User?.FullName?? string.Empty,
+                   VisitId = x.VisitId,
                }).ToList()
               
             };

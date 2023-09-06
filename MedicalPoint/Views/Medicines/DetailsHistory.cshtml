@@ -5,7 +5,6 @@
 
 @{
     Layout = null;
-    ViewBag.IsSuperUser = this.Context.IsUserHasRoles(new string[] { ConstantUserType.SUPER_ADMIN });
 }
 
 <!DOCTYPE html>
@@ -17,7 +16,7 @@
     <link rel="stylesheet" href="~/UserDesign/css/all.min.css">
     <link rel="stylesheet" href="~/UserDesign/css/bootstrap.min.css">
     <link rel="stylesheet" href="~/UserDesign/css/style.css">
-    <title>تفاصيل الدواء</title>
+    <title>تفاصيل سجل الدواء</title>
     <link rel="icon" href="~/UserDesign/img/logo.png">
 </head>
 <body class="background-with-color">
@@ -29,7 +28,7 @@
                    class="my-button-green">
                     تحديث الصفحة  <i class="fa-solid fa-arrows-rotate"></i>
                 </a>
-                <a asp-controller="Medicines" asp-action="Index"  class="my-button-blue">العودة للرئيسية <i class="fa-solid fa-house"></i></a>
+                <a asp-controller="Medicines" asp-action="Index" class="my-button-blue">العودة للرئيسية <i class="fa-solid fa-house"></i></a>
             </div>
             <img src="~/UserDesign/img/logo.png" alt="logo">
         </div>
@@ -38,9 +37,9 @@
         <div class="container fadeInUp-animation ">
             <div class="row  justify-content-center">
                 <div class="col-lg-6 text-center pt-5 ">
-                    <p id="nametwo">تفاصيل الدواء <i class="fa-solid fa-prescription-bottle-medical"></i></p>
+                    <p id="nametwo">تفاصيل سجل الدواء <i class="fa-solid fa-prescription-bottle-medical"></i></p>
 
-                     <table class="table  table-striped">
+                    <table class="table  table-striped">
                         <tbody>
                             <tr>
                                 <th>اسم الدواء</th>
@@ -63,81 +62,79 @@
                     </table>
 
 
- </div>
+                </div>
 
             </div>
             <div class="row justify-content-center mt-4">
                 <div class="col-lg-12 text-center">
-                        <a class="my-button-green mt-2 mb-2" asp-action="Index" asp-controller="Medicines">
-                            عودة <i class="fa-solid fa-right-from-bracket"></i>
-                        </a>
-
-                    @if (ViewBag.IsSuperUser)
-                    {
-                    <a class="my-button-blue mt-2 mb-2" asp-action="Edit" asp-controller="Medicines" asp-route-id="@Model.Id">
-                        تعديل <i class="fa-solid fa-pen-to-square"></i>
+                    <a class="my-button-green mt-2 mb-2" asp-action="Details" asp-route-id="@Model.Id" asp-controller="Medicines">
+                        عودة <i class="fa-solid fa-right-from-bracket"></i>
                     </a>
-                        <a class="my-button mt-2 mb-2" asp-action="Details" asp-controller="Medicines" asp-route-id="@Model.Id">
-                            حذف <i class="fa-solid fa-trash"></i>
-                        </a>
-                    }
+
                 </div>
             </div>
 
-            @if (this.Context.IsUserHasRoles(new string[]{ConstantUserType.SUPER_ADMIN, ConstantUserType.Doctor, ConstantUserType.Pharmacist}))
+            @if (this.Context.IsUserHasRoles(new string[] { ConstantUserType.SUPER_ADMIN, ConstantUserType.Doctor, ConstantUserType.Pharmacist }))
             {
-                    
-            <div class="row justify-content-center mt-4">
-                <div class="col-lg-8 text-center">
-                 
-                    <p id="nametwo">
-                       احدث التغييرات لسجل الدواء
-                    </p>    
-                 
-                    <table class="table  table-striped">
-                        <thead>
-                            <tr>
-                                <th>مسلسل</th>
-                                <th>متخذ الاجراء</th>
-                                <th>التوقيت</th>
-                                <th>نوع الاجراء</th>
-                                <th>اسم الدواء</th>
-                                <th>الكمية</th>
-                                <th>الحد الادني من الاكتفاء</th>
-                                <th>روشتة الكشف</th>
 
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach(var history in Model.History)
-                            {
+                <div class="row justify-content-center mt-4">
+                    <div class="col-lg-8 text-center">
+
+                        <p id="nametwo">
+                            سجل الدواء
+                        </p>
+
+                        <table class="table  table-striped">
+                            <thead>
                                 <tr>
-                                    <td></td>
-                                    <td>@history.UserName</td>
-                                    <td>@history.CreatedAt</td>
-                                    <td>@history.ActionType</td>
-                                    <td>@history.MedicineName</td>
-                                    <td>@history.MedicineQuantity</td>
-                                    <td>@history.MinimumQuantityThreshold</td>
-                                   
-                                    @if(history.VisitId.HasValue)
-                                        {
-                                            <td> <a asp-action="GiveMedicines" asp-controller="Medicines" asp-route-id="@history.VisitId.Value" id="link-green" > روشتة الكشف</a> </td>
-                                        }
-                                        else
-                                        {
-                                            <td> @StringExtensions.Dashes</td>
-                                            
-                                        }
-                                    
+                                    <th>مسلسل</th>
+                                    <th>متخذ الاجراء</th>
+                                    <th>التوقيت</th>
+                                    <th>نوع الاجراء</th>
+                                    <th>اسم الدواء</th>
+                                    <th>الكمية</th>
+                                    <th>الحد الادني من الاكتفاء</th>
+                                    @if (this.Context.IsUserHasRoles(new string[] { ConstantUserType.SUPER_ADMIN, ConstantUserType.Pharmacist }))
+                                    {
+
+                                        <th>روشتة الكشف</th>
+                                    }
+
                                 </tr>
-                                
-                            }
-                        </tbody>
-                    </table>
-                        <a asp-action="DetailsHistory" asp-route-id="@Model.Id" class="my-button ml-2">سجل الدواء بالكامل <i class="fa-solid fa-right-from-bracket"></i></a>
+                            </thead>
+                            <tbody>
+                                @foreach (var history in Model.History)
+                                {
+                                    <tr>
+                                        <td></td>
+                                        <td>@history.UserName</td>
+                                        <td>@history.CreatedAt</td>
+                                        <td>@history.ActionType</td>
+                                        <td>@history.MedicineName</td>
+                                        <td>@history.MedicineQuantity</td>
+                                        <td>@history.MinimumQuantityThreshold</td>
+                                        @if (this.Context.IsUserHasRoles(new string[] { ConstantUserType.SUPER_ADMIN, ConstantUserType.Pharmacist }))
+                                        {
+
+                                            @if (history.VisitId.HasValue)
+                                            {
+                                                <td> <a asp-action="GiveMedicines" asp-controller="Medicines" asp-route-id="@history.VisitId.Value" id="link-green"> روشتة الكشف</a> </td>
+                                            }
+                                            else
+                                            {
+                                                <td> @StringExtensions.Dashes</td>
+
+                                            }
+                                        }
+                                    </tr>
+
+                                }
+                            </tbody>
+                        </table>
+
+
+                    </div>
                 </div>
-            </div>
             }
 
 

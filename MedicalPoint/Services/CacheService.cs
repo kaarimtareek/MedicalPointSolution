@@ -24,6 +24,7 @@ namespace MedicalPoint.Services
         {
 
             _context = context;
+           
         }
         public List<Clinic> GetClinics()
         {
@@ -46,7 +47,7 @@ namespace MedicalPoint.Services
         }
         public List<LookupVisitRestType> GetVisitRestTypes()
         {
-            if (CacheData.NeedClinicUpdate)
+            if (CacheData.NeedVisitRestTypeUpdate)
             {
                 lock (CacheData.VisitRestTypes)
                 {

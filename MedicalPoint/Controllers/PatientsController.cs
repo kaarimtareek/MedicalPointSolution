@@ -1,7 +1,6 @@
 ﻿using System.Net;
 using System.Security.Claims;
 
-using DocumentFormat.OpenXml.Math;
 
 using MedicalPoint.Common;
 using MedicalPoint.Constants;

@@ -13,7 +13,7 @@ namespace MedicalPoint.Services
         Task<OperationResult<Medicine>> AddQauntity(int userId, int medicineId, int quantity, CancellationToken cancellationToken = default);
         Task<OperationResult<Medicine>> Delete(int userId, int medicineId, CancellationToken cancellationToken = default);
         Task<OperationResult<Medicine>> Edit(int userId, int medicineId, string name, int quantity, int? quantityThreshold = null, CancellationToken cancellationToken = default);
-        Task<Medicine> Get(int medicineId, CancellationToken cancellationToken = default);
+        Task<Medicine> Get(int medicineId, bool withAllHistory = false, CancellationToken cancellationToken = default);
         Task<List<Medicine>> GetAll(string name = "", int? quantityLessThan = null, bool medicinesAboutToFinish = false, CancellationToken cancellationToken = default);
 
     }
@@ -45,12 +45,20 @@ namespace MedicalPoint.Services
             return result;
         }
 
-        public async Task<Medicine> Get(int medicineId, CancellationToken cancellationToken = default)
+        public async Task<Medicine> Get(int medicineId, bool withAllHistory = false, CancellationToken cancellationToken = default)
         {
-            var result = await _context.Medicines
-                .Include(x => x.History.OrderByDescending(x=> x.CreatedAt))
-                    .ThenInclude(x=> x.User)
-                .AsNoTracking().FirstOrDefaultAsync(x => x.Id == medicineId, cancellationToken);
+            var query = _context.Medicines.AsNoTracking();
+            if(withAllHistory)
+            {
+                query = query.Include(x => x.History.OrderByDescending(x => x.CreatedAt).Take(5))
+                        .ThenInclude(x => x.User);
+            }
+            else
+            {
+                query = query.Include(x => x.History.OrderByDescending(x => x.CreatedAt))
+                        .ThenInclude(x => x.User);
+            } 
+            var result = await query.AsNoTracking().FirstOrDefaultAsync(x => x.Id == medicineId, cancellationToken);
 
             return result;
         }

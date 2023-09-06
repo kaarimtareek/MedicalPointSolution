@@ -40,6 +40,10 @@ namespace MedicalPoint.Services
         }
         public async Task<OperationResult<VisitMedicine>> Add(int userId, int visitId, int medicineId, int quantity, string? notes, CancellationToken cancellationToken = default)
         {
+            if(quantity < 1)
+            {
+                return OperationResult<VisitMedicine>.Failed(ConstantMessageCodes.InvalidQuantity);
+            }    
             //check if the medicine is already added to the visit
             //check if the visit status allows to add new medicine or not
             var visit = await _context.Visits.FirstOrDefaultAsync(x => x.Id == visitId, cancellationToken);
@@ -172,6 +176,7 @@ namespace MedicalPoint.Services
                     MedicineName = "",
                     MedicineQuantity = visitMedicine.Quantity,
                     UserId = userId,
+                    VisitId = visitId,
                 };
                 await _context.AddAsync(medicineHistory, cancellationToken);
             }

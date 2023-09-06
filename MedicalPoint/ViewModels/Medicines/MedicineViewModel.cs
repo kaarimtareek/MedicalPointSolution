@@ -29,6 +29,7 @@ namespace MedicalPoint.ViewModels.Medicines
         [MaxLength(100)]
         public string ActionType { get; set; }
         public string UserName { get; set; }
+        public int? VisitId { get; set; }
         public DateTime CreatedAt { get; set; }
     }
 }

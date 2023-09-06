@@ -1,0 +1,351 @@
+﻿@using MedicalPoint.Services;
+@model DailyMedicineReport
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="~/userDesign/css/all.min.css">
+    <link rel="stylesheet" href="~/userDesign/css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/userDesign/css/bootstrap.min.css.map">
+    <link rel="stylesheet" href="~/userDesign/css/style.css">
+    <title>تقرير الادوية</title>
+    <link rel="icon" href="~/userDesign/img/logo.png">
+</head>
+
+<body class="background-with-color">
+
+    <nav class="navbar navbar-expand-lg navbar-light ">
+        <div class="container">
+            <div class="text-one">
+
+                <h1 class="main-p">النقطة الطبية</h1>
+                <h1 class="second-p">كلية الضباط الإحتياط</h1>
+
+            </div>
+            <div class="text-one">
+            <a asp-action="Index"  asp-controller="Medicines" class="my-button-blue print"> <i class="fa-solid fa-forward"></i> العودة </a>
+            <a class="my-button-blue print" href="" onclick="window.print()">طباعة التقرير  <i class="fa-solid fa-print"></i></a>
+
+            </div>
+            <img src="~/userDesign/img/logo.png" alt="logo">
+
+
+        </div>
+    </nav>
+    <div class="">
+
+        <div class="container  fadeInUp-animation">
+            <div class="row ">
+                <div class="row">
+                    <p id="nametwo" class="text-center">تقرير الادوية  <i class="fa-solid fa-chart-simple"></i></p>
+                    <div class="beds-containerTwo mb-3">
+                        <div class="bedsTwo">
+
+                            <div class="my-table-input" style="background-color: #d9d5d5;">
+                                <div class="text-center">
+                                    <label for="checkbox-id" style="margin-left: 5px;">تاريخ إنشاء التقرير</label>
+                                    <label for="checkbox-id" style="margin-left: 5px;">@Model.ReportDate.ToShortDateString()</label>
+
+                                </div>
+
+                            </div>
+                            <div class="my-table-input" style="background-color: #d9d5d5;">
+
+                                <div class="text-center">
+                                    <label for="checkbox-id" style="margin-left: 5px;">عدد الادوية: </label>
+                                    <label for="checkbox-id" style="margin-left: 5px;">@Model.MedicinesCount</label>
+                                </div>
+
+                            </div>
+                            <div class="my-table-input" style="background-color: #d9d5d5;">
+
+
+                                <div class="text-center">
+                                    <label for="checkbox-id" style="margin-left: 5px;"> عدد الادوية المتاحة :</label>
+                                    <label for="checkbox-id" style="margin-left: 5px;">@Model.AvailableMedicinesCount</label>
+                                </div>
+
+                            </div>
+                            <div class="my-table-input" style="background-color: #d9d5d5;">
+
+
+                                <div class="text-center">
+                                    <label for="checkbox-id" style="margin-left: 5px;">عدد الادوية التي قاربت علي الانتهاء  :</label>
+                                    <label for="checkbox-id" style="margin-left: 5px;">@Model.NearFinishMedicineCount</label>
+                                </div>
+
+                            </div>
+
+                            <div class="my-table-input" style="background-color: #d9d5d5;">
+
+
+                                <div class="text-center">
+                                    <label for="checkbox-id" style="margin-left: 5px;">عدد الادوية الغير المتاحة:</label>
+                                    <label for="checkbox-id" style="margin-left: 5px;">@Model.NotAvailableMedicinesCount</label>
+                                </div>
+
+                            </div>
+                            
+                            <div class="my-table-input" style="background-color: #d9d5d5;">
+
+
+                                <div class="text-center">
+                                    <label for="checkbox-id" style="margin-left: 5px;">عدد الادوية التي تم تغييرها:</label>
+                                    <label for="checkbox-id" style="margin-left: 5px;">@Model.MedicinesGivenTodayCount</label>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="row " style="justify-content: space-between;">
+                        <div class="col-lg-12 ">
+                            <p id="nametwo"> كل الادوية <i class="fa-solid fa-hospital-user"></i></p>
+
+                            <table class="table  table-striped text-center" id="my-table">
+                                <thead>
+                                <th>مسلسل</th>
+                                <th>اسم الدواء</th>
+                                <th>حالة الدواء</th>
+                                <th>الكمية</th>
+                                <th>الحد الادني من الاكتفاء </th>
+                                <th>تاريخ الانشاء </th>
+                                <th>تاريخ اخر تعديل </th>
+
+                                </thead>
+                                <tbody>
+                                    @if (Model.MedicinesCount == 0)
+                                    {
+                                        <th colspan="7" style="color:var(--red-color)"> لا يوجد بيانات</th>
+                                    }
+                                    @foreach(var visit in Model.AllMedicines)
+                                    {
+                                        <tr>
+                                            <td></td>
+                                            <td>@visit.Name</td>
+                                            <td>@visit.Status</td>
+                                            <td>@visit.Quantity</td>
+                                            <td>@visit.MinimumQuantityThreshold</td>
+                                            <td>@visit.CreatedAt</td>
+                                            <td>@visit.LastUpdatedAt</td>
+
+                                        </tr>
+                                    }
+                                   
+                                </tbody>
+                            </table>
+
+
+                        </div>
+                        <div class="col-lg-12 ">
+                            <p id="nametwo"> الادوية المتاحة <i class="fa-solid fa-hospital-user"></i></p>
+
+                            <table class="table  table-striped text-center" id="my-table">
+                                <thead>
+                                <th>مسلسل</th>
+                                <th>اسم الدواء</th>
+                                <th>حالة الدواء</th>
+                                <th>الكمية</th>
+                                <th>الحد الادني من الاكتفاء </th>
+                                <th>تاريخ الانشاء </th>
+                                <th>تاريخ اخر تعديل </th>
+
+                                </thead>
+                                <tbody>
+                                    @if (Model.AvailableMedicinesCount == 0)
+                                    {
+                                        <th colspan="7" style="color:var(--red-color)"> لا يوجد بيانات</th>
+                                    }
+                                    @foreach (var visit in Model.AvailableMedicines)
+                                    {
+                                        <tr>
+                                            <td></td>
+                                            <td>@visit.Name</td>
+                                            <td>@visit.Status</td>
+                                            <td>@visit.Quantity</td>
+                                            <td>@visit.MinimumQuantityThreshold</td>
+                                            <td>@visit.CreatedAt</td>
+                                            <td>@visit.LastUpdatedAt</td>
+
+                                        </tr>
+                                    }
+                                   
+                                </tbody>
+                            </table>
+
+
+                        </div>
+                        <div class="col-lg-12 ">
+                            <p id="nametwo"> الادوية التي قاربت علي الانتهاء<i class="fa-solid fa-hospital-user"></i></p>
+
+                            <table class="table  table-striped text-center" id="my-table">
+                                <thead>
+                                <th>مسلسل</th>
+                                <th>اسم الدواء</th>
+                                <th>حالة الدواء</th>
+                                <th>الكمية</th>
+                                <th>الحد الادني من الاكتفاء </th>
+                                <th>تاريخ الانشاء </th>
+                                <th>تاريخ اخر تعديل </th>
+
+                                </thead>
+                                <tbody>
+                                    @if (Model.NearFinishMedicineCount == 0)
+                                    {
+                                        <th colspan="7" style="color:var(--red-color)"> لا يوجد بيانات</th>
+                                    }
+                                    @foreach(var visit in Model.NearFinishMedicines)
+                                    {
+                                        <tr>
+                                            <td></td>
+                                            <td>@visit.Name</td>
+                                            <td>@visit.Status</td>
+                                            <td>@visit.Quantity</td>
+                                            <td>@visit.MinimumQuantityThreshold</td>
+                                            <td>@visit.CreatedAt</td>
+                                            <td>@visit.LastUpdatedAt</td>
+
+                                        </tr>
+                                    }
+                                   
+                                </tbody>
+                            </table>
+
+
+                        </div>
+                        <div class="col-lg-12 ">
+                            <p id="nametwo"> الادوية الغير المتاحة<i class="fa-solid fa-hospital-user"></i></p>
+
+                            <table class="table  table-striped text-center" id="my-table">
+                                <thead>
+                                <th>مسلسل</th>
+                                <th>اسم الدواء</th>
+                                <th>حالة الدواء</th>
+                                <th>الكمية</th>
+                                <th>الحد الادني من الاكتفاء </th>
+                                <th>تاريخ الانشاء </th>
+                                <th>تاريخ اخر تعديل </th>
+
+                                </thead>
+                                <tbody>
+                                    @if (Model.NotAvailableMedicinesCount == 0)
+                                    {
+                                        <th colspan="7" style="color:var(--red-color)"> لا يوجد بيانات</th>
+                                    }
+                                    @foreach(var visit in Model.NotAvailableMedicines)
+                                    {
+                                        <tr>
+                                            <td></td>
+                                            <td>@visit.Name</td>
+                                            <td>@visit.Status</td>
+                                            <td>@visit.Quantity</td>
+                                            <td>@visit.MinimumQuantityThreshold</td>
+                                            <td>@visit.CreatedAt</td>
+                                            <td>@visit.LastUpdatedAt</td>
+
+                                        </tr>
+                                    }
+                                   
+                                </tbody>
+                            </table>
+
+
+                        </div>
+                       
+                        <div class="col-lg-12">
+                            <p id="nametwo">الادوية التي تم تغييرها <i class="fa-solid fa-bed"></i></p>
+                            @if (Model.MedicinesGivenTodayCount == 0)
+                            {
+                                <h3  class="text-center" style="color:var(--red-color)"> لا يوجد بيانات</h3>
+                            }
+                            else
+                            {
+                            <div class="beds-containerThree">
+                                <div class="bedsThree">
+
+                                    @foreach(var medicine in Model.MedicinesGivenToday)
+                                    {
+                                        
+                                    <div>
+                                        <p class="text-center " style="font-weight: bold;">
+                                         اسم الدواء: @medicine.Name 
+                                       <br>
+                                                    مجموع التعديل علي الكمية: @medicine.ChangeInQuantity
+                                        </p>
+                                       
+                                        <table class="table  table-striped text-center" id="my-table">
+                                            <thead>
+                                            <th>مسلسل</th>
+                                            <th> متخذ الإجراء </th>
+                                            <th> نوع الإجراء </th>
+                                            <th> تاريخ الإجراء </th>
+                                            <th> الاسم </th>
+                                            <th> الكمية </th>
+                                            <th> الحد الادني من الاكتفاء </th>
+                                            <th> تفاصيل الكشف </th>
+
+
+
+                                            </thead>
+                                            <tbody>
+                                                @foreach(var history in medicine.History)
+                                                {
+                                                    <tr>
+                                                        <td></td>
+                                                        <td> @history.UserName </td>
+                                                        <td> @history.ActionType </td>
+                                                        <td> @history.CreatedAt </td>
+                                                        <td> @history.MedicineName </td>
+                                                        <td> @history.MedicineQuantity </td>
+                                                        <td> @history.MinimumQuantityThreshold </td>
+                                                        @if(history.VisitId.HasValue)
+                                                        {
+                                                                    <td> <a asp-action="Details" asp-controller="Visits" asp-route-id="@history.VisitId.Value" id="link-green">  تفاصيل الكشف </a> </td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td> @StringExtensions.Dashes </td>
+                                                        }
+                                                    </tr>
+                                                }
+                                              
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    }
+                                   
+                                </div>
+                            </div>
+                                
+                            }
+                        </div>
+
+                    </div>
+                </div>
+
+
+
+            </div>
+        </div>
+    </div>
+    <footer>
+        <div class="container">
+        </div>
+        <div class="text-center p-1">
+            <p id="footer-text">
+                تم الانشاء بواسطة <span style="color: var(--red-color);">طلاب فرع النظم</span> الدفعة
+                <span style="color: var(--red-color);">164</span> ضباط إحتياط ©
+            </p>
+        </div>
+    </footer>
+</body>
+
+<script src="~/userDesign/js/all.min.js"></script>
+<script src="~/userDesign/js/bootstrap.bundle.min.js"></script>
+
+</html>

@@ -98,6 +98,40 @@ namespace MedicalPoint.Controllers
             SendErrorMessageToViewBagAndResetTempData();
             return View(viewModel);
         }
+        public async Task<IActionResult> Edit(int id)
+        {
+            var department = await _departmentsService.Get(id, false);
+            if(department == null)
+            {
+                var errorViewModel = new ErrorViewModel
+                {
+                    ControllerPath = "Departments",
+                    ErrorMessage = "",
+                    ActionPath = nameof(Index),
+                };
+                return NotFound(errorViewModel);
+            }
+            var viewModel = new DepartmentViewModel
+            {
+                Name = department.Name,
+                Id = id,
+                BedsCount = department.BedsCount,
+                AvailableBedsCount = department.AvailableBedsCount,
+               
+            };
+            SendErrorMessageToViewBagAndResetTempData();
+            return View(viewModel);
+        }
+        [HttpPost]
+        public async Task<IActionResult> Edit(int id,[FromForm] string name)
+        {
+            var result = await _departmentsService.Edit(id, name);
+            if(!result.Success)
+            {
+                TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY] = result.Message;
+            }
+            return RedirectToAction(nameof(Details), new {id});
+        }
         public async Task<IActionResult> Bed(int id)
         {
             var bed = await _underObservationBedsService.Get(id);

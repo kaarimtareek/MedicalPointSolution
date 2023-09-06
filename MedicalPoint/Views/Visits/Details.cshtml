@@ -204,7 +204,7 @@
                                         <td>
                                             <form id="form-delete-visitmedicine-@visitMedicine.Id" method="post" asp-action="RemoveVisitMedicine" asp-controller="Visits"></form>
                                             <div id="edit-medicine-@visitMedicine.Id">
-                                            <button type="button" onclick="activeDisable({disble:'input-quantity-medicine-@visitMedicine.Id',enable:'edit-input-@visitMedicine.Id',enableTwo:'save-medicine-@visitMedicine.Id',disbleTwo:'edit-medicine-@visitMedicine.Id'})" class="table-button-blue">
+                                            <button type="button" onclick="enableDisable({ids:['input-quantity-medicine-@visitMedicine.Id','edit-input-@visitMedicine.Id','save-medicine-@visitMedicine.Id','edit-medicine-@visitMedicine.Id']})" class="table-button-blue">
                                                     تعديل <i class="fa-solid fa-pen-to-square"></i>
                                                 </button>
                                                 <input hidden form="form-delete-visitmedicine-@visitMedicine.Id" name="Id" value="@visitMedicine.Id" />
@@ -214,11 +214,11 @@
                                                 </button>
                                             </div>
                                             <div id="save-medicine-@visitMedicine.Id" style="display:none">
-                                                <button type="button" class="table-button-blue">
+                                                <button type="submit" form="" type="button" class="table-button-blue">
                                                     حفظ
                                                     <i class="fa-solid fa-pen-to-square"></i>
                                                 </button>
-                                            <button type="button" class="table-button-red" onclick="activeDisable({enable:'edit-medicine-@visitMedicine.Id',disble:'save-medicine-@visitMedicine.Id',enableTwo:'input-quantity-medicine-@visitMedicine.Id',disbleTwo:'edit-input-@visitMedicine.Id'})">
+                                            <button type="button" class="table-button-red" onclick="enableDisable({ids:['edit-medicine-@visitMedicine.Id','save-medicine-@visitMedicine.Id','input-quantity-medicine-@visitMedicine.Id','edit-input-@visitMedicine.Id']})">
                                                     الغاء <i class="fa-solid fa-xmark"></i>
                                                 </button>
                                             </div>
@@ -247,7 +247,7 @@
                                         </td>
                                         <td>
                                             <input type="number" value="@Model.Id" name="VisitId" form="formAddVisitMedicine" hidden />
-                                        <input type="number" name="Quantity" form="formAddVisitMedicine" required placeholder="الكمية" style="width: 100%">
+                                        <input type="number" min="1" name="Quantity" form="formAddVisitMedicine" required placeholder="الكمية" style="width: 100%">
                                         </td>
                                         <td>
                                             <button type="submit" form="formAddVisitMedicine" class="table-button-blue">
@@ -272,7 +272,7 @@
                             </a>
                         </div>
                     }
-                @if (Model.HasVisitRest)
+                @if (Model.HasVisitRest && this.Context.IsUserHasRoles(new string[] { ConstantUserType.Doctor, ConstantUserType.SUPER_ADMIN, ConstantUserType.Recieptionist }))
                     {
                         <div class="col-lg-2 text-center mb-4">
                             <a asp-action="VisitRest" asp-route-id="@Model.Id" asp-controller="Visits" class="my-button custom-button  mb-2">
@@ -416,8 +416,9 @@
 
     <!-- Copyright -->
 </footer>
-
+<script src="~/userdesign/js/setmedicinequantity.js"></script>
 <script src="~/userDesign/js/all.min.js"></script>
+<script src="~/userdesign/js/enabledisableelements.js"></script>
 <script src="~/userDesign/js/bootstrap.bundle.min.js"></script>
 <script src="~/userdesign/js/enabledisableelements.js"></script>
 <!-- <script src="js/bootstrap.bundle.min.js.map"></script> -->

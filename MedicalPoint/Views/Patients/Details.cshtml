@@ -21,12 +21,13 @@
     <nav class="navbar navbar-expand-lg navbar-light ">
         <div class="container">
             <div>
-                <a asp-action="Logout" asp-controller="Account" class="my-button ml-2">تسجيل الخروج <i class="fa-solid fa-right-from-bracket"></i></a>
+                <a asp-action="Logout" asp-controller="Account" class="my-button ml-2"> تسجيل الخروج <i class="fa-solid fa-right-from-bracket"></i></a>
                 <a onClick="window.location.reload()" href=""
                    class="my-button-green">
                     تحديث الصفحة  <i class="fa-solid fa-arrows-rotate"></i>
                 </a>
-                <a asp-action="Index" asp-controller="Patients" class="my-button-blue">العودة للرئيسية <i class="fa-solid fa-house"></i></a>
+                <a asp-action="Index" asp-controller="Patients" class="my-button-blue"> العودة للرئيسية <i class="fa-solid fa-house"></i></a>
+                <a asp-action="Patient" asp-route-id="@Model.Id" asp-controller="Reports" class="my-button-blue"> تقرير المريض  <i class="fa-solid fa-scroll"></i></a>
             </div>
             <img src="~/UserDesign/img/logo.png" alt="logo">
         </div>

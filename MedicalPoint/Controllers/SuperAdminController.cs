@@ -385,6 +385,7 @@ namespace MedicalPoint.Controllers
 
 
             };
+            SendErrorMessageToViewBagAndResetTempData();
             return View(viewModel);
         }
 
@@ -404,8 +405,9 @@ namespace MedicalPoint.Controllers
 
             if (!result.Success)
             {
-                return View();
+                TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY] = result.Message;
             }
+            SendErrorMessageToViewBagAndResetTempData();
             return RedirectToAction("GetPatients","SuperAdmin");
         }
 
@@ -578,26 +580,6 @@ namespace MedicalPoint.Controllers
         }
 
 
-       
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         // Get Visit data
         public async Task<IActionResult> Details(int id)
@@ -668,5 +650,11 @@ namespace MedicalPoint.Controllers
             };
             return View(viewModel);
         }
+        private void SendErrorMessageToViewBagAndResetTempData()
+        {
+            ViewBag.ErrorMessage = TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY];
+            TempData.Clear();
+        }
     }
+
 }

@@ -812,6 +812,7 @@ td {
 
     footer {
         margin-top: 89.59px;
+     
     }
 }
 
@@ -846,4 +847,26 @@ td {
 #disablelink {
     pointer-events: none !important;
     background-color: var(--gray-color) !important;
+}
+@media only print {
+    #my-table {
+        font-size: 12px;
+    }
+
+    .background-with-color {
+        background-color: white;
+    }
+
+    .footerprint {
+        margin-top: 110.59px;
+        
+    }
+}
+.only-print{
+    display:none;
+}
+@media only print{
+    .only-print{
+        display:block
+    }
 }
