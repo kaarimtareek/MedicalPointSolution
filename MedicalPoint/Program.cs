@@ -73,7 +73,6 @@ if(app.Configuration.GetValue<bool>("Properties:AutoMigrateOnStartup"))
     }
 
 }
-app.UseStatusCodePagesWithReExecute("/Error/");
 app.UseStaticFiles();
 app.UseAuthentication();
 
