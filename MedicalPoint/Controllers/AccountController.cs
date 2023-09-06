@@ -47,14 +47,16 @@ namespace MedicalPoint.Controllers
             return View(userViewMode);
         }
 
-                public async Task<IActionResult> Index()
+        [Authorize]
+        public async Task<IActionResult> Index()
         {
-            var userId = HttpContext.GetUserId();
-            if(!userId.HasValue)
+            var userIdString = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdString))
             {
-                return RedirectToAction(nameof(AccessDenied));
+                return RedirectToAction("Index", "Home");
             }
-            var user = await _medicalPointUsersService.Get(userId.Value);
+            var userId = int.Parse(userIdString);
+            var user = await _medicalPointUsersService.Get(userId);
             var userViewMode = new UserViewModel
             {
                 AccountType = user.AccoutType,
@@ -63,14 +65,14 @@ namespace MedicalPoint.Controllers
                 MilitaryNumber = user.MilitaryNumber,
                 Name = user.FullName,
                 PhoneNumber = user.PhoneNumber,
-                DegreeName = user.Degree?.Name??"",
+                DegreeName = user.Degree.Name,
             };
-         
+
             return View(userViewMode);
         }
 
 
-        
+
 
 
 
