@@ -15,6 +15,7 @@
     -webkit-box-shadow: none !important;
     box-shadow: none !important;
     border: none !important;
+    outline: none !important;
 }
 
 
@@ -103,7 +104,7 @@
 /* end navbar */
 
 .landing-three {
-    min-height: calc(100vh - 89.59px);
+    min-height: calc(100vh - 121.59px);
 }
 
 
@@ -485,6 +486,10 @@ td {
         display: none;
     }
 
+    #example {
+        font-size: 12px;
+    }
+
     #example_length {
         display: none !important;
     }
@@ -499,11 +504,6 @@ td {
 
     #example_paginate {
         display: none !important;
-    }
-
-
-    #example {
-        font-size: 12px;
     }
 }
 
@@ -645,8 +645,7 @@ td {
 .beds {
     display: grid;
     grid-template-areas: "a a a a";
-    grid-gap: 20px;
-    padding: 30px;
+    grid-gap: 10px;
     grid-auto-rows: auto;
 }
 
@@ -664,8 +663,7 @@ td {
 
 .visit-image-style {
     transition: .3s transform cubic-bezier(.155, 1.105, .295, 1.12), .3s box-shadow, .3s -webkit-transform cubic-bezier(.155, 1.105, .295, 1.12);
-    height: 20vh;
-  
+    height: 15rem;
 }
 
 
@@ -678,7 +676,6 @@ td {
 
 .image-container {
     position: relative;
-
 }
 
 .overlay-image {
@@ -749,6 +746,8 @@ td {
     border-radius: 10px;
     background-color: var(--cold-color);
 }
+
+
 #example.dataTable thead > tr > th.sorting {
     padding-right: 0px;
 }
@@ -764,19 +763,118 @@ td {
 #example > :not(caption) > * > * {
     padding: 0.1rem 0.1rem;
 }
+
 #footer-text {
     margin: 0;
     font-weight: bold;
 }
 
 
-#filter-select {
-    width: 40%;
-    padding-right: 2vh;
-    padding-left: 2vh;
-    padding-top: 0.5vh;
-    padding-bottom: 0.5vh;
+#my-table {
+    outline: 1.5px solid #1b1b1b !important
+}
+
+    #my-table th {
+        padding: 0.1rem !important;
+    }
+
+    #my-table td {
+        padding: 0.1rem !important;
+    }
+
+    #my-table > tbody > tr:nth-of-type(odd) > * {
+        background-color: #d9d5d5;
+    }
+
+.my-table-input {
     border-radius: 15px;
-    text-indent: 2px;
-    margin-left: 5px;
+    padding: 0.3rem;
+    padding-right: 0.6rem;
+    width: 100%;
+}
+
+.my-table-select {
+    border-radius: 15px;
+    padding: 0.2rem;
+    padding-right: 0.6rem;
+    border-left: 0.5rem solid transparent !important;
+    width: 90%;
+}
+
+@media only print {
+    #my-table {
+        font-size: 12px;
+    }
+
+    .background-with-color {
+        background-color: white;
+    }
+
+    footer {
+        margin-top: 89.59px;
+     
+    }
+}
+
+.beds-containerTwo {
+    grid-auto-rows: 80px;
+}
+
+.bedsTwo {
+    display: grid;
+    grid-template-areas: "a a a a a";
+    grid-gap: 10px;
+    grid-auto-rows: auto;
+}
+
+.beds-containerThree {
+    grid-auto-rows: 80px;
+}
+
+.bedsThree {
+    display: grid;
+    grid-template-areas: "a a";
+    grid-gap: 10px;
+    grid-auto-rows: auto;
+}
+
+.card-text {
+    font-weight: bold;
+    font-size: 20px;
+}
+
+
+#disablelink {
+    pointer-events: none !important;
+    background-color: var(--gray-color) !important;
+}
+@media only print {
+    #my-table {
+        font-size: 12px;
+    }
+
+    .background-with-color {
+        background-color: white;
+    }
+
+    .footerprint {
+        margin-top: 110.59px;
+        
+    }
+}
+.only-print{
+    display:none;
+}
+@media only print{
+    .only-print{
+        display:block
+    }
+}
+
+.break-line {
+    height: 2px;
+    background-color: black;
+    width: 70%;
+    margin-left: 15%;
+    margin-right: 15%;
 }

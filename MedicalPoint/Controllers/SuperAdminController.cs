@@ -42,7 +42,7 @@ namespace MedicalPoint.Controllers
 
         public async Task<IActionResult> Index(DateTime? date)
         {
-            var visits = await _visitsService.GetAll(null, null, date, date.HasValue ? date.Value.AddDays(1) : null);
+            var visits = await _visitsService.GetAll(1, 20, null, null, date, date.HasValue ? date.Value.AddDays(1) : null);
             var viewModel = visits.ConvertAll(x => new VisitsViewModel
             {
                 ClinicId = x.Id,
@@ -385,6 +385,7 @@ namespace MedicalPoint.Controllers
 
 
             };
+            SendErrorMessageToViewBagAndResetTempData();
             return View(viewModel);
         }
 
@@ -404,8 +405,9 @@ namespace MedicalPoint.Controllers
 
             if (!result.Success)
             {
-                return View();
+                TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY] = result.Message;
             }
+            SendErrorMessageToViewBagAndResetTempData();
             return RedirectToAction("GetPatients","SuperAdmin");
         }
 
@@ -527,7 +529,6 @@ namespace MedicalPoint.Controllers
                 Name = clinic.Name,
                 Id = id,
 
-
             };
             return View(viewModel);
         }
@@ -576,26 +577,6 @@ namespace MedicalPoint.Controllers
             }
             return RedirectToAction("GetDegrees", "SuperAdmin");
         }
-
-
-       
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -668,5 +649,11 @@ namespace MedicalPoint.Controllers
             };
             return View(viewModel);
         }
+        private void SendErrorMessageToViewBagAndResetTempData()
+        {
+            ViewBag.ErrorMessage = TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY];
+            TempData.Clear();
+        }
     }
+
 }

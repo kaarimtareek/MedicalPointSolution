@@ -8,12 +8,6 @@
 
 <!-- Cli -->
 <center>
-    <div style="left: 0; margin-right: 600px; padding-bottom: 0;">
-        <p style="font-weight: bold; font-size: 20px; "> اضافه رتبه /درجه :- <a class="btn btn-g" style="width: 100px; height: 40px; font-weight: bold; background-color: #263f85; color: white;" asp-action="DegreeCreate" asp-controller="SuperAdmin" role="button ">اضافة عيادة</a></p>
-
-
-    </div>
-
     <div class="col-md-12">
         <div class="align-items-center">
 
@@ -21,6 +15,10 @@
 
             <div class="card-body pb-0">
                 <h5 class="card-title fw-bold" style="font-weight: bold; font-size: 35px;"> الرتبه / الدرجه </h5>
+
+            <div style="left: 0; margin-right: 600px; padding-bottom: 0;">
+                 <a class="btn btn-g" style="width: 200px; height: 40px; font-weight: bold; background-color: #263f85; color: white;" asp-action="DegreeCreate" asp-controller="SuperAdmin" role="button ">اضافة رتبة / درجة</a>
+            </div>
 
                 <table class="table datatable  table-striped " style="border: 0.5px; background-color: gray; border-width: 0.5px;">
                     <thead>
@@ -38,7 +36,7 @@
                                 <td></td>
                                 <td><a href="#" class="fw-bold">@item.Name</a></td>
                                 <td>
-                                    <a style="width: 60px; height: 30px;" type="button" asp-action="EditClinics" asp-controller="SuperAdmin" asp-route-id="@item.Id" class="btn btn-warning btn-sm"> تعديل</a>
+                                    <a style="width: 60px; height: 30px;" type="button" asp-action="EditDegree" asp-controller="SuperAdmin" asp-route-id="@item.Id" class="btn btn-warning btn-sm"> تعديل</a>
 
                                 </td>
                             </tr>

@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
+using static System.Formats.Asn1.AsnWriter;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -41,6 +43,12 @@ builder.Services.AddScoped<IVisitRestsService, VisitRestsService>();
 builder.Services.AddScoped<IUnderObservationBedsService, UnderObservationBedsService>();
 builder.Services.AddScoped<IMedicalPointUsersService, MedicalPointUsersService>();
 builder.Services.AddScoped<IDepartmentsService, DepartmentsService>();
+builder.Services.AddScoped<ICacheService, CacheService>();
+builder.Services.AddScoped<IUploadService, UploadService>();
+builder.Services.AddScoped<IReportsService, ReportsService>();
+
+builder.Services.AddSingleton<CacheData>();
+
 builder.Services.AddRazorPages();
 
 var app = builder.Build();
@@ -61,9 +69,9 @@ if(app.Configuration.GetValue<bool>("Properties:AutoMigrateOnStartup"))
     {
         var dbContext = scope.ServiceProvider
             .GetRequiredService<ApplicationDbContext>();
-
         // Here is the migration executed
         dbContext.Database.Migrate();
+
     }
 
 }

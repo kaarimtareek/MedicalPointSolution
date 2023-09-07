@@ -1,5 +1,6 @@
 ﻿using MedicalPoint.Common;
 using MedicalPoint.Constants;
+using MedicalPoint.Models;
 using MedicalPoint.Services;
 using MedicalPoint.ViewModels.Beds;
 using MedicalPoint.ViewModels.Departments;
@@ -34,11 +35,14 @@ namespace MedicalPoint.Controllers
                 Id = x.Id,
                 Name = x.Name,
             }).ToList();
+
+            SendErrorMessageToViewBagAndResetTempData();
             return View(departments);
         }
         public async Task<IActionResult> Create()
         {
            
+            SendErrorMessageToViewBagAndResetTempData();
             return View();
         }
         [HttpPost]
@@ -47,11 +51,14 @@ namespace MedicalPoint.Controllers
             var userId = HttpContext.GetUserId();
             if(userId==null)
             {
-                return View();
+                return RedirectToAction("AccessDenied", "Account");
             }
             var result = await _departmentsService.Create(viewModel.Name, userId.Value, viewModel.BedsCount);
             if(!result.Success)
+            {
+                TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY] = result.Message;
                 return View();
+            }
             return RedirectToAction(nameof(Index));
         }
         public async Task<IActionResult> Details(int id)
@@ -59,7 +66,13 @@ namespace MedicalPoint.Controllers
             var department = await _departmentsService.Get(id);
             if(department == null)
             {
-                return NotFound();
+                var errorViewModel = new ErrorViewModel
+                {
+                    ControllerPath = "Departments",
+                    ErrorMessage = "",
+                    ActionPath = nameof(Index),
+                };
+                return NotFound(errorViewModel);
             }
             var viewModel = new DepartmentViewModel
             {
@@ -82,14 +95,55 @@ namespace MedicalPoint.Controllers
                     PatientName = x.Patient?.Name ?? "",
                 }).ToList(),
             };
+            SendErrorMessageToViewBagAndResetTempData();
             return View(viewModel);
+        }
+        public async Task<IActionResult> Edit(int id)
+        {
+            var department = await _departmentsService.Get(id, false);
+            if(department == null)
+            {
+                var errorViewModel = new ErrorViewModel
+                {
+                    ControllerPath = "Departments",
+                    ErrorMessage = "",
+                    ActionPath = nameof(Index),
+                };
+                return NotFound(errorViewModel);
+            }
+            var viewModel = new DepartmentViewModel
+            {
+                Name = department.Name,
+                Id = id,
+                BedsCount = department.BedsCount,
+                AvailableBedsCount = department.AvailableBedsCount,
+               
+            };
+            SendErrorMessageToViewBagAndResetTempData();
+            return View(viewModel);
+        }
+        [HttpPost]
+        public async Task<IActionResult> Edit(int id,[FromForm] string name)
+        {
+            var result = await _departmentsService.Edit(id, name);
+            if(!result.Success)
+            {
+                TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY] = result.Message;
+            }
+            return RedirectToAction(nameof(Details), new {id});
         }
         public async Task<IActionResult> Bed(int id)
         {
             var bed = await _underObservationBedsService.Get(id);
             if (bed == null)
             {
-                return NotFound();
+                var errorViewModel = new ErrorViewModel
+                {
+                    ControllerPath = "Departments",
+                    ErrorMessage = "",
+                    ActionPath = nameof(Index),
+                };
+                return NotFound(errorViewModel);
             }
             var viewModel = new BedViewModel
             {
@@ -123,6 +177,7 @@ namespace MedicalPoint.Controllers
 
                 }).ToList(),
             };
+            SendErrorMessageToViewBagAndResetTempData();
             return View(viewModel);
         }
         public async Task<IActionResult> AddPatientToBed(int id)
@@ -130,19 +185,10 @@ namespace MedicalPoint.Controllers
             var patient = await _patientsService.GetById(id);
             if(patient == null)
             {
-                return NotFound();
+                return RedirectToAction("AccessDenied", "Account");
             }
 
             var availableDepartments = await _departmentsService.GetAllAvailable();
-            
-            //var departmentsIds = availableDepartments.Select(x=> x.Id).ToList();
-            //var beds = await _underObservationBedsService.GetAllAvailable(departmentsIds);
-            //if(beds.Count == 0)
-            //{
-            //    return BadRequest();
-            //}
-            
-            
             var viewModel =  new AddPatientToBedViewModel{
                 
                 Departments = availableDepartments.ConvertAll(x=> new DepartmentsViewModel
@@ -171,7 +217,7 @@ namespace MedicalPoint.Controllers
                 Name = patient.Name,
 
             }};
-          
+            SendErrorMessageToViewBagAndResetTempData();
             return View(viewModel);
         }
        //bed id
@@ -192,7 +238,7 @@ namespace MedicalPoint.Controllers
                     MilitaryNumber = x.MilitaryNumber,
                 }),
             };
-
+            SendErrorMessageToViewBagAndResetTempData();
             return View(viewModel);
         }
         [HttpPost]
@@ -201,11 +247,13 @@ namespace MedicalPoint.Controllers
             var userId = HttpContext.GetUserId();
             if (!userId.HasValue)
             {
-                return NotFound();
+                return RedirectToAction("AccessDenied", "Account");
             }
             var result = await _underObservationBedsService.AddPatientToBed(id,  patientId, userId.Value, notes);
             if(!result.Success)
             {
+                TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY] = result.Message;
+                return RedirectToAction(nameof(Bed), new { id });
 
             }
             return RedirectToAction("Bed", "Departments", new { id });
@@ -216,11 +264,13 @@ namespace MedicalPoint.Controllers
             var userId = HttpContext.GetUserId();
             if (!userId.HasValue)
             {
-                return NotFound();
+                return RedirectToAction("AccessDenied", "Account");
             }
             var result = await _underObservationBedsService.RemovePatientFromBed(id, userId.Value);
             if(!result.Success)
             {
+                TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY] = result.Message;
+                return RedirectToAction(nameof(Bed), new { id });
 
             }
             return RedirectToAction(nameof(Bed), new {id });
@@ -235,8 +285,9 @@ namespace MedicalPoint.Controllers
             }
             var result = await _underObservationBedsService.AddPatientToBed(id,  viewModel.PatientId, userId.Value, viewModel.Notes, null);
             if(!result.Success)
-            { 
-                return BadRequest();
+            {
+                TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY] = result.Message;
+                return RedirectToAction(nameof(AddPatientToBed), new { id });
             }
             return RedirectToAction("Bed", "Departments", new {id });
         }
@@ -245,10 +296,33 @@ namespace MedicalPoint.Controllers
             var result = await _underObservationBedsService.AddBedToDepartment(id);
             if (!result.Success)
             {
+                TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY] = result.Message;
                 return RedirectToAction(nameof(Details), new { id });
             }
 
             return RedirectToAction(nameof(Details), new { id });
         }
+        [HttpPost]
+        public async Task<IActionResult> EditBed(int id, [FromForm] string notes)
+        {
+            var userId = HttpContext.GetUserId();
+            if(!userId.HasValue)
+            {
+                return View("AccessDenied", "Account");
+            }
+            var result = await _underObservationBedsService.Edit(id, userId.Value, notes);
+            if (!result.Success)
+            {
+                TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY] = result.Message;
+                return RedirectToAction(nameof(Bed), new { id });
+            }
+
+            return RedirectToAction(nameof(Bed), new { id });
+        }
+    private void SendErrorMessageToViewBagAndResetTempData()
+    {
+        ViewBag.ErrorMessage = TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY];
+        TempData.Clear();
+    }
     }
 }

@@ -15,9 +15,12 @@
     <link rel="stylesheet" href="~/userdesign/css/style.css">
     <title>تسجيل مريض</title>
     <link rel="icon" href="~/userdesign/img/logo.png">
+  
 </head>
 
 <body class="background-with-color">
+
+   
 
     <nav class="navbar navbar-expand-lg navbar-light d-none d-lg-block ">
         <div class="container ">
@@ -35,7 +38,7 @@
                     <div class="col-lg-12 text-center">
                         <h1 id="choose">تسجيل بيانات مريض جديد <i class="fa-solid fa-user-pen"></i></h1>
                     </div>
-
+                    
                     <div class="row  justify-content-center">
                         <div class="col-lg-4 text-center">
                             <input asp-for=Name class="my-input" type="text" placeholder="إسم المريض" required>
@@ -81,7 +84,43 @@
             </div>
         </form>
     </div>
+
+
+    <div class="text-center">
+    <button type="button" id="popoutButton" class="my-button" data-bs-toggle="modal"
+            data-bs-target="#exampleModal" style="display: none;"></button>
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+
+
+                    <div class="row justify-content-center">
+                        <div class="col-lg-12">
+
+                            <div class="col-lg-12">
+                                <i style="color: var(--red-color); font-size: 80px; margin-bottom:15px;"
+                                   class="fa-solid fa-circle-exclamation fa-beat-fade"></i>
+                            </div>
+                            <div class="col-lg-12">
+                                <h4 id="errorText">هناك خطأ ما</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
     
+
+    </div>
 </body>
 <footer>
     <!-- Copyright -->
@@ -145,8 +184,17 @@
         }
     });
     </script>
+
 <script src="~/userdesign/js/all.min.js"></script>
 <script src="~/userdesign/js/bootstrap.bundle.min.js"></script>
+<script src="~/userdesign/js/popouterror.js"></script>
+@if (ViewBag.ErrorMessage is string s)
+{
+    if (!string.IsNullOrEmpty(s))
+    {
+        <script>popout({ error: '@s' })</script>
+    }
+}
 <!-- <script src="js/bootstrap.bundle.min.js.map"></script> -->
 
 </html>

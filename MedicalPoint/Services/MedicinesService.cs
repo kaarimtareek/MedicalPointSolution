@@ -13,7 +13,7 @@ namespace MedicalPoint.Services
         Task<OperationResult<Medicine>> AddQauntity(int userId, int medicineId, int quantity, CancellationToken cancellationToken = default);
         Task<OperationResult<Medicine>> Delete(int userId, int medicineId, CancellationToken cancellationToken = default);
         Task<OperationResult<Medicine>> Edit(int userId, int medicineId, string name, int quantity, int? quantityThreshold = null, CancellationToken cancellationToken = default);
-        Task<Medicine> Get(int medicineId, CancellationToken cancellationToken = default);
+        Task<Medicine> Get(int medicineId, bool withAllHistory = false, CancellationToken cancellationToken = default);
         Task<List<Medicine>> GetAll(string name = "", int? quantityLessThan = null, bool medicinesAboutToFinish = false, CancellationToken cancellationToken = default);
 
     }
@@ -28,7 +28,7 @@ namespace MedicalPoint.Services
         }
         public async Task<List<Medicine>> GetAll(string name = "", int? quantityLessThan = null, bool medicinesAboutToFinish = false, CancellationToken cancellationToken = default)
         {
-            var query = _context.Medicines.AsNoTracking().AsQueryable();
+            var query = _context.Medicines.AsNoTracking().Where(x=> !x.IsDeleted).AsQueryable();
             if (!string.IsNullOrWhiteSpace(name))
             {
                 query = query.Where(x => x.Name.Contains(name));
@@ -45,12 +45,20 @@ namespace MedicalPoint.Services
             return result;
         }
 
-        public async Task<Medicine> Get(int medicineId, CancellationToken cancellationToken = default)
+        public async Task<Medicine> Get(int medicineId, bool withAllHistory = false, CancellationToken cancellationToken = default)
         {
-            var result = await _context.Medicines
-                .Include(x => x.History.OrderByDescending(x=> x.CreatedAt))
-                    .ThenInclude(x=> x.User)
-                .AsNoTracking().FirstOrDefaultAsync(x => x.Id == medicineId, cancellationToken);
+            var query = _context.Medicines.AsNoTracking();
+            if(withAllHistory)
+            {
+                query = query.Include(x => x.History.OrderByDescending(x => x.CreatedAt).Take(5))
+                        .ThenInclude(x => x.User);
+            }
+            else
+            {
+                query = query.Include(x => x.History.OrderByDescending(x => x.CreatedAt))
+                        .ThenInclude(x => x.User);
+            } 
+            var result = await query.AsNoTracking().FirstOrDefaultAsync(x => x.Id == medicineId, cancellationToken);
 
             return result;
         }
@@ -62,7 +70,7 @@ namespace MedicalPoint.Services
 
              if(medicine == null)
             {
-                return OperationResult<Medicine>.Failed("");    
+                return OperationResult<Medicine>.Failed(ConstantMessageCodes.MedicineNotFound);    
             }
 
             medicine.IsDeleted = true;
@@ -77,14 +85,14 @@ namespace MedicalPoint.Services
                 UserId = userId,
             };
             await _context.MedicineHistories.AddAsync(history);
-            _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
             return OperationResult<Medicine>.Succeeded(medicine);
         }
         public async Task<OperationResult<Medicine>> Add(int userId, string name, int quantity, int? quantityThreshold = null, CancellationToken cancellationToken = default)
         {
             if (QueryValidator.IsMedicineNameExist(_context, name))
             {
-                return OperationResult<Medicine>.Failed("");
+                return OperationResult<Medicine>.Failed(ConstantMessageCodes.NameAlreadyExist);
             }
             var medicine = new Medicine
             {
@@ -115,12 +123,12 @@ namespace MedicalPoint.Services
         {
             if(quantity < 0)
             {
-                return OperationResult<Medicine>.Failed("");
+                return OperationResult<Medicine>.Failed(ConstantMessageCodes.InvalidQuantity);
             }
             var medicine = await _context.Medicines.FirstOrDefaultAsync(x => x.Id == medicineId && !x.IsDeleted);
             if(medicine == null)
             {
-                return OperationResult<Medicine>.Failed("");
+                return OperationResult<Medicine>.Failed(ConstantMessageCodes.MedicineNotFound);
 
             }
             medicine.Quantity += quantity;
@@ -141,12 +149,12 @@ namespace MedicalPoint.Services
         {
             if (QueryValidator.IsMedicineNameExist(_context, name, medicineId))
             {
-                return OperationResult<Medicine>.Failed("");
+                return OperationResult<Medicine>.Failed(ConstantMessageCodes.NameAlreadyExist);
             }
             var medicine = await _context.Medicines.FirstOrDefaultAsync(x => x.Id == medicineId && !x.IsDeleted, cancellationToken);
             if (medicine == null)
             {
-                return OperationResult<Medicine>.Failed("");
+                return OperationResult<Medicine>.Failed(ConstantMessageCodes.MedicineNotFound);
 
             }
             medicine.Name = name;

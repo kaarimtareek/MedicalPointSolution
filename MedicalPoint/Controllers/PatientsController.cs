@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Security.Claims;
 
+
 using MedicalPoint.Common;
 using MedicalPoint.Constants;
 using MedicalPoint.Data;
@@ -31,10 +32,11 @@ namespace MedicalPoint.Controllers
             _underObservationBedsService = underObservationBedsService;
         }
       
-        public async Task<IActionResult> Index(string searchValue,int? degreeId = null, string? checkHasVisit = null)
+        public async Task<IActionResult> Index(string searchValue,int? degreeId = null, string? checkHasVisit = null, int pageNumber = 1, int pageSize = 20)
         {
             var hasVisit = !string.IsNullOrEmpty(checkHasVisit);
-            var patients = await _patientsService.GetPatients(searchValue, degreeId, hasVisit);
+           
+            var patients = await _patientsService.GetPatients( pageNumber, pageSize, searchValue, degreeId, hasVisit);
             ViewBag.Degrees = _degreesService.GetAll().ConvertAll(x => new SelectListItem
             {
                 Text = x.Name,
@@ -44,6 +46,12 @@ namespace MedicalPoint.Controllers
             ViewBag.SelectedDegree = degreeId;
             ViewBag.SearchValue = searchValue;
             ViewBag.CheckHasVisit = hasVisit;
+            ViewBag.PageSizeList = new List<int>() { 10, 20, 50, 100 }.Select(x => new SelectListItem
+            {
+                Text = x.ToString(),
+                Value = x.ToString(),
+                Selected = pageSize == x
+            });
             var viewModel = patients.ConvertAll(x => new PatientViewModel
             {
                 CreatedAt = x.CreatedAt,
@@ -60,16 +68,19 @@ namespace MedicalPoint.Controllers
                 Degree = x.Degree?.Name ?? string.Empty,
                 RegisteredUserName = x.RegisteredUser?.FullName ?? string.Empty,
             });
-            return View(viewModel);
+            var paginatedViewModel = PaginatedList<PatientViewModel>.Create(viewModel, pageNumber, pageSize);
+            return View(paginatedViewModel);
         }
         public IActionResult Create()
         {
             var degrees =  _degreesService.GetAll();
+           
             ViewBag.Degrees = degrees.ConvertAll(x=> new SelectListItem
             {
                 Text = x.Name,
                 Value = x.Id.ToString(),
             });
+            SendErrorMessageToViewBagAndResetTempData();
             return View();
         }
         [HttpPost]
@@ -83,8 +94,9 @@ namespace MedicalPoint.Controllers
             int userId = int.Parse(userIdStr);
             var result = await _patientsService.Add(viewModel.Name, viewModel.DegreeId, viewModel.MilitaryNumber, viewModel.NationalNumber, viewModel.GeneralNumber, viewModel.SaryaNumber, viewModel.Major, userId);
             if(!result.Success)
-            { 
-                return View();
+            {
+                TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY] = result.Message;
+                return RedirectToAction(nameof(Create), "Patients");
             }
             return RedirectToAction(nameof(Index), "Patients");
         }
@@ -117,6 +129,7 @@ namespace MedicalPoint.Controllers
                  BedId = bedId,
                  RegisteredUserName = patient.RegisteredUser?.FullName??string.Empty,
             };
+            SendErrorMessageToViewBagAndResetTempData();
             return View(viewModel);
         }
         [HttpGet]
@@ -137,7 +150,6 @@ namespace MedicalPoint.Controllers
             });
             var viewModel = new PatientViewModel
             {
-
                 Name = patient.Name,
                 Id = id,
                 Major = patient.Major,
@@ -148,9 +160,8 @@ namespace MedicalPoint.Controllers
                 DegreeId = patient.DegreeId,
                 NationalNumber = patient.NationalNumber,
                 GeneralNumber = patient.GeneralNumber,
-
-
             };
+            SendErrorMessageToViewBagAndResetTempData();
             return View(viewModel);
         }
 
@@ -170,14 +181,16 @@ namespace MedicalPoint.Controllers
            
             if (!result.Success)
             {
-                return View();
+                TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY] = result.Message;
+                return RedirectToAction(nameof(Edit), new {id = viewModel.Id});
             }
             return RedirectToAction(nameof(Index));
         }
+        private void SendErrorMessageToViewBagAndResetTempData()
+        {
+            ViewBag.ErrorMessage = TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY];
+            TempData.Clear();
+        }
 
-
-
-        
-       
     }
 }

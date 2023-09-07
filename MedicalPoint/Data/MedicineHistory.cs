@@ -13,6 +13,8 @@ namespace MedicalPoint.Data
         public int? MinimumQuantityThreshold { get; set; }
         [MaxLength(100)]
         public string ActionType { get; set; }
+        //add visit id ?
+        public int? VisitId { get; set; }
         public MedicalPointUser User { get; set; }
         public Medicine Medicine { get; set; }
         public DateTime CreatedAt { get; set; }

@@ -9,7 +9,8 @@ namespace MedicalPoint.Services
     public interface IDepartmentsService
     {
         Task<OperationResult<UnderObservationDepartment>> Create(string name, int userId, int bedsCount = 0);
-        Task<UnderObservationDepartment> Get(int id);
+        Task<OperationResult<UnderObservationDepartment>> Edit(int id, string name);
+        Task<UnderObservationDepartment> Get(int id, bool withDetails = true);
         Task<List<UnderObservationDepartment>> GetAll();
         Task<List<UnderObservationDepartment>> GetAllAvailable();
     }
@@ -34,16 +35,20 @@ namespace MedicalPoint.Services
                 .AsNoTracking().Where(x=> x.AvailableBedsCount > 0).ToListAsync();
             return result;
         }
-        public async Task<UnderObservationDepartment> Get(int id)
+        public async Task<UnderObservationDepartment> Get(int id, bool withDetails = true)
         {
-            var result = await _context.UnderObservationDepartments
-                .Include(x => x.Beds.OrderBy(x=> x.BedNumber))
-                    .ThenInclude(x=> x.Patient)
-                .Include(x=> x.Beds)
-                .ThenInclude(x=> x.Doctor)
-                .AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+            var query = _context.UnderObservationDepartments.AsNoTracking();
+            if(withDetails)
+            {
+                query = query.Include(x => x.Beds.OrderBy(x => x.BedNumber))
+                    .ThenInclude(x => x.Patient)
+                .Include(x => x.Beds)
+                .ThenInclude(x => x.Doctor);
+            }
+            var result = await query.FirstOrDefaultAsync(x => x.Id == id);
             return result;
         }
+
         public async Task<OperationResult<UnderObservationDepartment>> Create(string name, int userId, int bedsCount = 0)
         {
             var department = new UnderObservationDepartment
@@ -74,6 +79,18 @@ namespace MedicalPoint.Services
                 };
                 await _context.UnderObservationBedHistories.AddAsync(history);
             }
+            await _context.SaveChangesAsync();
+            return OperationResult<UnderObservationDepartment>.Succeeded(department);
+        }
+
+        public async Task<OperationResult<UnderObservationDepartment>> Edit(int id, string name)
+        {
+            var department = await _context.UnderObservationDepartments.FirstOrDefaultAsync(x => x.Id == id);
+            if(department == null)
+            {
+                return OperationResult<UnderObservationDepartment>.Failed(ConstantMessageCodes.DepartmentNotFound);
+            }
+            department.Name = name;
             await _context.SaveChangesAsync();
             return OperationResult<UnderObservationDepartment>.Succeeded(department);
         }
