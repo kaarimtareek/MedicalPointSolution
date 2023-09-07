@@ -81,6 +81,11 @@ namespace MedicalPoint.Services
             {
                 return OperationResult<Patient>.Failed(ConstantMessageCodes.NationalNumberAlreadyExist);
             }
+            if(!await _context.Degrees.AnyAsync(x => x.Id == degreeId,  cancellationToken))
+            {
+                return OperationResult<Patient>.Failed(ConstantMessageCodes.DegreeNotFound);
+
+            }
             var patient = new Patient
             {
                 MilitaryNumber = militaryNumber ?? "",

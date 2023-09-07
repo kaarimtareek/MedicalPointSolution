@@ -35,7 +35,7 @@
     <div class="landing-three ">
         <div class="container fadeInUp-animation ">
             <div class="row  justify-content-center">
-                <div class="col-lg-6 text-center pt-5 ">
+                <div class="col-lg-8 text-center pt-5 ">
                     <p id="nametwo">بيانات المريض <i class="fa-solid fa-user"></i></p>
 
                     <table class="table  table-striped">
@@ -74,34 +74,46 @@
                     </table>
 
 
-
-                    <div>
-                        @if(Model.IsUnderObservation)
-                        {
-                            <p style="color:red" class="mb-4 mt-4"> المريض تحت الملاحظة </p>
-                            <a asp-controller="Departments" asp-action="Bed" asp-route-id="@Model.BedId.Value" class="my-button mt-2 mb-2"> تفاصيل الحجز <i class="fa-solid fa-pen-to-square"></i></a>
-                        }
-                        else
-                        {
-                            @if(this.Context.IsUserHasRoles(new string[] { ConstantUserType.Doctor, ConstantUserType.SUPER_ADMIN}))
-                            {
-                                <a asp-controller="Departments" asp-action="AddPatientToBed" asp-route-id="@Model.Id" class="my-button mt-2 mb-2"> حجز المريض <i class="fa-solid fa-bed"></i></a>
-                            }
-                            
-                        }
-                       
-
-                        <a asp-controller="Patients" asp-action="Edit" asp-route-id="@Model.Id" class="my-button mt-2 mb-2">تعديل <i class="fa-solid fa-pen-to-square"></i></a>
-                        <a class="my-button-blue mt-2 mb-2" asp-controller="Visits" asp-action="Patient" asp-route-patientId="@Model.Id ">
-                            كشوفات المريض <i class="fa-solid fa-list-check"></i>
-                        </a>
-                        <a class="my-button-blue mt-2 mb-2" asp-controller="Visits" asp-action="Create" asp-route-patientId="@Model.Id ">
-                            كشف جديد  <i class="fa-solid fa-plus"></i>
-                        </a>
+                    
                     </div>
-                </div>
 
             </div>
+            <div class="row justify-content-center">
+                <div class="col-lg-12 text-center">
+
+                <div>
+                    @if (Model.IsUnderObservation)
+                    {
+                        <p style="color:red" class="mb-4 mt-4"> المريض تحت الملاحظة </p>
+                        <a asp-controller="Departments" asp-action="Bed" asp-route-id="@Model.BedId.Value" class="my-button mt-2 mb-2"> تفاصيل الحجز <i class="fa-solid fa-pen-to-square"></i></a>
+                    }
+                    else
+                    {
+                        @if (this.Context.IsUserHasRoles(new string[] { ConstantUserType.Doctor, ConstantUserType.SUPER_ADMIN }))
+                        {
+                            <a asp-controller="Departments" asp-action="AddPatientToBed" asp-route-id="@Model.Id" class="my-button mt-2 mb-2"> حجز المريض <i class="fa-solid fa-bed"></i></a>
+                        }
+
+                    }
+
+
+                    <a asp-controller="Patients" asp-action="Edit" asp-route-id="@Model.Id" class="my-button mt-2 mb-2">تعديل <i class="fa-solid fa-pen-to-square"></i></a>
+                    <a class="my-button-blue mt-2 mb-2" asp-controller="Visits" asp-action="Patient" asp-route-patientId="@Model.Id ">
+                        كشوفات المريض <i class="fa-solid fa-list-check"></i>
+                    </a>
+                    <a class="my-button-blue mt-2 mb-2" asp-controller="Visits" asp-action="Create" asp-route-patientId="@Model.Id ">
+                        كشف جديد  <i class="fa-solid fa-plus"></i>
+                    </a>
+                </div>
+                </div>
+
+
+            </div>
+
+
+        
+        
+        
         </div>
     </div>
 
