@@ -103,105 +103,229 @@
 
                         </div>
                     </div>
-                    <div class="row " style="justify-content: space-between;">
-                        <div class="col-lg-12 ">
-                            <p id="nametwo">تقرير الكشوفات <i class="fa-solid fa-hospital-user"></i></p>
+                  
+                </div>
+                <div class="col-lg-12 " style="page-break-inside:avoid>
+                    <div style="width:100% ;text-align:center">
+                        <hr class="break-line" />
+                    </div>
 
-                            <table class="table  table-striped text-center" id="my-table">
-                                <thead>
-                                <th>مسلسل</th>
-                                <th>اسم الطبيب</th>
-                                <th>التشخيص</th>
-                                <th>حالة الكشف</th>
-                                <th>نوع الكشف</th>
-                                <th>العيادة </th>
-                                <th>تاريخ الكشف</th>
-                                <th>تاريخ انتهاء الكشف</th>
-                                <th>رقم الكشف</th>
+                    <p id="nametwo">تقرير الكشوفات <i class="fa-solid fa-hospital-user"></i></p>
 
-                                </thead>
-                                <tbody>
-                                    @if (Model.VisitHistory.Count == 0)
-                                    {
-                                        <th colspan="9" style="color:var(--red-color)"> لا يوجد بيانات</th>
-                                    }
-                                    @foreach(var visit in Model.VisitHistory)
-                                    {
-                                        <tr>
-                                            <td></td>
-                                            <td>@visit.DoctorName</td>
-                                            <td>@visit.Diagnosis</td>
-                                            <td>@visit.Status</td>
-                                            <td>@visit.Type</td>
-                                            <td>@visit.Clinic</td>
-                                            <td>@visit.VisitTime</td>
-                                            <td>@visit.ExitTime</td>
-                                            <td>@visit.VisitNumber</td>
+                    <table class="table  table-striped text-center" id="my-table" style="page-break-inside:avoid">
+                        <thead>
+                        <th>مسلسل</th>
+                        <th>اسم الطبيب</th>
+                        <th>التشخيص</th>
+                        <th>حالة الكشف</th>
+                        <th>نوع الكشف</th>
+                        <th>العيادة </th>
+                        <th>تاريخ الكشف</th>
+                        <th>تاريخ انتهاء الكشف</th>
+                        <th>رقم الكشف</th>
 
-                                        </tr>
-                                    }
-                                   
-                                </tbody>
-                            </table>
-
-
-                        </div>
-                        <div class="col-lg-12 ">
-                            <p id="nametwo">تقرير الارانيك <i class="fa-solid fa-hospital-user"></i></p>
-
-                            <table class="table  table-striped text-center" id="my-table">
-                                <thead>
-                                <th>مسلسل</th>
-                                <th>اسم الطبيب</th>
-                                <th>نوع الاورنيك</th>
-                                <th>بداية الراحة</th>
-                                <th>انتهاء الراحة </th>
-                                <th>الملاحظات </th>
-                                <th>تاريخ انشاء الاورنيك</th>
-                                </thead>
-
-                                <tbody>
-                                    @if (Model.VisitRests.Count == 0)
-                                    {
-                                    <th colspan="7" style="color:var(--red-color)"> لا يوجد بيانات</th>
-                                    }
-                                    @foreach(var visit in Model.VisitRests)
-                                    {
-                                        <tr>
-                                            <td></td>
-                                            <td>@visit.DoctorName</td>
-                                            <td>@visit.RestType</td>
-                                            <td>@visit.StartDate.ToShortDateString()</td>
-                                            <td>@visit.EndDate.ToShortDateString()</td>
-                                            <td>@visit.Notes</td>
-                                            <td>@visit.CreatedAt</td>
-                                        </tr>
-                                        
-                                    }
-                                   
-                                </tbody>
-                            </table>
-
-
-                        </div>
-                        <div class="col-lg-12">
-                            <p id="nametwo">تقرير الملاحظة <i class="fa-solid fa-bed"></i></p>
-                            @if (Model.UnderObservarionsHistory.Count == 0)
+                        </thead>
+                        <tbody>
+                            @if (Model.VisitHistory.Count == 0)
                             {
-                                <h3  class="text-center" style="color:var(--red-color)"> لا يوجد بيانات</h3>
+                            <th colspan="9" style="color:var(--red-color)"> لا يوجد بيانات</th>
                             }
-                            else
+                            @foreach (var visit in Model.VisitHistory)
                             {
-                            <div class="beds-containerThree">
-                                <div class="bedsThree">
+                            <tr>
+                                <td></td>
+                                <td>@visit.DoctorName</td>
+                                <td>@visit.Diagnosis</td>
+                                <td>@visit.Status</td>
+                                <td>@visit.Type</td>
+                                <td>@visit.Clinic</td>
+                                <td>@visit.VisitTime</td>
+                                <td>@visit.ExitTime</td>
+                                <td>@visit.VisitNumber</td>
 
-                                    @foreach(var bed in Model.UnderObservarionsHistory)
-                                    {
-                                        
+                            </tr>
+                            }
+
+                        </tbody>
+                    </table>
+
+
+                </div>
+                    <div style="width:100% ;text-align:center">
+                        <hr class="break-line" />
+
+                    </div>
+                <div class="col-lg-12 " style="page-break-inside:avoid">
+
+                    <p id="nametwo">تقرير الارانيك <i class="fa-solid fa-hospital-user"></i></p>
+
+                    <table class="table  table-striped text-center" id="my-table" style="page-break-inside:avoid">
+                        <thead>
+                        <th>مسلسل</th>
+                        <th>اسم الطبيب</th>
+                        <th>نوع الاورنيك</th>
+                        <th>بداية الراحة</th>
+                        <th>انتهاء الراحة </th>
+                        <th>الملاحظات </th>
+                        <th>تاريخ انشاء الاورنيك</th>
+                        </thead>
+
+                        <tbody>
+                            @if (Model.VisitRests.Count == 0)
+                            {
+                            <th colspan="7" style="color:var(--red-color)"> لا يوجد بيانات</th>
+                            }
+                            @foreach (var visit in Model.VisitRests)
+                            {
+                            <tr>
+                                <td></td>
+                                <td>@visit.DoctorName</td>
+                                <td>@visit.RestType</td>
+                                <td>@visit.StartDate.ToShortDateString()</td>
+                                <td>@visit.EndDate.ToShortDateString()</td>
+                                <td>@visit.Notes</td>
+                                <td>@visit.CreatedAt</td>
+                            </tr>
+
+                            }
+
+                        </tbody>
+                    </table>
+
+
+                </div>
+                    <div style="width:100% ;text-align:center">
+                        <hr class="break-line" />
+
+                    </div>
+                <div class="row " style="justify-content: space-between;" style="page-break-inside:avoid">
+
+                    <p id="nametwo">تقرير الادوية <i class="fa-solid fa-hospital-user"></i></p>
+                                <div class="beds-containerThree mb-3">
+                                    <div class="bedsThree">
+                                        <div class="my-table-input" style="background-color: #d9d5d5;">
+                                            <div class="text-center">
+                                                <label for="checkbox-id" style="margin-left: 5px;"> مجموع الادوية الماخوذة </label>
+                                                <label for="checkbox-id" style="margin-left: 5px;">@Model.MedicinesTakenCount</label>
+                                            </div>
+
+                                        </div>
+                                        <div class="my-table-input" style="background-color: #d9d5d5;">
+
+
+                                            <div class="text-center">
+                                                <label for="checkbox-id" style="margin-left: 5px;"> مجموع الكميات الماخوذة </label>
+                                                <label for="checkbox-id" style="margin-left: 5px;">@Model.MedicinesQuantityTakenCount</label>
+
+                                            </div>
+
+                                        </div>
+
+
+
+                                    </div>
+                                </div>
+                    <p id="nametwo" class="mb-2">تفاصيل الادوية <i class="fa-solid fa-hospital-user"></i></p>
+                    <div class="beds-containerThree" style="page-break-inside:avoid">
+                        <div class="bedsThree">
+                                @foreach (var visitMedicine in Model.MedicinesTaken)
+                                {
+                            <div class="col-lg-12 ">
+@*                                    put for loop out the column
+*@
+                                    <div class="beds-containerThree mb-3">
+                                        <div class="bedsThree">
+                                            <div class="my-table-input" style="background-color: #d9d5d5;">
+                                                <div class="text-center">
+                                                    <label for="checkbox-id" style="margin-left: 5px;">تاريخ إعطاء الادوية</label>
+                                                    <label for="checkbox-id" style="margin-left: 5px;">@visitMedicine.CreatedAt</label>
+
+                                                </div>
+
+                                            </div>
+                                            <div class="my-table-input" style="background-color: #d9d5d5;">
+
+                                                <div class="text-center">
+                                                    <label for="checkbox-id" style="margin-left: 5px;">رقم الكشف </label>
+                                                    <label for="checkbox-id" style="margin-left: 5px;">@visitMedicine.VisitNumber</label>
+                                                </div>
+
+                                            </div>
+                                            <div class="my-table-input" style="background-color: #d9d5d5;">
+
+                                                <div class="text-center">
+                                                    <label for="checkbox-id" style="margin-left: 5px;"> عدد الادوية الماخوذة </label>
+                                                    <label for="checkbox-id" style="margin-left: 5px;">@visitMedicine.VisitMedicinesCount</label>
+                                                </div>
+
+                                            </div>
+                                            <div class="my-table-input" style="background-color: #d9d5d5;">
+
+                                                <div class="text-center">
+                                                    <label for="checkbox-id" style="margin-left: 5px;"> كمية الادوية الماخوذة </label>
+                                                    <label for="checkbox-id" style="margin-left: 5px;">@visitMedicine.VisitMedicinesQuantityCount</label>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+                                    <table class="table  table-striped text-center" id="my-table">
+                                        <thead>
+                                        <th>مسلسل</th>
+                                        <th>اسم الدواء</th>
+                                        <th>الكمية</th>
+
+                                        </thead>
+                                        <tbody>
+                                            @if (visitMedicine.VisitMedicinesCount == 0)
+                                            {
+                                            <th colspan="3" style="color:var(--red-color)"> لا يوجد بيانات</th>
+                                            }
+                                            @foreach (var medicine in visitMedicine.VisitMedicines)
+                                            {
+                                            <tr>
+                                                <td></td>
+                                                <td>@medicine.MedicineName</td>
+                                                <td>@medicine.Quantity</td>
+                                            </tr>
+                                            }
+
+                                        </tbody>
+                                    </table>
+                            </div>
+                                }
+
+                        </div>
+                    </div>
+
+
+                </div>
+                <div style="width:100% ;text-align:center">
+                    <hr class="break-line" />
+
+                </div>
+
+                <div class="col-lg-12" style="page-break-inside:avoid">
+                    
+                    <p id="nametwo">تقرير الملاحظة <i class="fa-solid fa-bed"></i></p>
+                    @if (Model.UnderObservarionsHistory.Count == 0)
+                    {
+                        <h3 class="text-center" style="color:var(--red-color)"> لا يوجد بيانات</h3>
+                    }
+                    else
+                    {
+                        <div class="beds-containerThree">
+                            <div class="bedsThree">
+
+                                @foreach (var bed in Model.UnderObservarionsHistory)
+                                {
+
                                     <div>
                                         <p class="text-center " style="font-weight: bold;">
-                                          السرير رقم @bed.BedNumber
-                                          قسم @bed.DepratmentName
+                                            السرير رقم @bed.BedNumber
+                                            قسم @bed.DepratmentName
                                         </p>
                                         <table class="table  table-striped text-center" id="my-table">
                                             <thead>
@@ -215,7 +339,7 @@
 
                                             </thead>
                                             <tbody>
-                                                @foreach(var history in bed.BedHistory)
+                                                @foreach (var history in bed.BedHistory)
                                                 {
                                                     <tr>
                                                         <td></td>
@@ -225,20 +349,20 @@
                                                         <td>@history.Notes</td>
                                                     </tr>
                                                 }
-                                              
+
                                             </tbody>
                                         </table>
                                     </div>
-                                    }
-                                   
-                                </div>
+                                }
+
                             </div>
-                                
-                            }
                         </div>
 
-                    </div>
-                </div>
+                    }
+            </div>
+       
+
+
 
 
 

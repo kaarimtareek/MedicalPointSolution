@@ -33,3 +33,12 @@ Admin123
 - work on numerical reports.
 - work on database backup for each group.
 - work on filters.
+
+========
+6-9-2023
+========
+**Feedback from doctors in the medical point**
+- add expiration date to medicines ( they need expiration date to each quantity added & deduct quantity from the first quantity )
+- add export medicines when the patient is under observation & will be added in the patient report.
+- add the medicines that patient took in the patient report.
+

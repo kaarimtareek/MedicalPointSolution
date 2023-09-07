@@ -181,23 +181,12 @@ namespace MedicalPoint.Controllers
         public async Task<IActionResult> Delete(int id)
         {
 
-            var medicine = await _medicinesService.Get(id);
             var userId = HttpContext.GetUserId();
             if(userId == null)
             {
                 return RedirectToAction("AccessDenied","Account");
             }
-            if (medicine == null)
-            {
-                var errorViewModel = new ErrorViewModel
-                {
-                    ActionPath = nameof(Index),
-                    ErrorMessage = ConstantMessageCodes.MedicineNotFound,
-                    ControllerPath = nameof(MedicinesController),
-
-                };
-                return NotFound(errorViewModel);
-            }
+           
            var result=  await _medicinesService.Delete(userId.Value, id);
            if(!result.Success)
             {

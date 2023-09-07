@@ -28,7 +28,7 @@ namespace MedicalPoint.Services
         }
         public async Task<List<Medicine>> GetAll(string name = "", int? quantityLessThan = null, bool medicinesAboutToFinish = false, CancellationToken cancellationToken = default)
         {
-            var query = _context.Medicines.AsNoTracking().AsQueryable();
+            var query = _context.Medicines.AsNoTracking().Where(x=> !x.IsDeleted).AsQueryable();
             if (!string.IsNullOrWhiteSpace(name))
             {
                 query = query.Where(x => x.Name.Contains(name));
@@ -85,7 +85,7 @@ namespace MedicalPoint.Services
                 UserId = userId,
             };
             await _context.MedicineHistories.AddAsync(history);
-            _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
             return OperationResult<Medicine>.Succeeded(medicine);
         }
         public async Task<OperationResult<Medicine>> Add(int userId, string name, int quantity, int? quantityThreshold = null, CancellationToken cancellationToken = default)

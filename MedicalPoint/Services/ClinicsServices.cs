@@ -19,10 +19,12 @@ namespace MedicalPoint.Services
     public class ClinicsServices : IClinicsServices
     {
         private readonly ApplicationDbContext _context;
+        private readonly ICacheService _cacheService;
 
-        public ClinicsServices(ApplicationDbContext context)
+        public ClinicsServices(ApplicationDbContext context, ICacheService cacheService)
         {
             _context = context;
+            _cacheService = cacheService;
         }
 
         public async Task<Clinic> GetById(int id, CancellationToken cancellationToken = default)
@@ -35,7 +37,7 @@ namespace MedicalPoint.Services
         }
         public List<Clinic> GetAll(bool activeOnly = true)
         {
-            return  QueryFinder.GetClinics(_context, activeOnly);
+            return  _cacheService.GetClinics();
         }
         public async Task<OperationResult<Clinic>> Add(string name, CancellationToken cancellationToken = default)
         {
@@ -51,6 +53,7 @@ namespace MedicalPoint.Services
             };
             await _context.Clinics.AddAsync(clinic, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
+            _cacheService.UpdateClinics();
             return OperationResult<Clinic>.Succeeded(clinic);
         }
         public async Task<OperationResult<Clinic>> Edit(int id, string name, bool isActive, CancellationToken cancellationToken = default)
@@ -69,6 +72,7 @@ namespace MedicalPoint.Services
             clinic.IsActive = isActive;
 
             await _context.SaveChangesAsync(cancellationToken);
+            _cacheService.UpdateClinics();
             return OperationResult<Clinic>.Succeeded(clinic);
         }
 
@@ -82,6 +86,7 @@ namespace MedicalPoint.Services
             }
             _context.Clinics.Remove(clinic);
             await _context.SaveChangesAsync(cancellationToken);
+            _cacheService.UpdateClinics();
             return OperationResult<Clinic>.Succeeded(clinic);
         }
     }

@@ -13,6 +13,7 @@
         public static string GeneralNumberAlreadyExist = "الرقم العام موجود بالفعل";
         
         public static string PatientNotFound = "المريض غير موجود";
+        public static string PatientAlreadyUnderObservation = "المريض محجوز بالفعل";
         public static string PatientHasAlreadyActiveVisit = "المريض لديه كشف لم ينتهي بعد";
         public static string VisitNotFound = "الكشف غير موجود";
         public static string CannotChangeVisitStatus = "لا يمكن تغيير حالة الكشف";
@@ -46,6 +47,8 @@
         public static string ClinicNameAlreadyExist = "اسم العيادة  موجود بالفعل";
         public static string DepartmentNotFound = "القسم غير موجود";
         public static string BedNotFound = "السرير غير موجود";
+        public static string CannotRemovePatientFromBed = "لا يمكن إزالة المريض من هذا السرير";
+        public static string CannotAddPatientToBed = "لا يمكن اضافة مريض لهذا السرير ";
 
 
     }

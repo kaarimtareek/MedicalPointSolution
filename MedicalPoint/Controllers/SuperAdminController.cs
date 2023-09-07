@@ -529,7 +529,6 @@ namespace MedicalPoint.Controllers
                 Name = clinic.Name,
                 Id = id,
 
-
             };
             return View(viewModel);
         }

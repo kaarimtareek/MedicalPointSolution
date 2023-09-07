@@ -148,6 +148,13 @@ namespace MedicalPoint.Services
             var visitRests = await _context.VisitRests
                 .AsNoTracking()
                 .Where(x=> x.PatientId == patientId).ToListAsync();
+            var visitsIds = visits.Select(x=> x.Id).ToList();
+            var visitsDictionary = visits.ToDictionary(x => x.Id);
+            var visitMedicines = await _context.VisitMedicines.AsNoTracking().Where(x => visitsIds.Contains(x.VisitId)).ToListAsync();
+            var medicinesIds = visitMedicines.Select(x=> x.MedicineId).ToList();
+            var medicines = await _context.Medicines.AsNoTracking().Where(x => medicinesIds.Contains(x.Id)).ToDictionaryAsync(x=> x.Id);
+
+
             var report = new PatientReport
             {
                 Id = patientId,
@@ -206,7 +213,20 @@ namespace MedicalPoint.Services
                         PatientId = history.PatientId??0,
                     })).OrderByDescending(x=> x.CreatedAt).ToList(),
                     
-                })
+                }),
+               MedicinesTaken = visitMedicines.GroupBy(x=> x.VisitId).ToList().Select(x=> new MedicinesTakenForPatientReport
+               {
+                   VisitId = x.Key,
+                   CreatedAt = visitsDictionary.GetValueOrDefault(x.Key)?.CreatedAt?? DateTime.Now,
+                   VisitNumber = visitsDictionary.GetValueOrDefault(x.Key)?.VisitNumber??StringExtensions.Dashes,
+                   VisitMedicines = x.Select(xx=> new VisitMedicineForPatientReport
+                   {
+                       MedicineId =  xx.MedicineId,
+                       Quantity = xx.Quantity,
+                       VisitMedicineId = xx.Id,
+                       MedicineName = medicines.GetValueOrDefault(xx.MedicineId)?.Name??StringExtensions.Dashes,
+                   } ).ToList()
+               }).ToList()
             };
             stopwatch.Stop();
             var value = stopwatch.Elapsed.TotalMilliseconds;
@@ -380,9 +400,28 @@ namespace MedicalPoint.Services
         public DateTime CreatedAt { get; set; }
         public Dictionary<int, int> ClinicsCount { get; set; }
         public int UnderObservationsCount { get; set; }
+        public int MedicinesTakenCount =>  MedicinesTaken?.Sum(x=> x.VisitMedicinesCount)?? 0;
+        public int MedicinesQuantityTakenCount =>  MedicinesTaken?.Sum(x=> x.VisitMedicinesQuantityCount) ?? 0;
         public List<UnderObservarionForPatientReport> UnderObservarionsHistory { get; set; }
         public List<VisitForPatientReport> VisitHistory { get; set; }
         public List<VisitRestForPatientReport> VisitRests { get; set; }
+        public List<MedicinesTakenForPatientReport> MedicinesTaken { get; set; }
+    }
+    public class MedicinesTakenForPatientReport
+    {
+        public int VisitId { get; set; }
+        public string VisitNumber { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public int VisitMedicinesCount => VisitMedicines?.Count?? 0;
+        public int VisitMedicinesQuantityCount => VisitMedicines?.Sum(x=> x.Quantity)?? 0;
+        public List<VisitMedicineForPatientReport> VisitMedicines { get; set; }
+    }
+    public class VisitMedicineForPatientReport
+    {
+        public string MedicineName { get; set; }
+        public int MedicineId { get; set; }
+        public int VisitMedicineId { get; set; }
+        public int Quantity { get; set; }
     }
     public class VisitRestForPatientReport
     {

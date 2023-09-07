@@ -68,19 +68,23 @@ namespace MedicalPoint.Services
         public async Task<OperationResult<UnderObservationBed>> AddPatientToBed(int bedId,  int patientId, int doctorId, string notes, DateTime? enterDate = null, int? visitId = null, CancellationToken cancellationToken = default)
         {
             var bed = await _context.UnderObservationBeds.FirstOrDefaultAsync(x => x.Id == bedId, cancellationToken);
-            if (bed == null || !bed.CanAddPatient)
+            if (bed == null)
             {
-                return OperationResult<UnderObservationBed>.Failed("");
+                return OperationResult<UnderObservationBed>.Failed(ConstantMessageCodes.BedNotFound);
+            }
+            if ( !bed.CanAddPatient)
+            {
+                return OperationResult<UnderObservationBed>.Failed(ConstantMessageCodes.CannotAddPatientToBed);
             }
             var patient = await _context.Patients.FirstOrDefaultAsync(x => x.Id == patientId, cancellationToken);
             if (patient == null)
             {
-                return OperationResult<UnderObservationBed>.Failed("");
+                return OperationResult<UnderObservationBed>.Failed(ConstantMessageCodes.PatientNotFound);
             }
             //TODO:add this validation in compiled queries
             if (await _context.UnderObservationBeds.AnyAsync(x => x.PatientId == patientId, cancellationToken))
             {
-                return OperationResult<UnderObservationBed>.Failed("");
+                return OperationResult<UnderObservationBed>.Failed(ConstantMessageCodes.PatientAlreadyUnderObservation);
             }
             bed.PatientId = patientId;
             bed.EnterDate = enterDate ?? DateTime.Now;
@@ -109,7 +113,11 @@ namespace MedicalPoint.Services
             var bed = await _context.UnderObservationBeds.FirstOrDefaultAsync(x => x.Id == bedId, cancellationToken);
             if (bed == null || !bed.CanRemovePatient)
             {
-                return OperationResult<UnderObservationBed>.Failed("");
+                return OperationResult<UnderObservationBed>.Failed(ConstantMessageCodes.BedNotFound);
+            }
+            if ( !bed.CanRemovePatient)
+            {
+                return OperationResult<UnderObservationBed>.Failed(ConstantMessageCodes.CannotRemovePatientFromBed);
             }
             var bedHistory = new UnderObservationBedHistory
             {

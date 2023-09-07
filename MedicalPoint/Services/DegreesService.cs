@@ -19,10 +19,12 @@ namespace MedicalPoint.Services
     public class DegreesService : IDegreesService
     {
         private readonly ApplicationDbContext _context;
+        private readonly ICacheService _cacheService;
 
-        public DegreesService(ApplicationDbContext context)
+        public DegreesService(ApplicationDbContext context, ICacheService cacheService)
         {
             _context = context;
+            _cacheService = cacheService;
         }
         public async Task<Degree> GetById(int id, CancellationToken cancellationToken = default)
         {
@@ -34,7 +36,8 @@ namespace MedicalPoint.Services
         }
         public List<Degree> GetAll(bool activeOnly = true)
         {
-            return  QueryFinder.GetDegrees(_context, activeOnly);
+            return _cacheService.GetDegrees(); 
+                //QueryFinder.GetDegrees(_context, activeOnly);
         }
         public async Task<OperationResult<Degree>> Add(string name, CancellationToken cancellationToken = default)
         {
@@ -49,6 +52,7 @@ namespace MedicalPoint.Services
             };
             await _context.Degrees.AddAsync(degree, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
+            _cacheService.UpdateDegrees();
             return OperationResult<Degree>.Succeeded(degree);
         }
         public async Task<OperationResult<Degree>> Edit(int id, string name, CancellationToken cancellationToken = default)
@@ -65,6 +69,7 @@ namespace MedicalPoint.Services
             }
             degree.Name = name;
             await _context.SaveChangesAsync(cancellationToken);
+            _cacheService.UpdateDegrees();
             return OperationResult<Degree>.Succeeded(degree);
         }
 
@@ -78,6 +83,7 @@ namespace MedicalPoint.Services
             }
             _context.Degrees.Remove(degree);
             await _context.SaveChangesAsync(cancellationToken);
+            _cacheService.UpdateDegrees();
             return OperationResult<Degree>.Succeeded(degree);
         }
     }

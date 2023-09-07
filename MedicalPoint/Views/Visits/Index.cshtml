@@ -65,13 +65,13 @@
                           <form id="formFilterVisits" class="print" asp-action="Index" asp-controller="Visits" method="get" style="display:none"></form>
                     <div class="col-lg-12 text-center print">
                         <div class="row justify-content-center mb-2 ">
-                            <div class="col-lg-3 text-center">
-                                <input class="my-table-input print"value="@ViewBag.SearchValue" id="input-search"  name="searchValue" placeholder="ابحث هنا.." form="formFilterVisits" >
-                            </div>
                             <div class="col-lg-2 text-center">
-                                <input class="my-table-input" id="input-date" valueAsDate="@ViewBag.Date"  name="date"  type="date"  form="formFilterVisits" >
+                                <input style="width:90%" class="my-table-input print"value="@ViewBag.SearchValue" id="input-search"  name="searchValue" placeholder="ابحث هنا.." form="formFilterVisits" >
                             </div>
-                            <div class="col-lg-3 text-center ">
+                            <div  class="col-lg-2 text-center">
+                                <input style="width:90%" class="my-table-input" id="input-date" valueAsDate="@ViewBag.Date"  name="date"  type="date"  form="formFilterVisits" >
+                            </div>
+                            <div class="col-lg-2 text-center ">
                                 <select class="my-table-select "  id="select-clinic" asp-items="@ViewBag.Clinics"  name="clinicId" form="formFilterVisits">
                                      @if(ViewBag.SelectedClinic == null)
                                     {   
@@ -84,7 +84,7 @@
                                     }
                                 </select>
                             </div>
-                            <div class="col-lg-3 text-center ">
+                            <div class="col-lg-2 text-center ">
                                 <select class="my-table-select "  id="select-visit-type" asp-items="@ViewBag.VisitTypes" name="type" form="formFilterVisits">
                                       @if(ViewBag.SelectedVisitType == null)
                                     {   

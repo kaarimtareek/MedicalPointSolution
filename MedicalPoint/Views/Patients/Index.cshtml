@@ -49,7 +49,7 @@
                         <form asp-action="Index" method="get" id="formFilterPatients" style="display:none">
                         </form>
                         <div class="row justify-content-center mb-4 print"> 
-                            <div class="col-lg-8 text-center">
+                            <div class="col-lg-10 text-center">
                                 <div>
                                     @*addd clear button*@
                                     <select id="select-degrees" style="width:40%;border-left:5px solid transparent !important; padding-right: 2vh; padding-left: 2vh; padding-top: 0.5vh; padding-bottom: 0.5vh; border-radius:15px; text-indent:2px; margin-left:5px;"  asp-items="@ViewBag.Degrees"  form="formFilterPatients" name="degreeId">
@@ -68,8 +68,10 @@
                                     <input  type="checkbox"   checked="@ViewBag.CheckHasVisit" form="formFilterPatients" name="checkHasVisit" id="check-input"/>*@
 
                                     <input id="search-input" type="text" name="searchValue"  value="@ViewBag.SearchValue" style="width:40%; padding-right: 2vh; padding-left: 2vh; padding-top: 0.5vh; padding-bottom: 0.5vh; border-radius:15px; text-indent:2px; margin-left:5px;" form="formFilterPatients"  placeholder="كلمة البحث" />
+
                         <input type="button" class="table-button-red"  value="مسح البحث" onClick="ResetFilters(['select-degrees','search-input', 'check-input'])"/>
                         <input type="submit" class="table-button-blue"  value="تنفيذ" form="formFilterPatients"/>
+
                                 </div>
                             </div>
                         </div>
@@ -122,7 +124,7 @@
                       
                     </table>
                                          <!-- pagenation -->
-                    <div class="row">
+                    <div class="row print">
                      <form style="display:none" id="formPatientsPagination" method="get" asp-action="Index" asp-asp-controller="Visits"></form>
                      <input form="formPatientsPagination" value="@ViewBag.SearchValue" style="display:none" name="searchValue"  />
                      <input form="formPatientsPagination" value="@ViewBag.SelectedDegree" style="display:none" name="degreeId"  />

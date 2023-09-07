@@ -285,8 +285,9 @@ namespace MedicalPoint.Controllers
             }
             var result = await _underObservationBedsService.AddPatientToBed(id,  viewModel.PatientId, userId.Value, viewModel.Notes, null);
             if(!result.Success)
-            { 
-                return BadRequest();
+            {
+                TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY] = result.Message;
+                return RedirectToAction(nameof(AddPatientToBed), new { id });
             }
             return RedirectToAction("Bed", "Departments", new {id });
         }

@@ -56,17 +56,28 @@ namespace MedicalPoint.Services
         }
         public void UpdateClinics()
         {
-           
-                CacheData.Update(QueryFinder.GetClinics(_context));
+           lock(CacheData.Clinics)
+            {
+                var clinics = _context.Clinics.AsNoTracking().ToList();
+                  CacheData.Update(clinics);
+            }
             
         }
         public void UpdateDegrees()
         {
-            CacheData.Update(QueryFinder.GetDegrees(_context));
+            lock(CacheData.Degrees)
+            {
+                var degrees = _context.Degrees.AsNoTracking().ToList();
+                CacheData.Update(degrees);
+            }
         }
         public void UpdateVisitRestTypes()
         {
-            CacheData.Update(QueryFinder.GetVisitRestTypes(_context));
+            lock(CacheData.VisitRestTypes)
+            {
+
+                CacheData.Update(QueryFinder.GetVisitRestTypes(_context));
+            }
         }
     }
     public class CacheData
