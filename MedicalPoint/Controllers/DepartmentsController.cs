@@ -180,6 +180,49 @@ namespace MedicalPoint.Controllers
             SendErrorMessageToViewBagAndResetTempData();
             return View(viewModel);
         }
+        public async Task<IActionResult> BedDetails(int id)
+        {
+            var bed = await _underObservationBedsService.Get(id, true);
+            if (bed == null)
+            {
+                TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY] = ConstantMessageCodes.BedNotFound;
+                return RedirectToAction(nameof(Index));
+            }
+            var viewModel = new BedViewModel
+            {
+                BedNumber = bed.BedNumber,
+                DepartmentId = bed.DepartmentId,
+                DepartmentName = bed.Department?.Name??"",
+                DoctorDegree = bed.Doctor?.Degree?.Name??"",
+                DoctorId = bed.DoctorId,
+                DoctorName = bed.Doctor?.FullName??"",
+                EnterDate= bed.EnterDate,
+                Id= bed.Id,
+                IsActive= bed.IsActive,
+                Notes= bed.Notes,
+                PatientId = bed.PatientId,
+                VisitId = bed.VisitId,
+                PatientDegree = bed.Patient?.Degree?.Name??"",
+                PatientName = bed.Patient?.Name??"",
+                History = bed.History?.Select(x=> new BedHistoryViewModel 
+                {
+                    Id = x.Id,
+                    ActionDate = x.ActionDate,
+                    ActionType = x.ActionType,
+                    BedId = x.BedId,
+                    DoctorId= x.DoctorId,
+                    Notes = x.Notes??"",
+                    PatientId = x.PatientId,
+                    VisitId = x.VisitId,
+                    DoctorName = x.Doctor?.FullName??"",
+                    PatientName = x.Patient?.Name??"",
+                    EnterDate = x.EnterDate,
+
+                }).ToList(),
+            };
+            SendErrorMessageToViewBagAndResetTempData();
+            return View(viewModel);
+        }
         public async Task<IActionResult> AddPatientToBed(int id)
         {
             var patient = await _patientsService.GetById(id);
