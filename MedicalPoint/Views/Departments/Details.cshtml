@@ -46,10 +46,12 @@
                 <div class="beds">
                     @foreach(var bed in Model.Beds)
                     {
+                        //TODO: add status class name here
+                        var statusId = bed.IsActive ? "" : "";
                         string imgName =  bed.IsAvailable?  "empty bed.png": "bed with paitant.png";
                         string imgClass = bed.IsAvailable ? "empty-bed": "filled-bed";
                         <div class="text-center" >
-                       <a asp-action="Bed" asp-controller="Departments" asp-route-id="@bed.Id"><img class="@imgClass" src="~/UserDesign/img/@imgName" ></a> 
+                       <a id="@statusId" asp-action="Bed" asp-controller="Departments" asp-route-id="@bed.Id"><img class="@imgClass" src="~/UserDesign/img/@imgName" ></a> 
                         
                             @if (!bed.IsAvailable)
                             {
@@ -58,7 +60,12 @@
                             }
                             else
                             {
+                                string toggleButtonName = bed.IsActive ? "إيقاف" : "تفعيل";
+                                string toggleButtonStyleClass = bed.IsActive ? "table-button-red" : "table-button-blue";
                                 <p id="bedname">سرير رقم (@bed.BedNumber) </p>
+                                <p id="bedname"><a asp-action="ToggleBedStatus" asp-route-id="@bed.Id" class="@toggleButtonStyleClass"> 
+                                @toggleButtonName    
+                                </a></p>
                                 
                             }
                         </div>

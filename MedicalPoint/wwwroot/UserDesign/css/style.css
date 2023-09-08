@@ -636,6 +636,11 @@ td {
     margin-top: 20px;
     font-weight: bold;
 }
+#disabled-bed {
+    pointer-events: none !important;
+    background-color: var(--gray-color) !important;
+    
+}
 
 
 .beds-container {

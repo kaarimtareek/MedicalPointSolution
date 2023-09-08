@@ -61,40 +61,53 @@
                                     <div class="beds">
                                         @foreach(var bed in department.Beds)
                                         {
-                                            @if(!bed.IsAvailable)
+                                            @if(!bed.IsActive)
                                             {
                                                 <div class="text-center">
-                                                    <img class="filled-bed" src="~/UserDesign/img/bed with paitant.png">
+                                                    <img class="filled-bed" src="~/UserDesign/img/empty bed.png">
                                                     <p id="bedname">السرير رقم(@bed.BedNumber)</p>
-                                                    <p id="nametwo" style="color:red">محجوز</p>
+                                                    <p id="nametwo" style="color:var(--grey-color)">غير مفعل</p>
 
                                                 </div>
                                             }
                                             else
                                             {
-                                                <form style="display:none" id="formAddPatient-@bed.Id" method="post" asp-route-id="@bed.Id" asp-action="AddPatientToBed" asp-controller="Departments"></form>
+                                                
+                                                @if(!bed.IsAvailable)
+                                                {
+                                                    <div class="text-center">
+                                                        <img class="filled-bed" src="~/UserDesign/img/bed with paitant.png">
+                                                        <p id="bedname">السرير رقم(@bed.BedNumber)</p>
+                                                        <p id="nametwo" style="color:red">محجوز</p>
+
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <form style="display:none" id="formAddPatient-@bed.Id" method="post" asp-route-id="@bed.Id" asp-action="AddPatientToBed" asp-controller="Departments"></form>
                                            
-                                                <div class="text-center">
-                                                    <img class="empty-bed" src="~/UserDesign/img/empty bed.png">
-                                                    <p id="bedname">السرير رقم(@bed.BedNumber)</p>
-                                                    <input id="input-notes-@bed.Id" form="formAddPatient-@bed.Id" name="Notes" style="display:none" />
-                                                    <input id="input-bedId-@bed.Id" form="formAddPatient-@bed.Id" name="PatientId" value="@Model.PatientId" type="number" readonly style="display:none" />
+                                                    <div class="text-center">
+                                                        <img class="empty-bed" src="~/UserDesign/img/empty bed.png">
+                                                        <p id="bedname">السرير رقم(@bed.BedNumber)</p>
+                                                        <input id="input-notes-@bed.Id" form="formAddPatient-@bed.Id" name="Notes" style="display:none" />
+                                                        <input id="input-bedId-@bed.Id" form="formAddPatient-@bed.Id" name="PatientId" value="@Model.PatientId" type="number" readonly style="display:none" />
 
 
-                                                    <input type="submit" class="table-button-blue" id="button-save-@bed.Id" value="تأكيد الحجز" form="formAddPatient-@bed.Id" style="display:none" />
+                                                        <input type="submit" class="table-button-blue" id="button-save-@bed.Id" value="تأكيد الحجز" form="formAddPatient-@bed.Id" style="display:none" />
                                                
 
-                                                    <input type="button" value="إلغاء" style="display:none" id="button-cancel-@bed.Id"
-                                                           onclick="enableDisable({ids: ['button-add-patient-@bed.Id', 'button-save-@bed.Id','button-cancel-@bed.Id', 'input-notes-@bed.Id'] } )"
-                                                           class="table-button-red"/>
+                                                        <input type="button" value="إلغاء" style="display:none" id="button-cancel-@bed.Id"
+                                                               onclick="enableDisable({ids: ['button-add-patient-@bed.Id', 'button-save-@bed.Id','button-cancel-@bed.Id', 'input-notes-@bed.Id'] } )"
+                                                               class="table-button-red"/>
 
-                                                    <input type="button" value="حجز هنا" id="button-add-patient-@bed.Id" 
-                                                    onclick="enableDisable({ids: ['button-add-patient-@bed.Id', 'button-save-@bed.Id','button-cancel-@bed.Id', 'input-notes-@bed.Id'] } )" 
-                                                    class="table-button-red"/>
+                                                        <input type="button" value="حجز هنا" id="button-add-patient-@bed.Id" 
+                                                        onclick="enableDisable({ids: ['button-add-patient-@bed.Id', 'button-save-@bed.Id','button-cancel-@bed.Id', 'input-notes-@bed.Id'] } )" 
+                                                        class="table-button-red"/>
                                                
-                                                </div>
+                                                    </div>
 
                                                 
+                                                }
                                             }
                                             
                                         }

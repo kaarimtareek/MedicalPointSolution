@@ -66,13 +66,8 @@ namespace MedicalPoint.Controllers
             var department = await _departmentsService.Get(id);
             if(department == null)
             {
-                var errorViewModel = new ErrorViewModel
-                {
-                    ControllerPath = "Departments",
-                    ErrorMessage = "",
-                    ActionPath = nameof(Index),
-                };
-                return NotFound(errorViewModel);
+                TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY] = ConstantMessageCodes.DepartmentNotFound;
+                return RedirectToAction(nameof(Index));
             }
             var viewModel = new DepartmentViewModel
             {
@@ -137,13 +132,8 @@ namespace MedicalPoint.Controllers
             var bed = await _underObservationBedsService.Get(id);
             if (bed == null)
             {
-                var errorViewModel = new ErrorViewModel
-                {
-                    ControllerPath = "Departments",
-                    ErrorMessage = "",
-                    ActionPath = nameof(Index),
-                };
-                return NotFound(errorViewModel);
+                TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY] = ConstantMessageCodes.BedNotFound;
+                return RedirectToAction(nameof(Index));
             }
             var viewModel = new BedViewModel
             {
@@ -243,6 +233,8 @@ namespace MedicalPoint.Controllers
                      Beds = x.Beds.Select(x => new BedsViewModel
                      {
                          PatientId= x.PatientId,
+                         VisitId= x.VisitId,    
+                         IsActive = x.IsActive,
                          BedNumber = x.BedNumber,
                          DepartmentId = x.DepartmentId,
                          DoctorId = x.DoctorId,
@@ -300,6 +292,23 @@ namespace MedicalPoint.Controllers
 
             }
             return RedirectToAction("Bed", "Departments", new { id });
+        }
+
+        public async Task<IActionResult> ToggleBedStatus(int id)
+        {
+            var userId = HttpContext.GetUserId();
+            if (!userId.HasValue)
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+            var result = await _underObservationBedsService.ToggleBedStatus(userId.Value,  id);
+            if(!result.Success)
+            {
+                TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY] = result.Message;
+                return RedirectToAction(nameof(Index));
+
+            }
+                return RedirectToAction(nameof(Index));
         }
        
         public async Task<IActionResult> RemovePatient(int id)

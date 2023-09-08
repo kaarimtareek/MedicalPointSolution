@@ -47,6 +47,8 @@
         public static string ClinicNameAlreadyExist = "اسم العيادة  موجود بالفعل";
         public static string DepartmentNotFound = "القسم غير موجود";
         public static string BedNotFound = "السرير غير موجود";
+        public static string CannotDeactivateBedWithPatient = "لا يمكن ازالة سرير وبه مريض";
+        public static string CannotDeleteBedWithHistory = "لا يمكن مسح سرير وله سجل";
         public static string CannotRemovePatientFromBed = "لا يمكن إزالة المريض من هذا السرير";
         public static string CannotAddPatientToBed = "لا يمكن اضافة مريض لهذا السرير ";
 

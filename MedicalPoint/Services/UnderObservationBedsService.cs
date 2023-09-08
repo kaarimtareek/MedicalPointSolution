@@ -9,14 +9,24 @@ namespace MedicalPoint.Services
     public interface IUnderObservationBedsService
     {
         Task<OperationResult<UnderObservationBed>> AddBedToDepartment(int departmentId, CancellationToken cancellationToken = default);
-        Task<OperationResult<UnderObservationBed>> AddPatientToBed(int bedId,  int patientId, int doctorId, string notes, DateTime? enterDate = null, int? visitId = null, CancellationToken cancellationToken = default);
-        Task<OperationResult<UnderObservationBed>> Edit(int bedId, int doctorId, string notes,  CancellationToken cancellationToken = default);
+
+        Task<OperationResult<UnderObservationBed>> AddPatientToBed(int bedId, int patientId, int doctorId, string notes, DateTime? enterDate = null, int? visitId = null, CancellationToken cancellationToken = default);
+        Task<OperationResult> Delete(int userId, int id, CancellationToken cancellationToken = default);
+        Task<OperationResult<UnderObservationBed>> Edit(int bedId, int doctorId, string notes, CancellationToken cancellationToken = default);
+
         Task<UnderObservationBed> Get(int id, bool withHistory = false, CancellationToken cancellationToken = default);
+
         Task<List<UnderObservationBed>> GetAll(int departmentId, CancellationToken cancellationToken = default);
+
         Task<List<UnderObservationBed>> GetAllAvailable(int departmentId, CancellationToken cancellationToken = default);
+
         Task<List<UnderObservationBed>> GetAllAvailable(List<int> departmentsIds, CancellationToken cancellationToken = default);
+
         Task<int?> GetBedIdByPatientId(int patientId, CancellationToken cancellationToken = default);
+
         Task<OperationResult<UnderObservationBed>> RemovePatientFromBed(int bedId, int doctorId, CancellationToken cancellationToken = default);
+
+        Task<OperationResult<UnderObservationBed>> ToggleBedStatus(int userId, int id, CancellationToken cancellationToken = default);
     }
 
     public class UnderObservationBedsService : IUnderObservationBedsService
@@ -27,20 +37,22 @@ namespace MedicalPoint.Services
         {
             _context = context;
         }
+
         public async Task<List<UnderObservationBed>> GetAll(int departmentId, CancellationToken cancellationToken = default)
         {
             var result = await _context.UnderObservationBeds.AsNoTracking().Where(x => x.DepartmentId == departmentId).ToListAsync(cancellationToken);
             return result;
         }
-        
+
         public async Task<List<UnderObservationBed>> GetAllAvailable(int departmentId, CancellationToken cancellationToken = default)
         {
             var result = await _context.UnderObservationBeds.AsNoTracking().Where(x => x.DepartmentId == departmentId && x.IsActive && x.PatientId == null).ToListAsync(cancellationToken);
             return result;
         }
-         public async Task<List<UnderObservationBed>> GetAllAvailable(List<int> departmentsIds, CancellationToken cancellationToken = default)
+
+        public async Task<List<UnderObservationBed>> GetAllAvailable(List<int> departmentsIds, CancellationToken cancellationToken = default)
         {
-            var result = await _context.UnderObservationBeds.AsNoTracking().Where(x => departmentsIds.Contains( x.DepartmentId ) && x.IsActive && x.PatientId == null).ToListAsync(cancellationToken);
+            var result = await _context.UnderObservationBeds.AsNoTracking().Where(x => departmentsIds.Contains(x.DepartmentId) && x.IsActive && x.PatientId == null).ToListAsync(cancellationToken);
             return result;
         }
 
@@ -57,7 +69,7 @@ namespace MedicalPoint.Services
             if (withHistory)
             {
                 query = query
-                    .Include(x => x.History.OrderByDescending(x=> x.ActionDate))
+                    .Include(x => x.History.OrderByDescending(x => x.ActionDate))
                         .ThenInclude(x => x.Patient)
                     .Include(x => x.History.OrderByDescending(x => x.ActionDate))
                         .ThenInclude(x => x.Doctor);
@@ -69,19 +81,19 @@ namespace MedicalPoint.Services
                         .ThenInclude(x => x.Patient)
                     .Include(x => x.History.OrderByDescending(x => x.ActionDate).Take(5))
                         .ThenInclude(x => x.Doctor);
-
             }
-              var result = await query.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+            var result = await query.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
             return result;
         }
-        public async Task<OperationResult<UnderObservationBed>> AddPatientToBed(int bedId,  int patientId, int doctorId, string notes, DateTime? enterDate = null, int? visitId = null, CancellationToken cancellationToken = default)
+
+        public async Task<OperationResult<UnderObservationBed>> AddPatientToBed(int bedId, int patientId, int doctorId, string notes, DateTime? enterDate = null, int? visitId = null, CancellationToken cancellationToken = default)
         {
             var bed = await _context.UnderObservationBeds.FirstOrDefaultAsync(x => x.Id == bedId, cancellationToken);
             if (bed == null)
             {
                 return OperationResult<UnderObservationBed>.Failed(ConstantMessageCodes.BedNotFound);
             }
-            if ( !bed.CanAddPatient)
+            if (!bed.CanAddPatient)
             {
                 return OperationResult<UnderObservationBed>.Failed(ConstantMessageCodes.CannotAddPatientToBed);
             }
@@ -97,7 +109,7 @@ namespace MedicalPoint.Services
             }
             bed.PatientId = patientId;
             bed.EnterDate = enterDate ?? DateTime.Now;
-            bed.Notes = notes??"";
+            bed.Notes = notes ?? "";
             bed.DoctorId = doctorId;
             bed.VisitId = visitId;
 
@@ -124,14 +136,14 @@ namespace MedicalPoint.Services
             {
                 return OperationResult<UnderObservationBed>.Failed(ConstantMessageCodes.BedNotFound);
             }
-            if ( !bed.CanRemovePatient)
+            if (!bed.CanRemovePatient)
             {
                 return OperationResult<UnderObservationBed>.Failed(ConstantMessageCodes.CannotRemovePatientFromBed);
             }
             var bedHistory = new UnderObservationBedHistory
             {
                 PatientId = bed.PatientId.Value,
-                Notes = bed.Notes??"",
+                Notes = bed.Notes ?? "",
                 VisitId = bed.VisitId,
                 DoctorId = doctorId,
                 ActionDate = DateTime.Now,
@@ -150,15 +162,16 @@ namespace MedicalPoint.Services
 
             return OperationResult<UnderObservationBed>.Succeeded(bed);
         }
+
         public async Task<OperationResult<UnderObservationBed>> AddBedToDepartment(int departmentId, CancellationToken cancellationToken = default)
         {
-            var bedsCount = await _context.UnderObservationBeds.CountAsync(x=> x.DepartmentId == departmentId);
+            var bedsCount = await _context.UnderObservationBeds.CountAsync(x => x.DepartmentId == departmentId);
             var bed = new UnderObservationBed
             {
                 IsActive = true,
                 DepartmentId = departmentId,
-                BedNumber = bedsCount +1,
-                Notes =""
+                BedNumber = bedsCount + 1,
+                Notes = ""
             };
             var bedHistory = new UnderObservationBedHistory
             {
@@ -167,7 +180,7 @@ namespace MedicalPoint.Services
                 ActionType = ConstantObservationBedActionType.CREATE,
                 Bed = bed
             };
-            
+
             await _context.UnderObservationBeds.AddAsync(bed, cancellationToken);
             await _context.UnderObservationBedHistories.AddAsync(bedHistory, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
@@ -176,7 +189,7 @@ namespace MedicalPoint.Services
             return OperationResult<UnderObservationBed>.Succeeded(bed);
         }
 
-        public async Task<OperationResult<UnderObservationBed>> Edit(int bedId, int doctorId, string notes,  CancellationToken cancellationToken = default)
+        public async Task<OperationResult<UnderObservationBed>> Edit(int bedId, int doctorId, string notes, CancellationToken cancellationToken = default)
         {
             var bed = await _context.UnderObservationBeds.FirstOrDefaultAsync(x => x.Id == bedId, cancellationToken);
             if (bed == null || bed.IsAvailable)
@@ -184,8 +197,7 @@ namespace MedicalPoint.Services
                 return OperationResult<UnderObservationBed>.Failed("");
             }
 
-
-            bed.Notes = notes??"";
+            bed.Notes = notes ?? "";
 
             var bedHistory = new UnderObservationBedHistory
             {
@@ -203,12 +215,64 @@ namespace MedicalPoint.Services
             await _context.SaveChangesAsync(cancellationToken);
             return OperationResult<UnderObservationBed>.Succeeded(bed);
         }
+
         public async Task<int?> GetBedIdByPatientId(int patientId, CancellationToken cancellationToken = default)
         {
-            var bedId = await _context.UnderObservationBeds.AsNoTracking().Where(x => x.PatientId == patientId).Select(x=> x.Id).FirstOrDefaultAsync(cancellationToken);
+            var bedId = await _context.UnderObservationBeds.AsNoTracking().Where(x => x.PatientId == patientId).Select(x => x.Id).FirstOrDefaultAsync(cancellationToken);
             if (bedId == 0)
                 return null;
             return bedId;
+        }
+
+        public async Task<OperationResult<UnderObservationBed>> ToggleBedStatus(int userId, int id, CancellationToken cancellationToken = default)
+        {
+            var bed = await _context.UnderObservationBeds.FirstOrDefaultAsync(x => x.Id == id);
+            if (bed == null)
+            {
+                return OperationResult<UnderObservationBed>.Failed(ConstantMessageCodes.BedNotFound);
+            }
+            //it means it has patient, so we cannot change the status of the bed
+            if (!bed.IsAvailable)
+            {
+                return OperationResult<UnderObservationBed>.Failed(ConstantMessageCodes.CannotDeactivateBedWithPatient);
+            }
+            bed.IsActive = !bed.IsActive;
+            var bedHistory = new UnderObservationBedHistory
+            {
+                ActionDate = DateTime.Now,
+                BedId = id,
+                ActionType = ConstantObservationBedActionType.EDIT,
+                DoctorId = userId,
+                IsActive = bed.IsActive,
+                Notes = "",
+            };
+            await _context.UnderObservationBedHistories.AddAsync(bedHistory, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
+            await RefreshAavailableBedCount(bed.DepartmentId);
+            return OperationResult<UnderObservationBed>.Succeeded(bed);
+        }
+
+        public async Task<OperationResult> Delete(int userId, int id, CancellationToken cancellationToken = default)
+        {
+            var bed = await _context.UnderObservationBeds.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+            if (bed == null)
+            {
+                return OperationResult  .Failed("");
+            }
+            //cannot delete the bed if anyone has entered the bed before
+            if (await AnyoneHasEnteredBedBefore(id))
+            {
+
+            }
+            _context.UnderObservationBedHistories.RemoveRange(await _context.UnderObservationBedHistories.Where(x => x.BedId == id).ToListAsync());
+            _context.UnderObservationBeds.Remove(bed);
+            await _context.SaveChangesAsync(cancellationToken);
+            return OperationResult.Succeeded("");
+        }
+
+        private async Task<bool> AnyoneHasEnteredBedBefore(int id)
+        {
+            return await _context.UnderObservationBedHistories.AnyAsync(x => x.BedId == id && (x.ActionType == ConstantObservationBedActionType.ENTER || x.ActionType == ConstantObservationBedActionType.EXIT));
         }
 
         private async Task RefreshAavailableBedCount(int departmentId)
@@ -218,12 +282,13 @@ namespace MedicalPoint.Services
             {
                 return;
             }
-            var availableBedsCount = await _context.UnderObservationBeds.CountAsync(x => x.DepartmentId == departmentId && !x.PatientId.HasValue);
+            var availableBedsCount = await _context.UnderObservationBeds.CountAsync(x => x.DepartmentId == departmentId && !x.PatientId.HasValue && x.IsActive);
+            var activeBedsCount = await _context.UnderObservationBeds.CountAsync(x => x.DepartmentId == departmentId && x.IsActive);
             var bedsCount = await _context.UnderObservationBeds.CountAsync(x => x.DepartmentId == departmentId);
             department.BedsCount = bedsCount;
             department.AvailableBedsCount = availableBedsCount;
+            department.ActiveBedsCount = activeBedsCount;
             await _context.SaveChangesAsync();
         }
-
     }
 }

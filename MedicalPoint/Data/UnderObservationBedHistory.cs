@@ -17,6 +17,7 @@ namespace MedicalPoint.Data
         public string Notes { get; set; }
         public DateTime ActionDate { get; set; }
         public DateTime? EnterDate { get; set; }
+        public bool? IsActive { get; set; }
         public UnderObservationBed Bed { get; set; }
         public Patient Patient { get; set; }
         public MedicalPointUser Doctor { get; set; }
