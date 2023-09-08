@@ -13,7 +13,7 @@ namespace MedicalPoint.Services
     {
         Task<DailyMedicineReport> GenerateDailyMedicineReport(DateTime date);
         Task<PatientReport> GeneratePatientReport(int patientId);
-        Task<VisitsReport> GenerateTodayStudentsVisitsReport(DateTime date);
+        Task<VisitsReport> GenerateTodayVisitsReport(DateTime date, bool studentsOnly = true);
         Task<VisitsReport> GenerateVisitsReport(DateTime startDate, DateTime endDate);
     }
     public static class StringExtensions
@@ -74,11 +74,17 @@ namespace MedicalPoint.Services
             };
             return visitsReport;
         }
-        public async Task<VisitsReport> GenerateTodayStudentsVisitsReport(DateTime date)
+        public async Task<VisitsReport> GenerateTodayVisitsReport(DateTime date, bool studentsOnly = true)
         {
             var startDate = date.Date;
             var endDate = date.Date.AddDays(1);
-            var visits = await _context.Visits.AsNoTracking().Where(x => x.VisitTime >=startDate && x.VisitTime<=endDate && x.Patient.DegreeId == 1).ToListAsync();
+            var query = _context.Visits.AsNoTracking().Where(x => x.VisitTime >= startDate && x.VisitTime <= endDate);
+            if(studentsOnly)
+            {
+                query = query.Where(x=> x.Patient.DegreeId == 1);
+            }
+
+            var visits = await query.ToListAsync();
             var emergencyVisitTypeCount = visits.Count(x => x.Type == ConstantVisitType.EMERGENCY);
             var patientsIds = visits.Select(x => x.PatientId).Distinct().ToList();
             var doctorsIds = visits.Select(x => x.DoctorId).Distinct().Where(x => x.HasValue).Select(x => x.Value).ToList();

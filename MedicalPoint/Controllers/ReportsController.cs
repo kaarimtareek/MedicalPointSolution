@@ -24,7 +24,14 @@ namespace MedicalPoint.Controllers
         public async Task<IActionResult> VisitsToday()
         {
 
-            var report = await _reportsService.GenerateTodayStudentsVisitsReport(DateTime.Now);
+            var report = await _reportsService.GenerateTodayVisitsReport(DateTime.Now);
+
+            return View(report);
+        }
+        public async Task<IActionResult> AllVisitsToday()
+        {
+
+            var report = await _reportsService.GenerateTodayVisitsReport(DateTime.Now, false);
 
             return View(report);
         }

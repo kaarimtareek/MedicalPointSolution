@@ -1,0 +1,169 @@
+﻿@using MedicalPoint.Services;
+@model VisitsReport
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="~/userDesign/css/all.min.css">
+    <link rel="stylesheet" href="~/userDesign/css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/userDesign/css/bootstrap.min.css.map">
+    <link rel="stylesheet" href="~/userDesign/css/style.css">
+    <title>التقرير اليومي</title>
+    <link rel="icon" href="~/userDesign/img/logo.png">
+</head>
+
+<body class="background-with-color">
+
+    <nav class="navbar navbar-expand-lg navbar-light  ">
+        <div class="container">
+            <div class="text-one">
+
+                <h1 class="main-p">النقطة الطبية</h1>
+                <h1 class="second-p">كلية الضباط الإحتياط</h1>
+                <a asp-action="Index"  asp-controller="Visits" class="my-button-green print"> <i class="fa-solid fa-forward"></i> العودة </a>
+                <a class="my-button-blue print" href="" onclick="window.print()">طباعة التقرير  <i class="fa-solid fa-print"></i></a>
+
+
+            </div>
+            <div class="text-one">
+            </div>
+
+            <img src="~/userDesign/img/logo.png" alt="logo">
+
+
+        </div>
+    </nav>
+    <div class="landing-three ">
+
+        <div class="container  fadeInUp-animation">
+            <div class="row ">
+
+                <div class="row">
+                    <div class="col-lg-12 text-center ">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-12 ">
+                                <p id="nametwo">التقرير اليومي للكشوفات عن يوم @Model.ReportDate.Date.ToShortDateString() <i class="fa-solid fa-chart-simple"></i></p>
+
+                            </div>
+                            <div style="display:none" class="col-lg-2 print">
+                                <button class="my-button-green print">تصدير كملف إكسيل <i class="fa-solid fa-file-excel"></i></button>
+
+                            </div>
+                        </div>
+                        <div class="beds-containerTwo mb-3">
+                            <div class="bedsTwo">
+
+                                <div class="my-table-input" style="background-color: #d9d5d5;">
+                                    <div class="text-center">
+                                        <label for="checkbox-id" style="margin-left: 5px;">توقيت إنشاء التقرير</label>
+                                        <label for="checkbox-id" style="margin-left: 5px;">@Model.ReportDate.ToShortTimeString()</label>
+
+                                    </div>
+
+                                </div>
+                                <div class="my-table-input" style="background-color: #d9d5d5;">
+
+
+                                    <div class="text-center">
+                                        <label for="checkbox-id" style="margin-left: 5px;">عدد الكشوفات</label>
+                                        <label for="checkbox-id" style="margin-left: 5px;">@Model.VisitsCount</label>
+                                    </div>
+
+                                </div>
+                                <div class="my-table-input" style="background-color: #d9d5d5;">
+
+
+                                    <div class="text-center">
+                                        <label for="checkbox-id" style="margin-left: 5px;">عدد الكشوفات الطارئة</label>
+                                        <label for="checkbox-id" style="margin-left: 5px;">@Model.EmergencyVisitTypeCount</label>
+                                    </div>
+
+                                </div>
+                                <div class="my-table-input" style="background-color: #d9d5d5;">
+
+
+                                    <div class="text-center">
+                                        <label for="checkbox-id" style="margin-left: 5px;">عدد المرضى</label>
+                                        <label for="checkbox-id" style="margin-left: 5px;">@Model.PatientsCount</label>
+                                    </div>
+
+                                </div>
+                                
+                            </div>
+                        </div>
+
+                        <!-- Button trigger modal -->
+                        <button type="button" id="popoutButton" class="my-button" data-bs-toggle="modal"
+                                data-bs-target="#exampleModal" style="display: none;"></button>
+                        <!-- Modal -->
+
+
+                        <table class="table  table-striped" id="my-table">
+                            <thead>
+                            <th>مسلسل</th>
+                            <th>الدرجة / الرتبة</th>
+                            <th>اسم المريض</th>
+                            <th>اسم الطبيب</th>
+                            <th> التشخيص</th>
+                            <th> نوع الكشف </th>
+                            <th> رقم الكشف </th>
+                            <th> تاريخ بداية الكشف </th>
+                            <th> تاريخ انتهاء الكشف </th>
+                            <th>العيادة</th>
+
+                            </thead>
+                                <tbody>
+                            @if(Model.Vists.Count == 0)
+                            {
+                                <th colspan="10" style="color:var(--red-color)"> لا يوجد بيانات</th>
+                            }
+                            @foreach(var visit in Model.Vists)
+                            {
+                                    <tr>
+                                        <td></td>
+                                        <td>@visit.PatientDegree</td>
+                                        <td>@visit.PatientName</td>
+                                        <td>@visit.DoctorName</td>
+                                        <td>@visit.Diagnosis</td>
+                                        <td>@visit.Type</td>
+                                        <td>@visit.VisitNumber</td>
+                                        <td>@visit.VisitTime</td>
+                                        <td>@visit.ExitTime</td>
+                                        <td>@visit.ClinicName</td>
+                                    </tr>
+                                    
+                            }
+                                </tbody>
+                                
+                        </table>
+
+
+                    </div>
+                </div>
+
+
+
+            </div>
+        </div>
+    </div>
+    <footer>
+        <div class="container">
+        </div>
+        <div class="text-center p-1">
+            <p id="footer-text">
+                تم الانشاء بواسطة <span style="color: var(--red-color);">طلاب فرع النظم</span> الدفعة
+                <span style="color: var(--red-color);">164</span> ضباط إحتياط ©
+            </p>
+        </div>
+    </footer>
+</body>
+
+<script src="~/userDesign/js/all.min.js"></script>
+<script src="~/userDesign/js/bootstrap.bundle.min.js"></script>
+
+</html>
