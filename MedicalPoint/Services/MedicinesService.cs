@@ -50,12 +50,12 @@ namespace MedicalPoint.Services
             var query = _context.Medicines.AsNoTracking();
             if(withAllHistory)
             {
-                query = query.Include(x => x.History.OrderByDescending(x => x.CreatedAt).Take(5))
+                query = query.Include(x => x.History.OrderByDescending(x => x.CreatedAt))
                         .ThenInclude(x => x.User);
             }
             else
             {
-                query = query.Include(x => x.History.OrderByDescending(x => x.CreatedAt))
+                query = query.Include(x => x.History.OrderByDescending(x => x.CreatedAt).Take(5))
                         .ThenInclude(x => x.User);
             } 
             var result = await query.AsNoTracking().FirstOrDefaultAsync(x => x.Id == medicineId, cancellationToken);
