@@ -6,8 +6,8 @@ el.addEventListener('change', function handleChange(event) {
     //this is for student
     //student => military , saraya, major, genral
     if (event.target.options[event.target.selectedIndex].text === 'طالب') {
-        enable(['milNum', 'natNum', 'saryaNum', 'generalNum', 'majorInput']);
-        disable(['natNum']);
+        enable([ 'saryaNum', 'generalNum', 'majorInput']);
+        disable(['natNum', 'milNum']);
     }
     else if (event.target.options[event.target.selectedIndex].text === 'مدني') {
         //this is for ordinary citizens
