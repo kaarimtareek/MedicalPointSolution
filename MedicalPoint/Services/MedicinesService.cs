@@ -81,7 +81,7 @@ namespace MedicalPoint.Services
                 MedicineName = medicine.Name,
                 MedicineQuantity = medicine.Quantity,
                 MinimumQuantityThreshold = medicine.MinimumQuantityThreshold,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = DateTime.Now,
                 UserId = userId,
             };
             await _context.MedicineHistories.AddAsync(history);
@@ -110,7 +110,7 @@ namespace MedicalPoint.Services
                 MedicineQuantity = quantity,
                 MinimumQuantityThreshold = quantityThreshold,
                 UserId = userId,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = DateTime.Now,
                 ActionType = ConstantMedicineActionType.ADD,
             };
             await _context.Medicines.AddAsync(medicine, cancellationToken);
@@ -137,7 +137,7 @@ namespace MedicalPoint.Services
                 MedicineQuantity = quantity,
                 UserId = userId,
                 ActionType = ConstantMedicineActionType.ADD_QUANTITY,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = DateTime.Now,
                 MedicineId = medicineId,
                 MedicineName = "",
             };
@@ -168,7 +168,7 @@ namespace MedicalPoint.Services
                 MedicineQuantity = quantity,
                 MinimumQuantityThreshold = quantityThreshold,
                 UserId = userId,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = DateTime.Now,
                 ActionType = ConstantMedicineActionType.EDIT,
             };
             await _context.MedicineHistories.AddAsync(medicineHistory, cancellationToken);
