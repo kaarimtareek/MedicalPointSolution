@@ -42,7 +42,7 @@ namespace MedicalPoint.Controllers
 
         public async Task<IActionResult> Index(DateTime? date)
         {
-            var visits = await _visitsService.GetAll(1, 20, null, null, date, date.HasValue ? date.Value.AddDays(1) : null);
+            var visits = await _visitsService.GetAll(1, 200, null, null, date, date.HasValue ? date.Value.AddDays(1) : null);
             var viewModel = visits.ConvertAll(x => new VisitsViewModel
             {
                 ClinicId = x.Id,
@@ -62,6 +62,7 @@ namespace MedicalPoint.Controllers
                 DoctorName = x.Doctor?.FullName ?? "",
                 PatientName = x.Patient?.Name ?? "",
                 PatientDegree = x.Patient?.Degree?.Name,
+                PatientGeneralNumber = x.Patient?.GeneralNumber?? "",
             });
             return View(viewModel);
         }

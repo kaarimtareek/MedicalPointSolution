@@ -86,6 +86,7 @@ namespace MedicalPoint.Controllers
                 DoctorName = x.Doctor?.FullName??"",
                 PatientName = x.Patient?.Name??"",
                 PatientDegree = x.Patient?.Degree?.Name,
+                PatientGeneralNumber = x.Patient?.GeneralNumber?? "",
             });
             var paginatedViewModel = PaginatedList< VisitsViewModel >.Create(viewModel, pageNumber, pageSize);
             SendErrorMessageToViewBagAndResetTempData();
@@ -113,6 +114,7 @@ namespace MedicalPoint.Controllers
                 ClinicName = x.Clinic?.Name ?? "",
                 DoctorName = x.Doctor?.FullName ?? "",
                 PatientName = x.Patient?.Name ?? "",
+                PatientGeneralNumber = x.Patient?.GeneralNumber?? "",
                 PatientDegree = x.Patient?.Degree?.Name,
             });
             var paginatedViewMode = PaginatedList<VisitsViewModel>.Create(viewModel, 1, int.MaxValue);
@@ -445,6 +447,7 @@ namespace MedicalPoint.Controllers
                 ClinicName = x.Clinic?.Name ?? "",
                 DoctorName = x.Doctor?.FullName ?? "",
                 PatientName = x.Patient?.Name ?? "",
+                PatientGeneralNumber = x.Patient?.GeneralNumber?? "",
                 PatientDegree = x.Patient?.Degree?.Name ?? "",
             }).ToList();
             var paginatedViewMode = PaginatedList<VisitsViewModel>.Create(viewModel, 1, int.MaxValue);

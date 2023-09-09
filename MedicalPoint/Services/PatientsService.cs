@@ -64,10 +64,10 @@ namespace MedicalPoint.Services
                 return OperationResult<Patient>.Failed(ConstantMessageCodes.NameAlreadyExist);
 
             }
-            if (QueryValidator.IsPatientNameExist(_context, name))
-            {
-                return OperationResult<Patient>.Failed(ConstantMessageCodes.NameAlreadyExist);
-            }
+            //if (QueryValidator.IsPatientNameExist(_context, name))
+            //{
+            //    return OperationResult<Patient>.Failed(ConstantMessageCodes.NameAlreadyExist);
+            //}
             if (!string.IsNullOrEmpty(militaryNumber) && QueryValidator.IsPatientMilitaryNumberExist(_context, militaryNumber))
             {
                 return OperationResult<Patient>.Failed(ConstantMessageCodes.MilitaryNumberAlreadyExist);

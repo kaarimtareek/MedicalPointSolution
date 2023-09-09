@@ -13,6 +13,7 @@ namespace MedicalPoint.ViewModels.Visits
         public string ClinicName { get; set; }
         public int PatientId { get; set; }
         public string PatientName { get; set; }
+        public string PatientGeneralNumber { get; set; }
         public string PatientDegree { get; set; }
         public int? DoctorId { get; set; }
         public string DoctorName { get; set; }
