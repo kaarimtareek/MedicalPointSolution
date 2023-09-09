@@ -39,6 +39,7 @@ namespace MedicalPoint.Services
             {
                 query = query.Where(x => x.DegreeId == degree.Value);
             }
+            query = query.OrderByDescending(x => x.CreatedAt);
             var patients = await PaginatedList<Patient>.CreateAsync(query, pageNumber, pageSize);
 
             return patients;
