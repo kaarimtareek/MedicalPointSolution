@@ -67,10 +67,6 @@ namespace MedicalPoint.Controllers
             return View(viewModel);
         }
 
-
-
-
-
         public async Task<IActionResult> GetUsers()
         {
             var userId = HttpContext.GetUserId();
@@ -91,8 +87,6 @@ namespace MedicalPoint.Controllers
             });
             return View(viewModel);
         }
-
-
         [HttpGet]
         public async Task<IActionResult> UserEdit(int id)
 
@@ -133,7 +127,6 @@ namespace MedicalPoint.Controllers
             };
             return View(viewModel);
         }
-
 
         [HttpPost]
         public async Task<IActionResult> UserEdit(int id, [FromForm] UsersViewModel viewModel)

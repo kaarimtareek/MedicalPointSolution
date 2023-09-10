@@ -24,7 +24,7 @@
                    class="my-button-green">
                     تحديث الصفحة  <i class="fa-solid fa-arrows-rotate"></i>
                 </a>
-                <a asp-action="Index" asp-controller="Medicines" class="my-button-blue">العودة للرئيسية <i class="fa-solid fa-house"></i></a>
+                <a asp-action="Details" asp-route-id="@Model.VisitId" asp-controller="Visits"  class="my-button-blue">العودة للكشف <i class="fa-solid fa-house"></i></a>
 
             </div>
             <img src="~/userDesign/img/logo.png" alt="logo">
@@ -34,9 +34,9 @@
         <div class="container fadeInUp-animation ">
             <div class="row  justify-content-center align-items-center">
                 <div class="col-lg-4 text-center ">
-                    <form asp-action="CreateVisitRest" method="post">
-                        <input  hidden asp-for="VisitId"/>
-                        <input  hidden asp-for="PatientId"/>
+                    <form asp-action="EditVisitRest" asp-route-id="@Model.Id" method="post">
+                        <input  hidden asp-for="VisitId" value="@Model.VisitId"/>
+                        <input  hidden asp-for="PatientId" value="@Model.PatientId"/>
                     <table class="table  table-striped">
                         <p id="nametwo">اورنيك<i class="fa-solid fa-user-doctor"></i></p id="name">
                         <tbody >
@@ -56,19 +56,19 @@
                            <tr>
                                 <th>نوع الراحة</th>
                                 <td  >
-                                    <select class="w-100" asp-items="ViewBag.RestTypes" required asp-for="RestTypeId">
-                                        <option selected> اختر نوع الراحة</option>
+                                    <select class="w-100" asp-items="ViewBag.RestTypes" value="@Model.RestTypeId" required asp-for="RestTypeId">
+                                        
                                     </select>
 
                                 </td>
                             </tr>
                             <tr>
                                 <th>تاريخ بداية الراحة</th>
-                                <td> <input  type="datetime-local" value="@DateTime.Now" asp-for=StartDate required class="w-100"/> </td>
+                                <td> <input  type="datetime-local" value="@Model.StartDate" asp-for=StartDate required class="w-100"/> </td>
                             </tr>
                             <tr>
                                 <th>عدد ايام الراحة</th>
-                                <td><input  type="number" asp-for=RestDaysNumber required class="w-100"/></td>
+                                <td><input  type="number" value="@Model.RestDaysNumber" asp-for=RestDaysNumber required class="w-100"/></td>
                             </tr>
                            
                             <tr>
@@ -84,40 +84,13 @@
                             
                             <tr>
                                 <th>ملاحظات</th>
-                                <td><input type="text"class="w-100" placeholder="الملاحظات" asp-for="Notes" /></td>
+                                <td><input type="text"class="w-100" value="@Model.Notes" placeholder="الملاحظات" asp-for="Notes" /></td>
                             </tr>
                         </tbody>
                     </table>
-                        <input class="my-button-blue mb-3" type="submit" value="انشاء اورنيك"  />
+                        <input class="my-button-blue mb-3" type="submit" value="تعديل اورنيك"  />
                     </form>
-                    @if(Model.Medicines.Count> 0)
-                    {
-                        
-                        <table class="table  table-striped">
-                            <p id="nametwo" >الأدوية </p >
-                                <thead>
-                                    <tr>
-                                        <th>مسلسل</th>
-                                        <th>اسم الدواء</th>
-                                        <th>الكمية</th>
-                                    </tr>
-                                </thead>
-                            <tbody >
-                                @foreach(var medicine in Model.Medicines)
-                                {
-                                
-                                <tr>
-                               
-                                    <td></td>
-                                    <td>@medicine.MedicineName </td>
-                                    <td>@medicine.Quantity</td>
-                                </tr>
-                                }
-                        
-                            </tbody>
-                        </table>
-                    }
-                   
+                  
                 </div>
             </div>
         </div>

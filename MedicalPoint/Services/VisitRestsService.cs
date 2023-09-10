@@ -10,7 +10,7 @@ namespace MedicalPoint.Services
     public interface IVisitRestsService
     {
         Task<OperationResult<VisitRest>> Add(int visitId, int doctorId, int restType, string notes, DateTime startTime, int numberOfRestDays, CancellationToken cancellationToken = default);
-        Task<OperationResult<VisitRest>> Edit(int visitRestId, int doctorId, int restType, string notes, DateTime startTime, int numberOfRestDays, CancellationToken cancellationToken = default);
+        Task<OperationResult<VisitRest>> Edit(int visitRestId, int doctorId, int restType, string notes, DateTime startTime, int numberOfRestDays, bool forceChange = false, CancellationToken cancellationToken = default);
         Task<VisitRest> Get(int visitRestId, CancellationToken cancellationToken = default);
         Task<List<VisitRest>> GetAll(DateTime? from = null, DateTime? to = null, CancellationToken cancellationToken = default);
         Task<VisitRest> GetByVisitId(int visitId, CancellationToken cancellationToken = default);
@@ -89,7 +89,7 @@ namespace MedicalPoint.Services
             await _context.SaveChangesAsync(cancellationToken);
             return OperationResult<VisitRest>.Succeeded(visitRest);
         }
-        public async Task<OperationResult<VisitRest>> Edit(int visitRestId, int doctorId, int restType, string notes, DateTime startTime, int numberOfRestDays, CancellationToken cancellationToken = default)
+        public async Task<OperationResult<VisitRest>> Edit(int visitRestId, int doctorId, int restType, string notes, DateTime startTime, int numberOfRestDays, bool forceChange = false, CancellationToken cancellationToken = default)
         {
             if (numberOfRestDays < 1)
             {
@@ -105,7 +105,7 @@ namespace MedicalPoint.Services
             {
                 return OperationResult<VisitRest>.Failed(ConstantMessageCodes.VisitNotFound);
             }
-            if (!visit.CanEditVisit())
+            if (!forceChange && !visit.CanEditVisit())
             {
                 return OperationResult<VisitRest>.Failed(ConstantMessageCodes.CannotEditVisit);
             }

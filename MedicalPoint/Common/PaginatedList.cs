@@ -23,11 +23,9 @@ namespace MedicalPoint.Common
             var totalPages = count == 0 ? 1 : (int)Math.Ceiling(count / (double)pageSize);
             return new PaginatedList<T>(result, pageNumber, pageSize, totalPages);
         }
-        public static PaginatedList<T> Create(IList<T> query, int pageNumber, int pageSize)
+        public static PaginatedList<T> Create(IList<T> query, int pageNumber, int pageSize, int totalPages)
         {
-            var count = query.Count;
-            var result =  query.Skip( (pageNumber - 1) * pageSize).Take(pageSize).ToList();
-            var totalPages = count == 0 ? 1 : (int)Math.Ceiling(count / (double)pageSize);
+            var result =  query.ToList();
             return new PaginatedList<T>(result, pageNumber, pageSize, totalPages);
         }
     }

@@ -115,6 +115,7 @@
                                 <th>الدرجة / الرتبة</th>
                                 <th>اسم المريض</th>
                                 <th>رقم العام</th>
+                                <th>رقم السرية</th>
                                 <th>العيادة</th>
                                 <th>رقم الكشف</th>
                                 <th>نوع الكشف</th>
@@ -136,6 +137,7 @@
                                     <td></td>
                                     <td>@visits.PatientDegree</td>
                                      <td ><a asp-action="Details" asp-controller="Patients" asp-route-id="@visits.PatientId" id="link-green"> @visits.PatientName</a></td>
+                                    <td>@visits.PatientGeneralNumber</td>
                                     <td>@visits.PatientGeneralNumber</td>
                                     <td>@visits.ClinicName</td>
                                     <td>@visits.VisitNumber</td>
@@ -200,10 +202,11 @@
                                 <div class="row"style="justify-content: left;">
                                     @if(Model.HasPrevious)
                                         {
-                                        <div class="col-lg-2">
+                                                var pageNumber = Model.PageNumber - 1;
+                                                <div class="col-lg-2">
                                     <a  class="table-button-red"
                                     asp-action="Index" asp-asp-controller="Visits" 
-                                    asp-route-pageNumber="@Model.PageNumber-1"
+                                    asp-route-pageNumber="@pageNumber"
                                     asp-route-pageSize = "@Model.PageSize"
                                     asp-route-searchValue = "@ViewBag.SearchValue"
                                     asp-route-clinicId = "@ViewBag.SelectedClinic"
@@ -224,10 +227,11 @@
                                         }
                                         @if(Model.HasNext)
                                         {
+                                            var pageNumber = Model.PageNumber + 1;
                                                 
                                         <div class="col-lg-2">
                                     <a class="table-button-blue" asp-action="Index" asp-asp-controller="Visits" 
-                                    asp-route-pageNumber="@Model.PageNumber+1"
+                                    asp-route-pageNumber="@pageNumber"
                                     asp-route-pageSize = "@Model.PageSize"
                                     asp-route-searchValue = "@ViewBag.SearchValue"
                                     asp-route-clinicId = "@ViewBag.SelectedClinic"

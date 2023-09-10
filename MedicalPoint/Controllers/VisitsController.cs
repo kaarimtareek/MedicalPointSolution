@@ -88,7 +88,7 @@ namespace MedicalPoint.Controllers
                 PatientDegree = x.Patient?.Degree?.Name,
                 PatientGeneralNumber = x.Patient?.GeneralNumber?? "",
             });
-            var paginatedViewModel = PaginatedList< VisitsViewModel >.Create(viewModel, pageNumber, pageSize);
+            var paginatedViewModel = PaginatedList< VisitsViewModel >.Create(viewModel, visits.PageNumber, visits.PageSize, visits.TotalPages);
             SendErrorMessageToViewBagAndResetTempData();
             return View(paginatedViewModel);
         }
@@ -102,6 +102,7 @@ namespace MedicalPoint.Controllers
                 DoctorId = x.DoctorId,
                 ExitTime = x.ExitTime,
                 FollowingVisitDate = x.FollowingVisitDate,
+                PatientSaryaNumber = x.Patient?.SaryaNumber??"",
                 Id = x.Id,
                 IsDeleted = x.IsDeleted,
                 PatientId = x.PatientId,
@@ -117,7 +118,7 @@ namespace MedicalPoint.Controllers
                 PatientGeneralNumber = x.Patient?.GeneralNumber?? "",
                 PatientDegree = x.Patient?.Degree?.Name,
             });
-            var paginatedViewMode = PaginatedList<VisitsViewModel>.Create(viewModel, 1, int.MaxValue);
+            var paginatedViewMode = PaginatedList<VisitsViewModel>.Create(viewModel, 1, int.MaxValue, 1);
             return View("Index", paginatedViewMode);
         }
     [Authorize(Roles = $"{ConstantUserType.Recieptionist},{ConstantUserType.SUPER_ADMIN},{ConstantUserType.Doctor},{ConstantUserType.Pharmacist}")]
@@ -447,10 +448,11 @@ namespace MedicalPoint.Controllers
                 ClinicName = x.Clinic?.Name ?? "",
                 DoctorName = x.Doctor?.FullName ?? "",
                 PatientName = x.Patient?.Name ?? "",
-                PatientGeneralNumber = x.Patient?.GeneralNumber?? "",
+                PatientSaryaNumber = x.Patient?.SaryaNumber??"",
+                PatientGeneralNumber = x.Patient?.GeneralNumber ?? "",
                 PatientDegree = x.Patient?.Degree?.Name ?? "",
             }).ToList();
-            var paginatedViewMode = PaginatedList<VisitsViewModel>.Create(viewModel, 1, int.MaxValue);
+            var paginatedViewMode = PaginatedList<VisitsViewModel>.Create(viewModel, 1, int.MaxValue, 1);
             return View("Index", paginatedViewMode);
         }
         public async Task<IActionResult> VisitRest(int id)
@@ -493,7 +495,7 @@ namespace MedicalPoint.Controllers
                     IsActive = visit.Clinic.IsActive,
                 },
                 Id = visit.Id,
-                CreatedAt = visit.CreatedAt,
+                CreatedAt = visitRest.CreatedAt,
                 Diagnosis = visit.Diagnosis,
                 IsMedicinesGiven = visit.IsMedicinesGiven,
                 MedicineGivenTime = visit.MedicineGivenTime,
@@ -635,6 +637,102 @@ namespace MedicalPoint.Controllers
             if(!result.Success)
             {
                 TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY] = ConstantMessageCodes.VisitRestAlreadyExist;
+                return RedirectToAction(nameof(Details), new { id = viewModel.VisitId });
+            }
+            
+            return RedirectToAction(nameof(VisitRest), new { id = viewModel.VisitId});
+        }
+        [Authorize(Roles =ConstantUserType.SUPER_ADMIN)]
+        public async Task<IActionResult> EditVisitRest(int id)
+        {
+            var visit = await _visitsService.Get(id);
+            if (visit == null)
+            {
+                TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY] = ConstantMessageCodes.VisitNotFound;
+                return RedirectToAction(nameof(Details), new { id });
+            }
+            var visitRest = await _visitsService.GetVisitRest(id);
+            if(visitRest == null)
+            {
+                TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY] = ConstantMessageCodes.VisitRestNotFound;
+                return RedirectToAction(nameof(Details), new {id});
+            }
+            ViewBag.RestTypes = (await _visitsService.GetVisitRestTypes()).Select(x=> new SelectListItem
+            {
+                Text = x.Name,
+                Value = x.Id.ToString(),
+            });
+            var viewModel = new CreateVisitRestViewModel
+            {
+                RestDaysNumber = visitRest.RestDaysNumber,
+                EndDate = visitRest.EndDate,
+                RestTypeId = visitRest.RestTypeId,
+                StartDate = visitRest.StartDate,
+                ClinicId = visit.ClinicId,
+                DegreeId = visit.Patient== null? 0 :  visit.Patient.DegreeId,
+                RestType = "",
+                Clinic = visit.Clinic == null ? null : new ViewModels.Clinics.ClinicViewModel
+                {
+                    Name = visit.Clinic.Name,
+                    Id = visit.Clinic.Id,
+                    IsActive = visit.Clinic.IsActive,
+                },
+                Id = visitRest.Id,
+                CreatedAt = visit.CreatedAt,
+                Diagnosis = visit.Diagnosis,
+                IsMedicinesGiven = visit.IsMedicinesGiven,
+                MedicineGivenTime = visit.MedicineGivenTime,
+                DoctorId = visit.DoctorId,
+                PatientId = visit.PatientId,
+                Notes = visitRest.Notes,
+                
+                VisitId = id,
+                VisitNumber = visit.VisitNumber,
+                Doctor = visit.Doctor == null ? null : new DoctorViewModel
+                {
+                    Id = visit.DoctorId.Value,
+                    FullName = visit.Doctor.FullName,
+                    IsActive = visit.Doctor.IsActive,
+                },
+                Patient = visit.Patient == null ? null : new PatientViewModel
+                {
+                    CreatedAt = visit.Patient.CreatedAt,
+                    DegreeId = visit.Patient.DegreeId,
+                    GeneralNumber = visit.Patient.GeneralNumber,
+                    Id = visit.Patient.Id,
+                    LastUpdatedAt = visit.Patient.LastUpdatedAt,
+                    Name = visit.Patient.Name,
+                    SaryaNumber = visit.Patient.SaryaNumber,
+                    MilitaryNumber = visit.Patient.MilitaryNumber,
+                    Major = visit.Patient.Major,
+                    NationalNumber = visit.Patient.NationalNumber,
+                    LastVisitAt = visit.Patient.LastVisitAt,
+                    Degree = visit.Patient.Degree?.Name ?? "",
+                },
+                Medicines = visit.Medicines == null ? null : visit.Medicines.Select(x => new VisitMedicineViewModel
+                {
+                    Id = x.Id,
+                    InventoryQuantity = x.Medicine.Quantity,
+                    Quantity = x.Quantity,
+                    MedicineId = x.Medicine.Id,
+                    MedicineName = x.Medicine.Name,
+                }).ToList(),
+            };
+            SendErrorMessageToViewBagAndResetTempData();
+            return View(viewModel);
+        }
+        [HttpPost]
+        public async Task<IActionResult> EditVisitRest(int id, [FromForm] CreateVisitRestViewModel viewModel)
+        {
+            var userId = HttpContext.GetUserId();
+            if(userId == null)
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+            var result =await _visitRestsService.Edit(id, userId.Value, viewModel.RestTypeId, viewModel.Notes, viewModel.StartDate, viewModel.RestDaysNumber, true);
+            if(!result.Success)
+            {
+                TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY] = result.Message;
                 return RedirectToAction(nameof(Details), new { id = viewModel.VisitId });
             }
             

@@ -159,10 +159,12 @@
                                 <div class="row"style="justify-content: left;">
                                     @if(Model.HasPrevious)
                                         {
+                                                var pageNumber = Model.PageNumber - 1;
+
                                         <div class="col-lg-2">
                                     <a  class="table-button-red"
                                     asp-action="Index" asp-asp-controller="Patients" 
-                                    asp-route-pageNumber="@Model.PageNumber-1"
+                                    asp-route-pageNumber="@pageNumber"
                                     asp-route-pageSize = "@Model.PageSize"
                                     asp-route-searchValue = "@ViewBag.SearchValue"
                                     asp-route-degreeId = "@ViewBag.SelectedDegree"
@@ -182,10 +184,11 @@
                                         }
                                         @if(Model.HasNext)
                                         {
-                                                
+                                            var pageNumber = Model.PageNumber + 1;
+
                                         <div class="col-lg-2">
                                     <a class="table-button-blue" asp-action="Index" asp-asp-controller="Patients" 
-                                    asp-route-pageNumber="@Model.PageNumber+1"
+                                    asp-route-pageNumber="@pageNumber"
                                     asp-route-pageSize = "@Model.PageSize"
                                     asp-route-searchValue = "@ViewBag.SearchValue"
                                     asp-route-degreeId = "@ViewBag.SelectedDegree"
