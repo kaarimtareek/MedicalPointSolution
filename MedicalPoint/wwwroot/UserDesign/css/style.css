@@ -104,7 +104,8 @@
 /* end navbar */
 
 .landing-three {
-    min-height: calc(100vh - 121.59px);
+    min-height: calc(100vh - 160px);  
+    /*121.95 px*/
 }
 
 
@@ -134,14 +135,15 @@
 .my-button {
     margin-left: 2px;
     margin-right: 2px;
+    font-size: 14px;
     font-weight: bold;
     text-decoration: none;
     background-color: var(--red-color);
     color: white;
-    padding-right: 4vh;
-    padding-left: 4vh;
-    padding-top: 1vh;
-    padding-bottom: 1vh;
+    padding-right: 2vh;
+    padding-left: 2vh;
+    padding-top: 0.5vh;
+    padding-bottom: 0.5vh;
     border-radius: 25px;
     border: none;
     -webkit-transition: .3s transform cubic-bezier(.155, 1.105, .295, 1.12), .3s box-shadow, .3s -webkit-transform cubic-bezier(.155, 1.105, .295, 1.12);
@@ -178,14 +180,15 @@
 .my-button-green {
     margin-left: 2px;
     margin-right: 2px;
+    font-size: 14px;
     font-weight: bold;
     text-decoration: none;
     background-color: var(--green-color);
     color: white;
-    padding-right: 4vh;
-    padding-left: 4vh;
-    padding-top: 1vh;
-    padding-bottom: 1vh;
+    padding-right: 2vh;
+    padding-left: 2vh;
+    padding-top: 0.5vh;
+    padding-bottom: 0.5vh;
     border-radius: 25px;
     border: none;
     -webkit-transition: .3s transform cubic-bezier(.155, 1.105, .295, 1.12), .3s box-shadow, .3s -webkit-transform cubic-bezier(.155, 1.105, .295, 1.12);
@@ -223,13 +226,14 @@
     margin-left: 2px;
     margin-right: 2px;
     font-weight: bold;
+    font-size:14px;
     text-decoration: none;
     background-color: var(--blue-color);
     color: white;
-    padding-right: 4vh;
-    padding-left: 4vh;
-    padding-top: 1vh;
-    padding-bottom: 1vh;
+    padding-right: 2vh;
+    padding-left: 2vh;
+    padding-top: 0.5vh;
+    padding-bottom: 0.5vh;
     border-radius: 25px;
     border: none;
     -webkit-transition: .3s transform cubic-bezier(.155, 1.105, .295, 1.12), .3s box-shadow, .3s -webkit-transform cubic-bezier(.155, 1.105, .295, 1.12);
@@ -767,6 +771,7 @@ td {
 #footer-text {
     margin: 0;
     font-weight: bold;
+    font-size:20px;
 }
 
 
