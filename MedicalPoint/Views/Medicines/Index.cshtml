@@ -41,7 +41,7 @@
                 <a class="my-button-blue"asp-action="MedicinesToday" asp-controller="Reports">تقرير الأدوية <i class="fa-solid fa-scroll"></i></a>
                 @if (this.Context.IsUserHasRoles(new string[] { ConstantUserType.SUPER_ADMIN, ConstantUserType.Pharmacist}))
                 {
-                    <a  asp-action="Create" asp-controller="Medicines" class="my-button-blue">إضافة دواء جديد <i class="fa-solid fa-add"></i></a>
+                    <a  asp-action="Create" asp-controller="Medicines" class="my-button-green">إضافة دواء جديد <i class="fa-solid fa-add"></i></a>
                 }
             </div>
             <img src="~/UserDesign/img/logo.png" alt="logo">

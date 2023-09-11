@@ -72,6 +72,19 @@
                                 <th>تاريخ الكشف</th>
                                 <td>@Model.VisitTime</td>
                             </tr>
+                            <tr>
+                                <th>حالة الصرف </th>
+                            @if(!Model.IsMedicinesGiven)
+                                    {
+                                        <td><span  style="color:var(--red-color)"> لم يتم الصرف</span> </td>
+                                    }
+                                    else
+                                    {
+                                        <td > <span style="color:var(--green-color)">تم الصرف </span> </td>
+                                        
+                                    }
+
+                            </tr>
                         </tbody>
                     </table>
                     <table class="table  table-striped">

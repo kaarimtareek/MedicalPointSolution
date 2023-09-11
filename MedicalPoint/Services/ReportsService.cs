@@ -19,6 +19,13 @@ namespace MedicalPoint.Services
     public static class StringExtensions
     {
         public const string Dashes = "----";
+        public static bool IsNumber(this string s)
+        {
+            if (string.IsNullOrEmpty(s))
+                return false;
+            return int.TryParse(s, out int value);
+        }
+
    
     }
 
@@ -328,7 +335,7 @@ namespace MedicalPoint.Services
                         VisitId = xx.VisitId,
                         PatientName = xx.VisitId.HasValue?  visits.GetValueOrDefault(xx.VisitId.Value)?.Patient?.Name?? StringExtensions.Dashes : StringExtensions.Dashes,
                         PatientId = xx.VisitId.HasValue? visits.GetValueOrDefault(xx.VisitId.Value)?.PatientId : null,
-                    }).ToList()
+                    }).OrderBy(x=> x.PatientName).ToList()
                 }).ToList()
 
             };
@@ -405,8 +412,8 @@ namespace MedicalPoint.Services
     {
         public DateTime FromDate { get; set; }
         public DateTime ToDate { get; set; }
-        public Dictionary<string, int> SaryasCount =>
-            Visits?.Where(x=> !string.IsNullOrEmpty(x.PatientSaryaNumber) && x.PatientSaryaNumber != StringExtensions.Dashes).GroupBy(x => x.PatientSaryaNumber).Where(x => x.Key != StringExtensions.Dashes).ToDictionary(x => x.Key, x => x.Count());
+        public Dictionary<int, int> SaryasCount =>
+            Visits?.Where(x=> x.PatientSaryaNumber.IsNumber()).GroupBy(x => x.PatientSaryaNumber).Where(x => x.Key != StringExtensions.Dashes  ).ToDictionary(x => int.Parse(x.Key), x => x.Count()).OrderBy(x => x.Key).ToDictionary(x=> x.Key, x=> x.Value);
         public DateTime ReportDate { get; set; }
         public int VisitsCount { get; set; }
         public int PatientsCount { get; set; }
