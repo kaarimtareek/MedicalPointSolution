@@ -41,7 +41,7 @@ namespace MedicalPoint.Services
             {
                 query = query.Where(x => x.MinimumQuantityThreshold.HasValue && x.MinimumQuantityThreshold.Value >= x.Quantity);
             }
-            var result = await query.ToListAsync(cancellationToken);
+            var result = await query.OrderBy(x=> x.Name).ToListAsync(cancellationToken);
             return result;
         }
 

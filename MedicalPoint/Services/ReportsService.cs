@@ -241,6 +241,11 @@ namespace MedicalPoint.Services
             var givenMedicinesHistory = await _context.MedicineHistories
                 .Include(x=> x.User)
                 .AsNoTracking().Where(x => x.CreatedAt >= startDate && x.CreatedAt <= endDate ).ToListAsync();
+            var visitsIds = givenMedicinesHistory.Where(x => x.VisitId.HasValue).Select(x => x.VisitId.Value).ToList();
+            var visits = await _context.Visits
+                .Include(x=> x.Patient)
+                .AsNoTracking().Where(x=> visitsIds.Contains(x.Id)).ToDictionaryAsync(x=> x.Id);
+
             var givenMedicinesIds = givenMedicinesHistory.Select(x=> x.MedicineId).Distinct().ToList();
             var givenMedicines = medicines.Where(x => givenMedicinesIds.Contains(x.Id)).ToList();
             var report = new DailyMedicineReport
@@ -306,7 +311,9 @@ namespace MedicalPoint.Services
                         MinimumQuantityThreshold = xx.MinimumQuantityThreshold,
                         UserId = xx.UserId,
                         UserName = xx.User?.FullName?? StringExtensions.Dashes,
-                        VisitId = xx.VisitId
+                        VisitId = xx.VisitId,
+                        PatientName = xx.VisitId.HasValue?  visits.GetValueOrDefault(xx.VisitId.Value)?.Patient?.Name?? StringExtensions.Dashes : StringExtensions.Dashes,
+                        PatientId = xx.VisitId.HasValue? visits.GetValueOrDefault(xx.VisitId.Value)?.PatientId : null,
                     }).ToList()
                 })
 
@@ -377,6 +384,8 @@ namespace MedicalPoint.Services
         public string UserName { get; set; }
         public int? VisitId { get; set; }
         public DateTime CreatedAt { get; set; }
+        public string PatientName { get; set; }
+        public int? PatientId { get; set; }
     }
     public class VisitsReport
     {

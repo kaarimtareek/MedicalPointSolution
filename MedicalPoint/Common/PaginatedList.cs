@@ -9,7 +9,7 @@ namespace MedicalPoint.Common
         public int PageSize { get; set; }
         public bool HasPrevious => PageNumber > 1;
         public bool HasNext => PageNumber < TotalPages;
-        private PaginatedList(List<T> items, int pageNumber, int pageSize, int totalPages)
+        private PaginatedList(IList<T> items, int pageNumber, int pageSize, int totalPages)
        {
             PageNumber = pageNumber;
             TotalPages = totalPages;
@@ -25,8 +25,7 @@ namespace MedicalPoint.Common
         }
         public static PaginatedList<T> Create(IList<T> query, int pageNumber, int pageSize, int totalPages)
         {
-            var result =  query.ToList();
-            return new PaginatedList<T>(result, pageNumber, pageSize, totalPages);
+            return new PaginatedList<T>(query, pageNumber, pageSize, totalPages);
         }
     }
 }

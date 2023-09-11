@@ -284,7 +284,7 @@
                                             <th> متخذ الإجراء </th>
                                             <th> نوع الإجراء </th>
                                             <th> تاريخ الإجراء </th>
-                                            <th> الاسم </th>
+                                            <th>اسم المريض  </th>
                                             <th> الكمية </th>
                                             <th> الحد الادني من الاكتفاء </th>
                                             <th> تفاصيل الكشف </th>
@@ -300,8 +300,20 @@
                                                         <td> @history.UserName </td>
                                                         <td> @history.ActionType </td>
                                                         <td> @history.CreatedAt </td>
-                                                        <td> @history.MedicineName </td>
-                                                        <td> @history.MedicineQuantity </td>
+                                                        @if(history.PatientId.HasValue)
+                                                        {
+                                                            <td> 
+                                                            <a asp-action="Details" asp-controller="Patients" asp-route-id="@history.PatientId.Value" id="link-green"> @history.PatientName </a> 
+                                                            </td>
+
+                                                        }
+                                                        else
+                                                        {
+                                                            <td>
+                                                                @history.PatientName
+                                                            </td>
+                                                        }
+                                                                <td> @history.MedicineQuantity </td>
                                                         <td> @history.MinimumQuantityThreshold </td>
                                                         @if(history.VisitId.HasValue)
                                                         {

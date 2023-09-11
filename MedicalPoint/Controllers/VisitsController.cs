@@ -128,10 +128,8 @@ namespace MedicalPoint.Controllers
             if(visit == null)
             {
                 TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY] = ConstantMessageCodes.VisitNotFound;
-                TempData[ConstantMessageCodes.ACTION_MESSAGE_KEY] = nameof(Index);
-                TempData[ConstantMessageCodes.CONTROLLER_MESSAGE_KEY] = nameof(VisitsController);
-
-                return NotFound();
+               
+                return RedirectToAction(nameof(Index));
             }
             var hasVisitRest = await _visitsService.IsVisitHasRest(id);
             var viewModel = new VisitViewModel

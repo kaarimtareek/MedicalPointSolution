@@ -201,31 +201,40 @@
                                         <input id="edit-input-@visitMedicine.Id" type="number" name="Quantity" form="form-edit-visitmedicine-@visitMedicine.Id" value="@visitMedicine.Quantity" required placeholder="الكمية" style="width: 100%; display:none;">
 
                                         </td>
+                                        @if(Model.IsFinished)
+                                        {
+                                            <td> -----</td>
+
+                                        }
+                                    else
+                                    {
+                                        
                                         <td>
-                                            <form id="form-delete-visitmedicine-@visitMedicine.Id" method="post" asp-action="RemoveVisitMedicine" asp-controller="Visits"></form>
-                                            <form id="form-edit-visitmedicine-@visitMedicine.Id" method="post" asp-action="EditVisitMedicine" asp-controller="Visits"></form>
-                                            <div id="edit-medicine-@visitMedicine.Id">
-                                            <button type="button" onclick="enableDisable({ids:['input-quantity-medicine-@visitMedicine.Id','edit-input-@visitMedicine.Id','save-medicine-@visitMedicine.Id','edit-medicine-@visitMedicine.Id']})" class="table-button-blue">
-                                                    تعديل <i class="fa-solid fa-pen-to-square"></i>
-                                                </button>
-                                            <input hidden form="form-delete-visitmedicine-@visitMedicine.Id" name="Id" value="@visitMedicine.Id" />
-                                            <input hidden form="form-edit-visitmedicine-@visitMedicine.Id" name="Id" value="@visitMedicine.Id" />
-                                            <input hidden form="form-delete-visitmedicine-@visitMedicine.Id" name="visitId" value="@Model.Id" />
-                                            <input hidden form="form-edit-visitmedicine-@visitMedicine.Id" name="visitId" value="@Model.Id" />
-                                                <button type="submit" form="form-delete-visitmedicine-@visitMedicine.Id" class="table-button-red">
-                                                    حذف <i class="fa-solid fa-trash"></i>
-                                                </button>
-                                            </div>
-                                            <div id="save-medicine-@visitMedicine.Id" style="display:none">
-                                            <button type="submit" form="form-edit-visitmedicine-@visitMedicine.Id" class="table-button-blue">
-                                                    حفظ
-                                                    <i class="fa-solid fa-pen-to-square"></i>
-                                                </button>
-                                            <button type="button" class="table-button-red" onclick="enableDisable({ids:['edit-medicine-@visitMedicine.Id','save-medicine-@visitMedicine.Id','input-quantity-medicine-@visitMedicine.Id','edit-input-@visitMedicine.Id']})">
-                                                    الغاء <i class="fa-solid fa-xmark"></i>
-                                                </button>
-                                            </div>
-                                        </td>
+                                                <form id="form-delete-visitmedicine-@visitMedicine.Id" method="post" asp-action="RemoveVisitMedicine" asp-controller="Visits"></form>
+                                                <form id="form-edit-visitmedicine-@visitMedicine.Id" method="post" asp-action="EditVisitMedicine" asp-controller="Visits"></form>
+                                                <div id="edit-medicine-@visitMedicine.Id">
+                                                <button type="button" onclick="enableDisable({ids:['input-quantity-medicine-@visitMedicine.Id','edit-input-@visitMedicine.Id','save-medicine-@visitMedicine.Id','edit-medicine-@visitMedicine.Id']})" class="table-button-blue">
+                                                        تعديل <i class="fa-solid fa-pen-to-square"></i>
+                                                    </button>
+                                                <input hidden form="form-delete-visitmedicine-@visitMedicine.Id" name="Id" value="@visitMedicine.Id" />
+                                                <input hidden form="form-edit-visitmedicine-@visitMedicine.Id" name="Id" value="@visitMedicine.Id" />
+                                                <input hidden form="form-delete-visitmedicine-@visitMedicine.Id" name="visitId" value="@Model.Id" />
+                                                <input hidden form="form-edit-visitmedicine-@visitMedicine.Id" name="visitId" value="@Model.Id" />
+                                                    <button type="submit" form="form-delete-visitmedicine-@visitMedicine.Id" class="table-button-red">
+                                                        حذف <i class="fa-solid fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                                <div id="save-medicine-@visitMedicine.Id" style="display:none">
+                                                <button type="submit" form="form-edit-visitmedicine-@visitMedicine.Id" class="table-button-blue">
+                                                        حفظ
+                                                        <i class="fa-solid fa-pen-to-square"></i>
+                                                    </button>
+                                                <button type="button" class="table-button-red" onclick="enableDisable({ids:['edit-medicine-@visitMedicine.Id','save-medicine-@visitMedicine.Id','input-quantity-medicine-@visitMedicine.Id','edit-input-@visitMedicine.Id']})">
+                                                        الغاء <i class="fa-solid fa-xmark"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                    }
                                     </tr>
 
                                 }
