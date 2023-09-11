@@ -38,7 +38,7 @@
                 <a asp-action="Index" asp-controller="Patients" class="my-button-green print">بيانات المرضى <i class="fa-solid fa-user"></i></a>
                  <a asp-action="Create" asp-controller="Patients" class="my-button-green print">إضافة مريض جديد <i class="fa-solid fa-user"></i></a>
                 <a class="my-button-blue print" href="" onclick="window.print()"  >طباعة البيانات <i class="fa-solid fa-print"></i></a>
-                <a class="my-button-green print" asp-action="VisitsToday" asp-controller="Reports"  > التقرير اليومي   <i class="fa-solid fa-scroll"></i></a>
+                <a class="my-button-green print" asp-action="VisitsToday" asp-controller="Reports"  > انشاء تقرير الكشوفات   <i class="fa-solid fa-scroll"></i></a>
 
                 @if(this.Context.IsUserHasRoles(new string[]{ConstantUserType.Doctor, ConstantUserType.SUPER_ADMIN, ConstantUserType.Recieptionist}))
                 {

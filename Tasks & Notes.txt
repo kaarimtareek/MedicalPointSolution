@@ -42,3 +42,8 @@ Admin123
 - add export medicines when the patient is under observation & will be added in the patient report.
 - add the medicines that patient took in the patient report.
 
+=========
+11-9-2023
+=========
+
+- move the db from C: drive (HDD) to the E: drive (SSD)

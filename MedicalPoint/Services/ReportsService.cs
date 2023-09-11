@@ -13,7 +13,7 @@ namespace MedicalPoint.Services
     {
         Task<DailyMedicineReport> GenerateDailyMedicineReport(DateTime date);
         Task<PatientReport> GeneratePatientReport(int patientId);
-        Task<VisitsReport> GenerateTodayStudentsVisitsReport(DateTime date);
+        Task<VisitsReport> GenerateVisitsReport(DateTime startDate, DateTime endDate, bool includeAllPatients = false, CancellationToken cancellationToken = default);
         Task<VisitsReport> GenerateVisitsReport(DateTime startDate, DateTime endDate);
     }
     public static class StringExtensions
@@ -74,24 +74,37 @@ namespace MedicalPoint.Services
             };
             return visitsReport;
         }
-        public async Task<VisitsReport> GenerateTodayStudentsVisitsReport(DateTime date)
+        public async Task<VisitsReport> GenerateVisitsReport(DateTime startDate, DateTime endDate, bool includeAllPatients = false, CancellationToken cancellationToken = default)
         {
-            var startDate = date.Date;
-            var endDate = date.Date.AddDays(1);
-            var visits = await _context.Visits.AsNoTracking().Where(x => x.VisitTime >=startDate && x.VisitTime<=endDate && x.Patient.DegreeId == 1).ToListAsync();
+            startDate = startDate.Date;
+            //largest time span is 1 month
+            startDate = endDate.Subtract(startDate).TotalDays > 31 ? endDate.AddDays(-31) : startDate.Date;
+            endDate = endDate.Date.AddDays(1);
+            //var startDate = date.Date;
+            //var endDate = date.Date.AddDays(1);
+            var query = _context.Visits.AsNoTracking().Where(x => x.VisitTime >=startDate && x.VisitTime<=endDate );
+            if(!includeAllPatients)
+            {
+                query = query.Where(x => x.Patient.DegreeId == 1);    
+            }
+            var visits = await query.OrderByDescending(x => x.CreatedAt).ToListAsync(cancellationToken);
+
             var emergencyVisitTypeCount = visits.Count(x => x.Type == ConstantVisitType.EMERGENCY);
             var patientsIds = visits.Select(x => x.PatientId).Distinct().ToList();
             var doctorsIds = visits.Select(x => x.DoctorId).Distinct().Where(x => x.HasValue).Select(x => x.Value).ToList();
-            var patients = await _context.Patients.Include(x => x.Degree).AsNoTracking().Where(x => patientsIds.Contains(x.Id)).ToDictionaryAsync(x => x.Id);
-            var doctors = await _context.Users.Include(x => x.Degree).AsNoTracking().Where(x => doctorsIds.Contains(x.Id)).ToDictionaryAsync(x => x.Id);
+            var patients = await _context.Patients.Include(x => x.Degree).AsNoTracking().Where(x => patientsIds.Contains(x.Id)).ToDictionaryAsync(x => x.Id, cancellationToken);
+            var doctors = await _context.Users.Include(x => x.Degree).AsNoTracking().Where(x => doctorsIds.Contains(x.Id)).ToDictionaryAsync(x => x.Id, cancellationToken);
             var clinicsIds = visits.Select(x => x.ClinicId).Distinct().ToList();
-            var clinics = await _context.Clinics.AsNoTracking().Where(x => clinicsIds.Contains(x.Id)).ToDictionaryAsync(x => x.Id);
+            var clinics = await _context.Clinics.AsNoTracking().Where(x => clinicsIds.Contains(x.Id)).ToDictionaryAsync(x => x.Id, cancellationToken);
             var visitsPatientsGroup = visits.GroupBy(x => x.PatientId);
             var visitsDoctorsGroup = visits.GroupBy(x => x.DoctorId);
             var visitsClinicsGroup = visits.GroupBy(x => x.ClinicId);
             var visitsTypesGroup = visits.GroupBy(x => x.Type);
             var visitsReport = new VisitsReport
             {
+                FromDate = startDate,
+                //because we added 1 day for filteration, we revert it back here
+                ToDate = endDate.AddDays(-1),
                 ReportDate = DateTime.Now,
                 PatientsCount = patientsIds.Count,
                 VisitsCount = visits.Count,
@@ -390,6 +403,8 @@ namespace MedicalPoint.Services
     }
     public class VisitsReport
     {
+        public DateTime FromDate { get; set; }
+        public DateTime ToDate { get; set; }
         public Dictionary<string, int> SaryasCount =>
             Visits?.Where(x=> !string.IsNullOrEmpty(x.PatientSaryaNumber) && x.PatientSaryaNumber != StringExtensions.Dashes).GroupBy(x => x.PatientSaryaNumber).Where(x => x.Key != StringExtensions.Dashes).ToDictionary(x => x.Key, x => x.Count());
         public DateTime ReportDate { get; set; }

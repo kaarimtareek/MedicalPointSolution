@@ -2,6 +2,7 @@
 @model VisitsReport
 @{
     Layout = null;
+    ViewBag.IsEmptyPage = Model == null;
 }
 <!DOCTYPE html>
 <html dir="rtl">
@@ -41,13 +42,58 @@
     <div class="landing-three ">
 
         <div class="container  fadeInUp-animation">
-            <div class="row ">
+            <div class="row justify-content-center mt-2 mb-2 print">
 
-                <div class="row">
-                    <div class="col-lg-12 text-center ">
+                <div class="col-lg-12 text-center ">
+
+                        <div class="row justify-content-center  ">
+                    <form id="formFilterVisitsReport" class="print" asp-action="VisitsToday" asp-controller="Reports" method="get" style="display:none"></form>
+
+                    <div class="col-lg-1 text-center">
+                            <label id="" for="input-date-from">تاريخ البداية</label>
+                    </div>
+                    <div class="col-lg-2 text-center">
+                        <input style="width:90%" class="my-table-input" id="input-date-from" valueAsDate="@ViewBag.FromDate" placeholder="اختر بداية التاريخ" name="fromDate" type="date" form="formFilterVisitsReport">
+                    </div>
+                        <div class="col-lg-1 text-center">
+                            <label  for="input-date-to">تاريخ النهاية</label>
+                        </div>
+                    <div class="col-lg-2 text-center">
+                        <input style="width:90%" class="my-table-input" id="input-date-to" valueAsDate="@ViewBag.ToDate" placeholder="اختر نهاية التاريخ" name="toDate" type="date" form="formFilterVisitsReport">
+                    </div>
+                    <div class="col-lg-2 text-center ">
+                        <select class="my-table-select " id="select-patients-type" asp-items="@ViewBag.PatientTypes" value="@ViewBag.SelectedPatientType" name="patientType" form="formFilterVisitsReport">
+                        </select>
+                    </div>
+                    <div class="col-lg-2 text-center">
+                        <button class="table-button-blue" value="مسح البحث" onClick="ResetFilters(['input-date-from','input-date-to','select-patients-type'])">مسح البحث</button>
+                        <input class="table-button-red" type="submit" form="formFilterVisitsReport" value="تنفيذ" />
+                    </div>
+
+                       
+
+                    </div>
+
+                </div>
+            </div>
+
+
+                    <div class="row">
+                    @if(!ViewBag.IsEmptyPage)
+                    {
+                        <div class="col-lg-12 text-center ">
                         <div class="row justify-content-center">
                             <div class="col-lg-12 ">
-                                <p id="nametwo">التقرير اليومي لكشوفات الطلبة عن يوم @Model.ReportDate.Date.ToShortDateString() <i class="fa-solid fa-chart-simple"></i></p>
+                                @if( string.IsNullOrEmpty( ViewBag.SelectedPatientType))
+                                {
+                                    <p id="nametwo">التقرير لكشوفات الطلبة من يوم @Model.FromDate.Date.ToShortDateString() ليوم @Model.ToDate.Date.ToShortDateString() <i class="fa-solid fa-chart-simple"></i></p>
+
+                                }
+                                else
+                                {
+                                    <p id="nametwo">التقرير للكشوفات من يوم @Model.FromDate.Date.ToShortDateString() ليوم @Model.ToDate.Date.ToShortDateString() <i class="fa-solid fa-chart-simple"></i></p>
+
+                                }
 
                             </div>
                             <div style="display:none" class="col-lg-2 print">
@@ -135,7 +181,7 @@
                                 <tbody>
                             @if(Model.Visits.Count == 0)
                             {
-                                <th colspan="10" style="color:var(--red-color)"> لا يوجد بيانات</th>
+                                <th colspan="12" style="color:var(--red-color)"> لا يوجد بيانات</th>
                             }
                             @foreach(var visit in Model.Visits)
                             {
@@ -161,13 +207,87 @@
 
 
                     </div>
-                </div>
 
+                }
+                else
+                {
+                    <p style="color:red" class="text-center mt-4"> برجاء اختيار تاريخ بداية ونهاية التقرير</p>
+                }
+            </div>
+
+        </div>
+    </div>
+    <!--popout div-->
+    <button type="button" id="popoutButton" class="my-button" data-bs-toggle="modal"
+            data-bs-target="#exampleModal" style="display: none;"></button>
+    <div class="modal fade text-center" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+
+
+                    <div class="row justify-content-center">
+                        <div class="col-lg-12">
+
+                            <div class="col-lg-12">
+                                <i style="color: var(--red-color); font-size: 80px; margin-bottom:15px;"
+                                   class="fa-solid fa-circle-exclamation fa-beat-fade"></i>
+                            </div>
+                            <div class="col-lg-12">
+                                <h4 id="errorText">هناك خطأ ما</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
 
             </div>
         </div>
+        <!--popout div-->
+        <div class="text-center">
+            <button type="button" id="popoutButton" class="my-button" data-bs-toggle="modal"
+                    data-bs-target="#exampleModal" style="display: none;"></button>
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+
+
+                            <div class="row justify-content-center">
+                                <div class="col-lg-12">
+
+                                    <div class="col-lg-12">
+                                        <i style="color: var(--red-color); font-size: 80px; margin-bottom:15px;"
+                                           class="fa-solid fa-circle-exclamation fa-beat-fade"></i>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <h4 id="errorText">هناك خطأ ما</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
     </div>
+
+
+
     <footer>
         <div class="container">
         </div>
@@ -182,5 +302,13 @@
 
 <script src="~/userDesign/js/all.min.js"></script>
 <script src="~/userDesign/js/bootstrap.bundle.min.js"></script>
-
+<script src="~/userdesign/js/resetfilters.js"></script>
+<script src="~/userdesign/js/popouterror.js"></script>
+@if (ViewBag.ErrorMessage is string s)
+{
+    if (!string.IsNullOrEmpty(s))
+    {
+        <script>popout({ error: '@s' })</script>
+    }
+}
 </html>
