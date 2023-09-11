@@ -283,7 +283,6 @@ namespace MedicalPoint.Controllers
                     Value = "1",
                     Selected = !notGivenOnly,
                 },
-
             };
             ViewBag.PageSizeList = new List<int>() { 10, 20, 50, 100 }.Select(x => new SelectListItem
             {
