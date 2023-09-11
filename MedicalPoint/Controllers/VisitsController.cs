@@ -87,6 +87,7 @@ namespace MedicalPoint.Controllers
                 PatientName = x.Patient?.Name??"",
                 PatientDegree = x.Patient?.Degree?.Name,
                 PatientGeneralNumber = x.Patient?.GeneralNumber?? "",
+                PatientSaryaNumber = x.Patient?.SaryaNumber?? ""
             });
             var paginatedViewModel = PaginatedList< VisitsViewModel >.Create(viewModel, visits.PageNumber, visits.PageSize, visits.TotalPages);
             SendErrorMessageToViewBagAndResetTempData();

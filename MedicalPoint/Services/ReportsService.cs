@@ -54,7 +54,7 @@ namespace MedicalPoint.Services
             {
                 PatientsCount = patientsIds.Count,
                 VisitsCount = visits.Count,
-                Vists = visits.ConvertAll(x => new VisitsViewModel
+                Visits = visits.ConvertAll(x => new VisitsViewModel
                 {
                     ClinicId = x.ClinicId,
                     ClinicName = x.ClinicId.HasValue ? clinics[x.ClinicId.Value]?.Name ?? StringExtensions.Dashes : StringExtensions.Dashes,
@@ -96,7 +96,7 @@ namespace MedicalPoint.Services
                 PatientsCount = patientsIds.Count,
                 VisitsCount = visits.Count,
                 EmergencyVisitTypeCount = emergencyVisitTypeCount,
-                Vists = visits.ConvertAll(x => new VisitsViewModel
+                Visits = visits.ConvertAll(x => new VisitsViewModel
                 {
                     PatientDegree = patients.GetValueOrDefault(x.PatientId)?.Degree?.Name??StringExtensions.Dashes,
                     ClinicId = x.ClinicId,
@@ -112,6 +112,8 @@ namespace MedicalPoint.Services
                     Id = x.Id,
                     DoctorName = x.DoctorId.HasValue ? doctors.GetValueOrDefault(x.DoctorId.Value)?.FullName ?? StringExtensions.Dashes : StringExtensions.Dashes,
                     PatientName = patients.GetValueOrDefault(x.PatientId)?.Name ?? StringExtensions.Dashes,
+                    PatientSaryaNumber = patients.GetValueOrDefault(x.PatientId)?.SaryaNumber?? StringExtensions.Dashes,
+                    PatientGeneralNumber = patients.GetValueOrDefault(x.PatientId)?.GeneralNumber ?? StringExtensions.Dashes,
                 }),
 
             };
@@ -250,17 +252,7 @@ namespace MedicalPoint.Services
             var report = new DailyMedicineReport
             {
                 ReportDate = startDate,
-                AllMedicines = medicines.ConvertAll(x=> new MedicineForDailyMedicineReport
-                {
-                    CreatedAt = x.CreatedAt,
-                    Id = x.Id,
-                    LastUpdatedAt = x.LastUpdatedAt,
-                    MinimumQuantityThreshold = x.MinimumQuantityThreshold,
-                    Name = x.Name,
-                    Quantity = x.Quantity,
-                    Status = x.Status
-                }),
-                AvailableMedicines = medicines.Where(x => x.Status == ConstantMedicineStatus.AVAILABLE).Select(x => new MedicineForDailyMedicineReport
+                AllMedicines = medicines.OrderBy(x=> x.Name).Select(x=> new MedicineForDailyMedicineReport
                 {
                     CreatedAt = x.CreatedAt,
                     Id = x.Id,
@@ -270,7 +262,7 @@ namespace MedicalPoint.Services
                     Quantity = x.Quantity,
                     Status = x.Status
                 }).ToList(),
-                NearFinishMedicines = medicines.Where(x => x.Status == ConstantMedicineStatus.NEAR_FINISH).Select(x => new MedicineForDailyMedicineReport
+                AvailableMedicines = medicines.Where(x => x.Status == ConstantMedicineStatus.AVAILABLE).OrderBy(x=> x.Name).Select(x => new MedicineForDailyMedicineReport
                 {
                     CreatedAt = x.CreatedAt,
                     Id = x.Id,
@@ -280,7 +272,7 @@ namespace MedicalPoint.Services
                     Quantity = x.Quantity,
                     Status = x.Status
                 }).ToList(),
-                NotAvailableMedicines = medicines.Where(x => x.Status == ConstantMedicineStatus.NOT_AVAILABLE).Select(x => new MedicineForDailyMedicineReport
+                NearFinishMedicines = medicines.Where(x => x.Status == ConstantMedicineStatus.NEAR_FINISH).OrderBy(x => x.Name).Select(x => new MedicineForDailyMedicineReport
                 {
                     CreatedAt = x.CreatedAt,
                     Id = x.Id,
@@ -290,7 +282,17 @@ namespace MedicalPoint.Services
                     Quantity = x.Quantity,
                     Status = x.Status
                 }).ToList(),
-                MedicinesGivenToday = givenMedicines.ConvertAll(x => new MedicineForDailyMedicineReport
+                NotAvailableMedicines = medicines.Where(x => x.Status == ConstantMedicineStatus.NOT_AVAILABLE).OrderBy(x => x.Name).Select(x => new MedicineForDailyMedicineReport
+                {
+                    CreatedAt = x.CreatedAt,
+                    Id = x.Id,
+                    LastUpdatedAt = x.LastUpdatedAt,
+                    MinimumQuantityThreshold = x.MinimumQuantityThreshold,
+                    Name = x.Name,
+                    Quantity = x.Quantity,
+                    Status = x.Status
+                }).ToList(),
+                MedicinesGivenToday = givenMedicines.OrderBy(x => x.Name).Select(x => new MedicineForDailyMedicineReport
                 {
                     CreatedAt = x.CreatedAt,
                     Id = x.Id,
@@ -314,7 +316,7 @@ namespace MedicalPoint.Services
                         PatientName = xx.VisitId.HasValue?  visits.GetValueOrDefault(xx.VisitId.Value)?.Patient?.Name?? StringExtensions.Dashes : StringExtensions.Dashes,
                         PatientId = xx.VisitId.HasValue? visits.GetValueOrDefault(xx.VisitId.Value)?.PatientId : null,
                     }).ToList()
-                })
+                }).ToList()
 
             };
             return report;
@@ -388,11 +390,13 @@ namespace MedicalPoint.Services
     }
     public class VisitsReport
     {
+        public Dictionary<string, int> SaryasCount =>
+            Visits?.Where(x=> !string.IsNullOrEmpty(x.PatientSaryaNumber) && x.PatientSaryaNumber != StringExtensions.Dashes).GroupBy(x => x.PatientSaryaNumber).Where(x => x.Key != StringExtensions.Dashes).ToDictionary(x => x.Key, x => x.Count());
         public DateTime ReportDate { get; set; }
         public int VisitsCount { get; set; }
         public int PatientsCount { get; set; }
         public int EmergencyVisitTypeCount { get; set; }
-        public List<VisitsViewModel> Vists { get; set; }
+        public List<VisitsViewModel> Visits { get; set; }
 
     }
     public class PatientReport
