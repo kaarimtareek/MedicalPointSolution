@@ -90,7 +90,6 @@ namespace MedicalPoint.Services
             var visitsDoctorsGroup = visits.GroupBy(x => x.DoctorId);
             var visitsClinicsGroup = visits.GroupBy(x => x.ClinicId);
             var visitsTypesGroup = visits.GroupBy(x => x.Type);
-            var patientsDegreesGroup = patients.GroupBy(x => x.Value.DegreeId);
             var visitsReport = new VisitsReport
             {
                 ReportDate = DateTime.Now,
@@ -99,7 +98,7 @@ namespace MedicalPoint.Services
                 EmergencyVisitTypeCount = emergencyVisitTypeCount,
                 Vists = visits.ConvertAll(x => new VisitsViewModel
                 {
-                    PatientDegree = x.Patient?.Degree?.Name??StringExtensions.Dashes,
+                    PatientDegree = patients.GetValueOrDefault(x.PatientId)?.Degree?.Name??StringExtensions.Dashes,
                     ClinicId = x.ClinicId,
                     ClinicName = x.ClinicId.HasValue ? clinics.GetValueOrDefault(x.ClinicId.Value)?.Name ?? StringExtensions.Dashes : StringExtensions.Dashes,
                     Diagnosis = x.Diagnosis,
