@@ -13,12 +13,19 @@ namespace MedicalPoint.Services
     {
         Task<DailyMedicineReport> GenerateDailyMedicineReport(DateTime date);
         Task<PatientReport> GeneratePatientReport(int patientId);
-        Task<VisitsReport> GenerateTodayStudentsVisitsReport(DateTime date);
+        Task<VisitsReport> GenerateVisitsReport(DateTime startDate, DateTime endDate, bool includeAllPatients = false, CancellationToken cancellationToken = default);
         Task<VisitsReport> GenerateVisitsReport(DateTime startDate, DateTime endDate);
     }
     public static class StringExtensions
     {
         public const string Dashes = "----";
+        public static bool IsNumber(this string s)
+        {
+            if (string.IsNullOrEmpty(s))
+                return false;
+            return int.TryParse(s, out int value);
+        }
+
    
     }
 
@@ -54,7 +61,7 @@ namespace MedicalPoint.Services
             {
                 PatientsCount = patientsIds.Count,
                 VisitsCount = visits.Count,
-                Vists = visits.ConvertAll(x => new VisitsViewModel
+                Visits = visits.ConvertAll(x => new VisitsViewModel
                 {
                     ClinicId = x.ClinicId,
                     ClinicName = x.ClinicId.HasValue ? clinics[x.ClinicId.Value]?.Name ?? StringExtensions.Dashes : StringExtensions.Dashes,
@@ -74,32 +81,44 @@ namespace MedicalPoint.Services
             };
             return visitsReport;
         }
-        public async Task<VisitsReport> GenerateTodayStudentsVisitsReport(DateTime date)
+        public async Task<VisitsReport> GenerateVisitsReport(DateTime startDate, DateTime endDate, bool includeAllPatients = false, CancellationToken cancellationToken = default)
         {
-            var startDate = date.Date;
-            var endDate = date.Date.AddDays(1);
-            var visits = await _context.Visits.AsNoTracking().Where(x => x.VisitTime >=startDate && x.VisitTime<=endDate && x.Patient.DegreeId == 1).ToListAsync();
+            startDate = startDate.Date;
+            //largest time span is 1 month
+            startDate = endDate.Subtract(startDate).TotalDays > 31 ? endDate.AddDays(-31) : startDate.Date;
+            endDate = endDate.Date.AddDays(1);
+            //var startDate = date.Date;
+            //var endDate = date.Date.AddDays(1);
+            var query = _context.Visits.AsNoTracking().Where(x => x.VisitTime >=startDate && x.VisitTime<=endDate );
+            if(!includeAllPatients)
+            {
+                query = query.Where(x => x.Patient.DegreeId == 1);    
+            }
+            var visits = await query.OrderByDescending(x => x.CreatedAt).ToListAsync(cancellationToken);
+
             var emergencyVisitTypeCount = visits.Count(x => x.Type == ConstantVisitType.EMERGENCY);
             var patientsIds = visits.Select(x => x.PatientId).Distinct().ToList();
             var doctorsIds = visits.Select(x => x.DoctorId).Distinct().Where(x => x.HasValue).Select(x => x.Value).ToList();
-            var patients = await _context.Patients.Include(x => x.Degree).AsNoTracking().Where(x => patientsIds.Contains(x.Id)).ToDictionaryAsync(x => x.Id);
-            var doctors = await _context.Users.Include(x => x.Degree).AsNoTracking().Where(x => doctorsIds.Contains(x.Id)).ToDictionaryAsync(x => x.Id);
+            var patients = await _context.Patients.Include(x => x.Degree).AsNoTracking().Where(x => patientsIds.Contains(x.Id)).ToDictionaryAsync(x => x.Id, cancellationToken);
+            var doctors = await _context.Users.Include(x => x.Degree).AsNoTracking().Where(x => doctorsIds.Contains(x.Id)).ToDictionaryAsync(x => x.Id, cancellationToken);
             var clinicsIds = visits.Select(x => x.ClinicId).Distinct().ToList();
-            var clinics = await _context.Clinics.AsNoTracking().Where(x => clinicsIds.Contains(x.Id)).ToDictionaryAsync(x => x.Id);
+            var clinics = await _context.Clinics.AsNoTracking().Where(x => clinicsIds.Contains(x.Id)).ToDictionaryAsync(x => x.Id, cancellationToken);
             var visitsPatientsGroup = visits.GroupBy(x => x.PatientId);
             var visitsDoctorsGroup = visits.GroupBy(x => x.DoctorId);
             var visitsClinicsGroup = visits.GroupBy(x => x.ClinicId);
             var visitsTypesGroup = visits.GroupBy(x => x.Type);
-            var patientsDegreesGroup = patients.GroupBy(x => x.Value.DegreeId);
             var visitsReport = new VisitsReport
             {
+                FromDate = startDate,
+                //because we added 1 day for filteration, we revert it back here
+                ToDate = endDate.AddDays(-1),
                 ReportDate = DateTime.Now,
                 PatientsCount = patientsIds.Count,
                 VisitsCount = visits.Count,
                 EmergencyVisitTypeCount = emergencyVisitTypeCount,
-                Vists = visits.ConvertAll(x => new VisitsViewModel
+                Visits = visits.ConvertAll(x => new VisitsViewModel
                 {
-                    PatientDegree = x.Patient?.Degree?.Name??StringExtensions.Dashes,
+                    PatientDegree = patients.GetValueOrDefault(x.PatientId)?.Degree?.Name??StringExtensions.Dashes,
                     ClinicId = x.ClinicId,
                     ClinicName = x.ClinicId.HasValue ? clinics.GetValueOrDefault(x.ClinicId.Value)?.Name ?? StringExtensions.Dashes : StringExtensions.Dashes,
                     Diagnosis = x.Diagnosis,
@@ -113,6 +132,8 @@ namespace MedicalPoint.Services
                     Id = x.Id,
                     DoctorName = x.DoctorId.HasValue ? doctors.GetValueOrDefault(x.DoctorId.Value)?.FullName ?? StringExtensions.Dashes : StringExtensions.Dashes,
                     PatientName = patients.GetValueOrDefault(x.PatientId)?.Name ?? StringExtensions.Dashes,
+                    PatientSaryaNumber = patients.GetValueOrDefault(x.PatientId)?.SaryaNumber?? StringExtensions.Dashes,
+                    PatientGeneralNumber = patients.GetValueOrDefault(x.PatientId)?.GeneralNumber ?? StringExtensions.Dashes,
                 }),
 
             };
@@ -241,22 +262,17 @@ namespace MedicalPoint.Services
             var givenMedicinesHistory = await _context.MedicineHistories
                 .Include(x=> x.User)
                 .AsNoTracking().Where(x => x.CreatedAt >= startDate && x.CreatedAt <= endDate ).ToListAsync();
+            var visitsIds = givenMedicinesHistory.Where(x => x.VisitId.HasValue).Select(x => x.VisitId.Value).ToList();
+            var visits = await _context.Visits
+                .Include(x=> x.Patient)
+                .AsNoTracking().Where(x=> visitsIds.Contains(x.Id)).ToDictionaryAsync(x=> x.Id);
+
             var givenMedicinesIds = givenMedicinesHistory.Select(x=> x.MedicineId).Distinct().ToList();
             var givenMedicines = medicines.Where(x => givenMedicinesIds.Contains(x.Id)).ToList();
             var report = new DailyMedicineReport
             {
                 ReportDate = startDate,
-                AllMedicines = medicines.ConvertAll(x=> new MedicineForDailyMedicineReport
-                {
-                    CreatedAt = x.CreatedAt,
-                    Id = x.Id,
-                    LastUpdatedAt = x.LastUpdatedAt,
-                    MinimumQuantityThreshold = x.MinimumQuantityThreshold,
-                    Name = x.Name,
-                    Quantity = x.Quantity,
-                    Status = x.Status
-                }),
-                AvailableMedicines = medicines.Where(x => x.Status == ConstantMedicineStatus.AVAILABLE).Select(x => new MedicineForDailyMedicineReport
+                AllMedicines = medicines.OrderBy(x=> x.Name).Select(x=> new MedicineForDailyMedicineReport
                 {
                     CreatedAt = x.CreatedAt,
                     Id = x.Id,
@@ -266,7 +282,7 @@ namespace MedicalPoint.Services
                     Quantity = x.Quantity,
                     Status = x.Status
                 }).ToList(),
-                NearFinishMedicines = medicines.Where(x => x.Status == ConstantMedicineStatus.NEAR_FINISH).Select(x => new MedicineForDailyMedicineReport
+                AvailableMedicines = medicines.Where(x => x.Status == ConstantMedicineStatus.AVAILABLE).OrderBy(x=> x.Name).Select(x => new MedicineForDailyMedicineReport
                 {
                     CreatedAt = x.CreatedAt,
                     Id = x.Id,
@@ -276,7 +292,7 @@ namespace MedicalPoint.Services
                     Quantity = x.Quantity,
                     Status = x.Status
                 }).ToList(),
-                NotAvailableMedicines = medicines.Where(x => x.Status == ConstantMedicineStatus.NOT_AVAILABLE).Select(x => new MedicineForDailyMedicineReport
+                NearFinishMedicines = medicines.Where(x => x.Status == ConstantMedicineStatus.NEAR_FINISH).OrderBy(x => x.Name).Select(x => new MedicineForDailyMedicineReport
                 {
                     CreatedAt = x.CreatedAt,
                     Id = x.Id,
@@ -286,7 +302,17 @@ namespace MedicalPoint.Services
                     Quantity = x.Quantity,
                     Status = x.Status
                 }).ToList(),
-                MedicinesGivenToday = givenMedicines.ConvertAll(x => new MedicineForDailyMedicineReport
+                NotAvailableMedicines = medicines.Where(x => x.Status == ConstantMedicineStatus.NOT_AVAILABLE).OrderBy(x => x.Name).Select(x => new MedicineForDailyMedicineReport
+                {
+                    CreatedAt = x.CreatedAt,
+                    Id = x.Id,
+                    LastUpdatedAt = x.LastUpdatedAt,
+                    MinimumQuantityThreshold = x.MinimumQuantityThreshold,
+                    Name = x.Name,
+                    Quantity = x.Quantity,
+                    Status = x.Status
+                }).ToList(),
+                MedicinesGivenToday = givenMedicines.OrderBy(x => x.Name).Select(x => new MedicineForDailyMedicineReport
                 {
                     CreatedAt = x.CreatedAt,
                     Id = x.Id,
@@ -306,9 +332,11 @@ namespace MedicalPoint.Services
                         MinimumQuantityThreshold = xx.MinimumQuantityThreshold,
                         UserId = xx.UserId,
                         UserName = xx.User?.FullName?? StringExtensions.Dashes,
-                        VisitId = xx.VisitId
-                    }).ToList()
-                })
+                        VisitId = xx.VisitId,
+                        PatientName = xx.VisitId.HasValue?  visits.GetValueOrDefault(xx.VisitId.Value)?.Patient?.Name?? StringExtensions.Dashes : StringExtensions.Dashes,
+                        PatientId = xx.VisitId.HasValue? visits.GetValueOrDefault(xx.VisitId.Value)?.PatientId : null,
+                    }).OrderBy(x=> x.PatientName).ToList()
+                }).ToList()
 
             };
             return report;
@@ -377,14 +405,20 @@ namespace MedicalPoint.Services
         public string UserName { get; set; }
         public int? VisitId { get; set; }
         public DateTime CreatedAt { get; set; }
+        public string PatientName { get; set; }
+        public int? PatientId { get; set; }
     }
     public class VisitsReport
     {
+        public DateTime FromDate { get; set; }
+        public DateTime ToDate { get; set; }
+        public Dictionary<int, int> SaryasCount =>
+            Visits?.Where(x=> x.PatientSaryaNumber.IsNumber()).GroupBy(x => x.PatientSaryaNumber).Where(x => x.Key != StringExtensions.Dashes  ).ToDictionary(x => int.Parse(x.Key), x => x.Count()).OrderBy(x => x.Key).ToDictionary(x=> x.Key, x=> x.Value);
         public DateTime ReportDate { get; set; }
         public int VisitsCount { get; set; }
         public int PatientsCount { get; set; }
         public int EmergencyVisitTypeCount { get; set; }
-        public List<VisitsViewModel> Vists { get; set; }
+        public List<VisitsViewModel> Visits { get; set; }
 
     }
     public class PatientReport

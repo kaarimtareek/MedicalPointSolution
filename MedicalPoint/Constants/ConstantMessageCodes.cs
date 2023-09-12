@@ -5,6 +5,7 @@
         public const string ERROR_MESSAGE_KEY = "ErrorMessage";
         public const string ACTION_MESSAGE_KEY = "ActionName";
         public const string CONTROLLER_MESSAGE_KEY = "ControllerName";
+        public const string TO_DATE_MUST_BE_GREATER_FROM_DATE = "تاريخ النهاية يجب ان يكون اكبر من تاريخ البداية";
 
         public static string NameAlreadyExist = "الاسم موجود بالفعل";
         public static string PhoneNumberAlreadyExist = "رقم الهاتف موجود بالفعل";

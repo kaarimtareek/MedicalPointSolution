@@ -38,7 +38,7 @@
                 <a asp-action="Index" asp-controller="Patients" class="my-button-green print">بيانات المرضى <i class="fa-solid fa-user"></i></a>
                  <a asp-action="Create" asp-controller="Patients" class="my-button-green print">إضافة مريض جديد <i class="fa-solid fa-user"></i></a>
                 <a class="my-button-blue print" href="" onclick="window.print()"  >طباعة البيانات <i class="fa-solid fa-print"></i></a>
-                <a class="my-button-green print" asp-action="VisitsToday" asp-controller="Reports"  > التقرير اليومي   <i class="fa-solid fa-scroll"></i></a>
+                <a class="my-button-green print" asp-action="VisitsToday" asp-controller="Reports"  > انشاء تقرير الكشوفات   <i class="fa-solid fa-scroll"></i></a>
 
                 @if(this.Context.IsUserHasRoles(new string[]{ConstantUserType.Doctor, ConstantUserType.SUPER_ADMIN, ConstantUserType.Recieptionist}))
                 {
@@ -115,6 +115,7 @@
                                 <th>الدرجة / الرتبة</th>
                                 <th>اسم المريض</th>
                                 <th>رقم العام</th>
+                                <th>رقم السرية</th>
                                 <th>العيادة</th>
                                 <th>رقم الكشف</th>
                                 <th>نوع الكشف</th>
@@ -137,6 +138,7 @@
                                     <td>@visits.PatientDegree</td>
                                      <td ><a asp-action="Details" asp-controller="Patients" asp-route-id="@visits.PatientId" id="link-green"> @visits.PatientName</a></td>
                                     <td>@visits.PatientGeneralNumber</td>
+                                    <td>@visits.PatientSaryaNumber</td>
                                     <td>@visits.ClinicName</td>
                                     <td>@visits.VisitNumber</td>
                                     <td>@visits.Type</td>
@@ -200,10 +202,11 @@
                                 <div class="row"style="justify-content: left;">
                                     @if(Model.HasPrevious)
                                         {
-                                        <div class="col-lg-2">
+                                                var pageNumber = Model.PageNumber - 1;
+                                                <div class="col-lg-2">
                                     <a  class="table-button-red"
                                     asp-action="Index" asp-asp-controller="Visits" 
-                                    asp-route-pageNumber="@Model.PageNumber-1"
+                                    asp-route-pageNumber="@pageNumber"
                                     asp-route-pageSize = "@Model.PageSize"
                                     asp-route-searchValue = "@ViewBag.SearchValue"
                                     asp-route-clinicId = "@ViewBag.SelectedClinic"
@@ -224,10 +227,11 @@
                                         }
                                         @if(Model.HasNext)
                                         {
+                                            var pageNumber = Model.PageNumber + 1;
                                                 
                                         <div class="col-lg-2">
                                     <a class="table-button-blue" asp-action="Index" asp-asp-controller="Visits" 
-                                    asp-route-pageNumber="@Model.PageNumber+1"
+                                    asp-route-pageNumber="@pageNumber"
                                     asp-route-pageSize = "@Model.PageSize"
                                     asp-route-searchValue = "@ViewBag.SearchValue"
                                     asp-route-clinicId = "@ViewBag.SelectedClinic"
@@ -267,7 +271,7 @@
         <!-- Copyright -->
         <div class="text-center p-1" >
             
-          <p id="footer-text">تم الانشاء بواسطة <span style="color: var(--red-color);">فرع النظم</span> الدفعة <span style="color: var(--red-color);">164</span> ضباط إحتياط ©</p>
+          <p id="footer-text">تم الانشاء بواسطة <span style="color: var(--red-color);">طلاب فرع النظم</span> الدفعة <span style="color: var(--red-color);">164</span> ضباط إحتياط ©</p>
         </div>
         
         <!-- Copyright -->

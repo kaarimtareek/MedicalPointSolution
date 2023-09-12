@@ -1,7 +1,10 @@
-﻿@using MedicalPoint.ViewModels.Visits;
+﻿@using MedicalPoint.Common;
+@using MedicalPoint.Constants;
+@using MedicalPoint.ViewModels.Visits;
 @model VisitRestViewModel
 @{
     Layout = null;
+    ViewBag.IsSuperUser = this.Context.IsUserHasRoles(new string[] { ConstantUserType.SUPER_ADMIN });
 }
 <!DOCTYPE html>
 <html dir="rtl">
@@ -91,10 +94,27 @@
                             <tr>
                                 <th>ملاحظات</th>
                                 <td>@Model.Notes</td>
+                            </tr> 
+
+                            <tr>
+                                <th>تاريخ انشاء الاورنيك</th>
+                                <td>@Model.CreatedAt</td>
+                            </tr> 
+                            <tr class="print">
+                                <th>تفاصيل الكشف</th>
+                                <td><a asp-route-id="@Model.VisitId" asp-action="Details" id="link-green" > تفاصيل الكشف </a></td>
                             </tr>
                         </tbody>
                     </table>
-                   </div>
+                    @if(ViewBag.IsSuperUser)
+                    {
+                        <a asp-action="EditVisitRest"  asp-route-id="@Model.Id" class="my-button print" >
+                        تعديل الاورنيك
+                    </a>   
+                        
+                    }
+                </div>
+
               
                 </div>
             </div>

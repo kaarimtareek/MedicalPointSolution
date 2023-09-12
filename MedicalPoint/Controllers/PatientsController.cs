@@ -68,7 +68,7 @@ namespace MedicalPoint.Controllers
                 Degree = x.Degree?.Name ?? string.Empty,
                 RegisteredUserName = x.RegisteredUser?.FullName ?? string.Empty,
             });
-            var paginatedViewModel = PaginatedList<PatientViewModel>.Create(viewModel, pageNumber, pageSize);
+            var paginatedViewModel = PaginatedList<PatientViewModel>.Create(viewModel, patients.PageNumber, patients.PageSize, patients.TotalPages);
             return View(paginatedViewModel);
         }
         public IActionResult Create()

@@ -19,7 +19,8 @@ namespace MedicalPoint.Services
         Task<PaginatedList<Visit>> GetAll(int pageNumber = 1, int pageSize = 20, int? doctorId = null, int? patientId = null, DateTime? from = null, DateTime? to = null, string? type = null, int? clinicId = null, string? searchValue = null, CancellationToken cancellationToken = default);
         Task<VisitRest> GetVisitRest(int visitId, CancellationToken cancellationToken = default);
         Task<List<LookupVisitRestType>> GetVisitRestTypes(CancellationToken cancellationToken = default);
-        Task<List<Visit>> GetVisitsThatNeedsToGiveMedicines(CancellationToken cancellationToken = default);
+        Task<PaginatedList<Visit>> GetVisitsMedicines( string searchValue, DateTime? date, bool notGivenOnly = true, int pageNumber = 1, int pageSize = 20, CancellationToken cancellationToken = default);
+        Task<List<Visit>> GetVisitsThatGivenMedicines(DateTime date, CancellationToken cancellationToken = default);
         Task<bool> IsVisitHasRest(int visitId, CancellationToken cancellationToken = default);
         Task<OperationResult<Visit>> WriteDiagnosis(int visitId, int userId, string diagnosis, bool forceChange = false, CancellationToken cancellationToken = default);
     }
@@ -298,17 +299,36 @@ namespace MedicalPoint.Services
             var result = await PaginatedList<Visit>.CreateAsync( query, pageNumber, pageSize);
             return result;
         }
-        public async Task<List<Visit>> GetVisitsThatNeedsToGiveMedicines(CancellationToken cancellationToken = default)
+        public async Task<PaginatedList<Visit>> GetVisitsMedicines(string searchValue, DateTime? date, bool notGivenOnly = true, int pageNumber = 1, int pageSize = 20, CancellationToken cancellationToken = default)
         {
             var query = _context.Visits
                 .Include(x=> x.Doctor)
                 .Include(x=> x.Patient)
                     .ThenInclude(x=> x.Degree)
                  .Include(x=> x.Clinic)
-                .AsNoTracking().AsQueryable();
+                .AsNoTracking().Where(x => x.Medicines.Count > 0);
+            if(!string.IsNullOrEmpty(searchValue))
+            {
+                query = query.Where(x=> x.Patient.GeneralNumber == searchValue || x.Patient.SaryaNumber == searchValue || x.Patient.Name.Contains(searchValue));
+            }
+            DateTime endDate;
+            if(date.HasValue)
+            {
+                date = date.Value.Date;
+                endDate =date.Value.Date.AddDays(1);
+            }
+            else
+            {
+                date = DateTime.Today.Date;
+                endDate = date.Value.AddDays(1);
+            }
+            if(notGivenOnly)
+            {
+                query = query.Where(x => !x.IsMedicinesGiven && x.Status == ConstantVisitStatus.TAKING_MEDICINE );
+            }
+            query = query.Where(x => x.VisitTime >= date.Value && x.VisitTime <= endDate);
 
-           
-            var result = await query.Where(x=> x.Medicines.Count > 0 &&   !x.IsMedicinesGiven && ( x.Status == ConstantVisitStatus.TAKING_MEDICINE || x.Status == ConstantVisitStatus.FINISHED) ).ToListAsync(cancellationToken);
+            var result = await PaginatedList<Visit>.CreateAsync(query, pageNumber, pageSize);
             return result;
         }
         public async Task<Visit> Get(int visitId, CancellationToken cancellationToken = default)
@@ -350,6 +370,22 @@ namespace MedicalPoint.Services
             var visit = await _context.LookupVisitRestTypes.AsNoTracking()
                 .ToListAsync(cancellationToken);
             return visit;
+        }
+
+        public async Task<List<Visit>> GetVisitsThatGivenMedicines(DateTime date, CancellationToken cancellationToken = default)
+        {
+            date = date.Date;
+            var endDate = date.AddDays(1);
+            var query = _context.Visits
+                .Include(x => x.Doctor)
+                .Include(x => x.Patient)
+                    .ThenInclude(x => x.Degree)
+                 .Include(x => x.Clinic)
+                .AsNoTracking().AsQueryable();
+
+
+            var result = await query.Where(x => x.CreatedAt >=date && x.CreatedAt <=endDate && x.Medicines.Count > 0 && x.IsMedicinesGiven).OrderByDescending(x=> x.CreatedAt).ToListAsync(cancellationToken);
+            return result;
         }
     }
 }
