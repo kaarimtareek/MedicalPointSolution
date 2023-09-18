@@ -181,12 +181,18 @@ namespace MedicalPoint.Data
             };
             modelBuilder.Entity<LookupVisitRestType>().HasData(visitRestTypes);
             #endregion
+
+            modelBuilder.Entity<MedicineBatch>().Property(x => x.IsFinished).HasComputedColumnSql($"CAST(CASE {nameof(MedicineBatch.Quantity)}  WHEN 0 THEN 0 ELSE 1 END AS bit)", true);
+            modelBuilder.Entity<MedicineBatch>().Property(x => x.Price).HasColumnType("decimal(18,2)");
+            modelBuilder.Entity<Medicine>().Property(x => x.Price).HasColumnType("decimal(18,2)");
+            modelBuilder.Entity<MedicineHistory>().Property(x => x.Price).HasColumnType("decimal(18,2)");
         }
         public DbSet<Clinic> Clinics { get; set; }
         public DbSet<Degree> Degrees { get; set; }
         public DbSet<LookupVisitRestType> LookupVisitRestTypes { get; set; }
         public DbSet<MedicalPointUser> Users { get; set; }
         public DbSet<Medicine> Medicines { get; set; }
+        public DbSet<MedicineBatch> MedicineBatches { get; set; }
         public DbSet<MedicineHistory> MedicineHistories { get; set; }
         public DbSet<Patient> Patients { get; set; }
         public DbSet<UnderObservationBed> UnderObservationBeds { get; set; }

@@ -91,7 +91,7 @@ namespace MedicalPoint.Controllers
                 return RedirectToAction("AccessDenied", "Account");
             }
 
-            var result = await _medicinesService.Add(userId.Value, viewModel.Name, viewModel.Quantity, viewModel.MinimumQuantityThreshold);
+            var result = await _medicinesService.Add(userId.Value, viewModel.Name, viewModel.Quantity, viewModel.ExpirationDate,  viewModel.MinimumQuantityThreshold );
             if (!result.Success)
             {
                 TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY] = result.Message;
@@ -101,7 +101,7 @@ namespace MedicalPoint.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddQuantity([FromForm] int MedicineId, [FromForm] int Quantity)
+        public async Task<IActionResult> AddQuantity([FromForm] int MedicineId, [FromForm] int Quantity, [FromForm] DateTime expirationDate)
         {
             var userId = HttpContext.GetUserId();
             if (userId == null)
@@ -109,7 +109,7 @@ namespace MedicalPoint.Controllers
                 return RedirectToAction("AccessDenied", "Account");
             }
 
-            var result = await _medicinesService.AddQauntity(userId.Value, MedicineId, Quantity);
+            var result = await _medicinesService.AddBatch(userId.Value, MedicineId, Quantity, expirationDate);
             if (!result.Success)
             {
                 TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY] = result.Message;
@@ -252,7 +252,7 @@ namespace MedicalPoint.Controllers
             {
                 return RedirectToAction("AccessDenied", "Account");
             }
-            var result = await _medicinesService.Edit(userId.Value, viewModel.Id, viewModel.Name, viewModel.Quantity, viewModel.MinimumQuantityThreshold);
+            var result = await _medicinesService.Edit(userId.Value, viewModel.Id, viewModel.Name,  viewModel.MinimumQuantityThreshold);
 
             if (!result.Success)
             {
