@@ -51,8 +51,8 @@ namespace MedicalPoint.Controllers
             {
                 TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY] = ConstantMessageCodes.TO_DATE_MUST_BE_GREATER_FROM_DATE;
             }
-            ViewBag.FromDate = fromDate;
-            ViewBag.ToDate = toDate;
+            ViewBag.FromDate = fromDate.ToString(DateTimeHelper.DefaultFormat);
+            ViewBag.ToDate = toDate.ToString(DateTimeHelper.DefaultFormat);
             ViewBag.SelectedPatientType = patientType;
             bool includeAll = !string.IsNullOrEmpty(patientType);
             var report = await _reportsService.GenerateVisitsReport(fromDate, toDate, includeAll );
@@ -64,6 +64,16 @@ namespace MedicalPoint.Controllers
 
             var report = await _reportsService.GenerateDailyMedicineReport(DateTime.Now);
 
+            return View(report);
+        }
+        public async Task<IActionResult> ExportedMedicines(DateTime? date)
+        {
+            if(date == null)
+            {
+                return View(null);
+            }
+            ViewBag.Date = date.Value.ToString(DateTimeHelper.DefaultFormat);
+            var report = await _reportsService.GenerateDailyExportedVisitMedicines(date.Value);
             return View(report);
         }
         private void SendErrorMessageToViewBagAndResetTempData()

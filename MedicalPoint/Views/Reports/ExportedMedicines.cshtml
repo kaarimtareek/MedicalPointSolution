@@ -1,0 +1,194 @@
+﻿@using MedicalPoint.Services;
+@model DailyExportedVisitMedicinesReport
+@{
+    ViewBag.IsEmptyPage = Model == null;
+    Layout = null;
+}
+<!DOCTYPE html>
+<html dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="~/userDesign/css/all.min.css">
+    <link rel="stylesheet" href="~/userDesign/css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/userDesign/css/bootstrap.min.css.map">
+    <link rel="stylesheet" href="~/userDesign/css/style.css">
+    <title>تقرير الادوية</title>
+    <link rel="icon" href="~/userDesign/img/logo.png">
+</head>
+
+<body class="background-with-color">
+
+    <nav class="navbar navbar-expand-lg navbar-light ">
+        <div class="container">
+            <div class="text-one">
+
+                <h1 class="main-p">النقطة الطبية</h1>
+                <h1 class="second-p">كلية الضباط الإحتياط</h1>
+
+            </div>
+            <div class="text-one">
+            <a asp-action="Index"  asp-controller="Medicines" class="my-button-blue print"> <i class="fa-solid fa-forward"></i> العودة </a>
+            <a class="my-button-blue print" href="" onclick="window.print()">طباعة التقرير  <i class="fa-solid fa-print"></i></a>
+
+            </div>
+            <img src="~/userDesign/img/logo.png" alt="logo">
+
+
+        </div>
+    </nav>
+    <div class="">
+
+        <div class="container  fadeInUp-animation">
+            <div class="row justify-content-center mt-2 mb-2 print">
+
+                <div class="col-lg-12 text-center ">
+
+                    <div class="row justify-content-center  ">
+                        <form id="formExportedMedicines" class="print" asp-action="ExportedMedicines" asp-controller="Reports" method="get" style="display:none"></form>
+
+                        <div class="col-lg-1 text-center">
+                            <label id="" for="input-date">تاريخ التقرير</label>
+                        </div>
+                        <div class="col-lg-2 text-center">
+                            <input style="width:90%" class="my-table-input" id="input-date" value="@ViewBag.Date" placeholder="اختر التاريخ" name="date" type="date" form="formExportedMedicines">
+                        </div>
+                      
+                        <div class="col-lg-2 text-center">
+                            <button class="table-button-blue" value="مسح البحث" onClick="ResetFilters(['input-date'])">مسح البحث</button>
+                            <input class="table-button-red" type="submit" form="formExportedMedicines" value="تنفيذ" />
+                        </div>
+
+
+
+                    </div>
+
+                </div>
+            </div>
+            @if(!ViewBag.IsEmptyPage)
+            {
+            <div class="row ">
+                <div class="row">
+                    <p id="nametwo" class="text-center">تقرير المنصرف اليومي للأدوية ليوم @Model.ReportDate.ToShortDateString() <i class="fa-solid fa-chart-simple"></i></p>
+                    <div class="beds-containerTwo mb-3">
+                        <div class="bedsTwo">
+
+                            <div class="my-table-input" style="background-color: #d9d5d5;">
+                                <div class="text-center">
+                                    <label for="checkbox-id" style="margin-left: 5px;">تاريخ إنشاء التقرير</label>
+                                    <label for="checkbox-id" style="margin-left: 5px;">@Model.CreatedAt.ToShortDateString()</label>
+
+                                </div>
+
+                            </div>
+                            <div class="my-table-input" style="background-color: #d9d5d5;">
+
+                                <div class="text-center">
+                                    <label for="checkbox-id" style="margin-left: 5px;">عدد الادوية: </label>
+                                    <label for="checkbox-id" style="margin-left: 5px;">@Model.MedicinesCount</label>
+                                </div>
+
+                            </div>
+                           
+                             <div class="my-table-input" style="background-color: #d9d5d5;">
+
+                                <div class="text-center">
+                                    <label for="checkbox-id" style="margin-left: 5px;">عدد المرضى: </label>
+                                    <label for="checkbox-id" style="margin-left: 5px;">@Model.PatientsCount</label>
+                                </div>
+
+                            </div>
+                           
+
+                        </div>
+                    </div>
+                    <div class="row " style="justify-content: space-between;">
+                        <div class="col-lg-12 ">
+                            <p id="nametwo"> كل الادوية <i class="fa-solid fa-hospital-user"></i></p>
+
+                            <table class="table  table-striped text-center" id="my-table">
+                                <thead>
+                                <th>اسم المريض \ الدواء</th>
+                               @foreach(var medicine in Model.ExportedVisitMedicines)
+                               {
+                                    <th> @medicine.Value </th>
+                               }
+
+                                </thead>
+                                <tbody>
+                                  
+                                    @foreach(var patientWithMedicines in Model.PatientsWithVisitMedicines)
+                                    {
+                                        var medicinesIds = Model.ExportedVisitMedicines.Keys.ToList();
+                                        <tr>
+                                            <td>@patientWithMedicines.PatientName</td>
+                                            @foreach(var medicineId in medicinesIds)
+                                            {
+                                                @if(patientWithMedicines.MedicineExportedCount.ContainsKey(medicineId))
+                                                {
+                                                    <td> @patientWithMedicines.MedicineExportedCount.GetValueOrDefault(medicineId)  </td>
+                                                    
+                                                }
+                                                else
+                                                {
+                                                    <td> @StringExtensions.Dashes</td>
+                                                }
+                                                
+                                            }
+
+                                        </tr>
+                                    }
+                                    <tr>
+                                        <td> المجموع الكلي </td>
+                                        @foreach (var medicinesId in Model.ExportedVisitMedicines.Keys)
+                                        {
+
+                                            @if (Model.TotalTakenMedicineQuantities.ContainsKey(medicinesId))
+                                            {
+                                                <td> @Model.TotalTakenMedicineQuantities.GetValueOrDefault(medicinesId) </td>
+                                            }
+                                            else
+                                            {
+                                             <td> 0</td>   
+                                            }
+                                        }
+                                    </tr>
+                                   
+                                </tbody>
+                            </table>
+
+
+                        </div>
+                       
+                    </div>
+                </div>
+
+
+
+            </div>
+                
+            }
+            else
+            {
+                <p style="color:red" class="text-center mt-4"> برجاء اختيار تاريخ التقرير</p>
+            }
+        </div>
+    </div>
+    <footer>
+        <div class="container">
+        </div>
+        <div class="text-center p-1">
+            <p id="footer-text">
+                تم الانشاء بواسطة <span style="color: var(--red-color);">طلاب فرع النظم</span> الدفعة
+                <span style="color: var(--red-color);">164</span> ضباط إحتياط ©
+            </p>
+        </div>
+    </footer>
+</body>
+
+<script src="~/userDesign/js/all.min.js"></script>
+<script src="~/userDesign/js/bootstrap.bundle.min.js"></script>
+<script src="~/userdesign/js/resetfilters.js"></script>
+
+</html>

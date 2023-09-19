@@ -39,6 +39,7 @@
                 <a class="my-button-green"asp-action="VisitsMedicines" asp-controller="Medicines">صرف الأدوية <i class="fa-solid fa-receipt"></i></a>
 
                 <a class="my-button-blue"asp-action="MedicinesToday" asp-controller="Reports">تقرير الأدوية <i class="fa-solid fa-scroll"></i></a>
+                <a class="my-button-green"asp-action="ExportedMedicines" asp-controller="Reports">تقرير المنصرف اليومي <i class="fa-solid fa-scroll"></i></a>
                 @if (this.Context.IsUserHasRoles(new string[] { ConstantUserType.SUPER_ADMIN, ConstantUserType.Pharmacist}))
                 {
                     <a  asp-action="Create" asp-controller="Medicines" class="my-button-green">إضافة دواء جديد <i class="fa-solid fa-add"></i></a>
@@ -60,6 +61,8 @@
                                 <th>مسلسل</th>
                                 <th>إسم العلاج</th>
                                 <th>حالة الكمية</th>
+                                <th>حالة تاريخ انتهاء الصلاحية</th>
+                                <th>اقرب تاريخ انتهاء الصلاحية</th>
                                 <th>الحد الادنى من الاكتفاء</th>
                                 <th>المخزون</th>
                                 <th class="print">إضافة كمية <i class="fa-solid fa-plus"></i></th>
@@ -96,11 +99,39 @@
 
                                         }
                                     </td>
+
+                                    <td>
+                                        @{
+                                            string expirationColorName = "";
+                                            
+                                            //expiration date is over
+                                            if (item.ExpirationStatus == ConstantMedicineExpirationStatus.EXPIRED)
+                                            {
+                                                expirationColorName = "red";
+                                            }
+
+                                            else if (item.ExpirationStatus == ConstantMedicineExpirationStatus.NEAR_EXPIRATION)
+                                            {
+                                                expirationColorName = "darkorange";
+                                            }
+                                            else
+                                            {
+                                                expirationColorName = "green";
+                                            }
+                                            <span style="color:@expirationColorName">
+                                                @item.ExpirationStatus
+                                            </span>
+
+                                        }
+                                    </td>
+                                    <td>
+                                        @item.OldestExpirationDate.ToShortDateString()
+                                    </td>
                                     <td>
                                        @item.MinimumQuantityThreshold
                                     </td>
                                     <td>@item.Quantity</td>
-
+                                   
                                     <td class="print">
                                         
                                         <button   onclick="activeDiv({buttonId:'add-medicine-button-@item.Id',divId:'add-medicine-@item.Id'})" id="add-medicine-button-@item.Id" type="button" class="table-button-blue">إضافة كمية جديدة <i class="fa-solid fa-plus"></i></button>
@@ -109,10 +140,20 @@
                                             <div id="add-medicine-@item.Id" style="display:none;">
 
                                             <input hidden type="text" value="@item.Id" name="MedicineId" form="formAddQuantity-@item.Id" />
+                                            <div class="row justify-content-between mt-2">
+                                                <div class="text-center col-lg-12">
+                                                        <input name="Quantity" required min="0" form="formAddQuantity-@item.Id" class="w-100" type="number" placeholder="الكمية">
 
-                                            <input name="Quantity" form="formAddQuantity-@item.Id" type="number" placeholder="الكمية">
+                                                </div>
+                                                    <div class="text-center col-lg-12">
+                                                        <input name="ExpirationDate" required form="formAddQuantity-@item.Id" class="w-100" type="date">
 
-                                            <button type="submit" form="formAddQuantity-@item.Id" class="table-button-red">  <i class="fa-solid fa-floppy-disk"></i> حفظ</button>
+                                                    </div>
+                                            </div>
+
+                                           
+
+                                                <button type="submit" form="formAddQuantity-@item.Id" class="table-button-blue"> حفظ <i class="fa-solid fa-floppy-disk"></i></button>
 
                                             <button type="button" onclick="activeButton({buttonId:'add-medicine-button-@item.Id',divId:'add-medicine-@item.Id'})" class="table-button-red">الغاء <i class="fa-solid fa-xmark"></i></button>
                                     </div>
