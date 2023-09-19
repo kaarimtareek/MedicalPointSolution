@@ -14,8 +14,10 @@ namespace MedicalPoint.Data
         public decimal Price { get; set; }
         public DateTime ExpirationDate { get; set; }
         public bool IsFinished { get; private set; }
+        public bool IsDeleted { get; set; }
         public DateTime CreatedAt { get; set; }
         public Medicine Medicine { get; set; }
+        public bool IsExpired => ExpirationDate <= DateTime.Now;
 
     }
 }

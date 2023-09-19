@@ -154,7 +154,7 @@ namespace MedicalPoint.Services
                 return OperationResult.Failed(ConstantMessageCodes.NoVisitMedicinesOrAlreadyGiven);
             }
             var medicinesIds = visitMedicines.Select(x=> x.MedicineId).ToList();
-            var medicines = await _context.Medicines.Include(x=> x.Batches.Where(x=> !x.IsFinished).OrderBy(x=> x.ExpirationDate)).Where(x => medicinesIds.Contains(x.Id)).ToListAsync(cancellationToken);
+            var medicines = await _context.Medicines.Include(x=> x.Batches.Where(x=> !x.IsFinished && !x.IsDeleted).OrderBy(x=> x.ExpirationDate)).Where(x => medicinesIds.Contains(x.Id)).ToListAsync(cancellationToken);
 
             foreach (var visitMedicine in visitMedicines)
             {
@@ -169,8 +169,9 @@ namespace MedicalPoint.Services
                 }
                 var remainingAmount = visitMedicine.Quantity;
                 
-                foreach (var batch in medicine.Batches)
+                foreach (var batch in medicine.Batches.Where(x=> !x.IsExpired))
                 {
+                   
                     if(batch.Quantity >= remainingAmount)
                     {
                         batch.Quantity -= remainingAmount;
@@ -186,7 +187,7 @@ namespace MedicalPoint.Services
                 
                 if(remainingAmount > 0)
                 {
-                    return OperationResult.Failed(ConstantMessageCodes.VisitMedicineQuantityMoreThanMedicineQuantity);
+                    return OperationResult.Failed(ConstantMessageCodes.QuantityIsNotEnoughOrExpired);
                 }
 
                 medicine.Quantity -= visitMedicine.Quantity;

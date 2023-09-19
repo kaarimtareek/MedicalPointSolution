@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
+using static Azure.Core.HttpHeader;
+
 namespace MedicalPoint.Services
 {
     public interface IMedicinesService
@@ -13,7 +15,7 @@ namespace MedicalPoint.Services
         Task<OperationResult<Medicine>> AddBatch(int userId, int medicineId, int quantity, DateTime expirationDate, string notes ="" , decimal price = 0, CancellationToken cancellationToken = default);
         Task<OperationResult<Medicine>> Delete(int userId, int medicineId, CancellationToken cancellationToken = default);
         Task<OperationResult<Medicine>> DeleteBatch(int userId, int batchId, CancellationToken cancellationToken = default);
-        Task<OperationResult<Medicine>> Edit(int userId, int medicineId, string name,  int? quantityThreshold = null, CancellationToken cancellationToken = default);  
+        Task<OperationResult<Medicine>> Edit(int userId, int medicineId, string name,  int? quantityThreshold = null, decimal price = 0, CancellationToken cancellationToken = default);  
         Task<OperationResult<Medicine>> EditBatch(int userId, int batchId, DateTime expirationDate, int quantity, string notes ="", decimal price =0 , CancellationToken cancellationToken = default);
         Task<Medicine> Get(int medicineId, bool withAllHistory = false, CancellationToken cancellationToken = default);
         Task<List<Medicine>> GetAll(string name = "", int? quantityLessThan = null, bool medicinesAboutToFinish = false, CancellationToken cancellationToken = default);
@@ -49,7 +51,7 @@ namespace MedicalPoint.Services
 
         public async Task<Medicine> Get(int medicineId, bool withAllHistory = false, CancellationToken cancellationToken = default)
         {
-            var query = _context.Medicines.AsNoTracking();
+            var query = _context.Medicines.Include(x=> x.Batches.Where(x=> !x.IsDeleted).OrderBy(x=> x.ExpirationDate)).AsNoTracking();
             if(withAllHistory)
             {
                 query = query.Include(x => x.History.OrderByDescending(x => x.CreatedAt))
@@ -171,9 +173,10 @@ namespace MedicalPoint.Services
             await _context.MedicineBatches.AddAsync(medicineBatch, cancellationToken);
             await _context.MedicineHistories.AddAsync(medicineHistory, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
+            await UpdateMedicineExpirationDateAndQuantity(medicine.Id);
             return OperationResult<Medicine>.Succeeded(medicine);
         }
-        public async Task<OperationResult<Medicine>> Edit(int userId, int medicineId, string name, int? quantityThreshold = null, CancellationToken cancellationToken = default)
+        public async Task<OperationResult<Medicine>> Edit(int userId, int medicineId, string name, int? quantityThreshold = null, decimal price = 0, CancellationToken cancellationToken = default)
         {
             if (QueryValidator.IsMedicineNameExist(_context, name, medicineId))
             {
@@ -188,10 +191,12 @@ namespace MedicalPoint.Services
             medicine.Name = name;
             medicine.LastUpdatedAt = DateTime.Now;
             medicine.MinimumQuantityThreshold = quantityThreshold;
+            medicine.Price = price;
             var medicineHistory = new MedicineHistory
             {
                 MedicineId = medicineId,
                 MedicineName = name,
+                Price = price,
                 MinimumQuantityThreshold = quantityThreshold,
                 UserId = userId,
                 CreatedAt = DateTime.Now,
@@ -209,7 +214,7 @@ namespace MedicalPoint.Services
                 return OperationResult<Medicine>.Failed(ConstantMessageCodes.InvalidQuantity);
             }
             var medicineBatch = await _context.MedicineBatches.FirstOrDefaultAsync(x => x.Id == batchId);
-            if(medicineBatch == null)
+            if(medicineBatch == null || medicineBatch.IsDeleted)
             {
                 return OperationResult<Medicine>.Failed(ConstantMessageCodes.MedicineNotFound);
             }
@@ -219,11 +224,7 @@ namespace MedicalPoint.Services
                 return OperationResult<Medicine>.Failed(ConstantMessageCodes.MedicineNotFound);
 
             }
-            medicine.Quantity += quantity;
-            if (medicine.OldestExpirationDate > expirationDate)
-            {
-                medicine.OldestExpirationDate = expirationDate;
-            }
+           
            medicineBatch.ExpirationDate = expirationDate;
             medicineBatch.Price = price;
             medicineBatch.Quantity = quantity;
@@ -232,21 +233,59 @@ namespace MedicalPoint.Services
             {
                 MedicineQuantity = quantity,
                 UserId = userId,
-                ActionType = ConstantMedicineActionType.ADD_BATCH,
+                ActionType = ConstantMedicineActionType.EDIT_BATCH,
                 ExpirationDate = expirationDate,
                 MedicineId = medicineBatch.MedicineId,
                 CreatedAt = DateTime.Now,
                 MedicineName = "",
             };
-            await _context.MedicineBatches.AddAsync(medicineBatch, cancellationToken);
             await _context.MedicineHistories.AddAsync(medicineHistory, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
+            await UpdateMedicineExpirationDateAndQuantity(medicine.Id);
+
             return OperationResult<Medicine>.Succeeded(medicine);
         }
 
-        public Task<OperationResult<Medicine>> DeleteBatch(int userId, int batchId, CancellationToken cancellationToken = default)
+        public async Task<OperationResult<Medicine>> DeleteBatch(int userId, int batchId, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var medicineBatch = await _context.MedicineBatches.FirstOrDefaultAsync(x => x.Id == batchId);
+            if (medicineBatch == null || medicineBatch.IsDeleted)
+            {
+                return OperationResult<Medicine>.Failed(ConstantMessageCodes.MedicineNotFound);
+            }
+            var medicine = await _context.Medicines.FirstOrDefaultAsync(x => x.Id == medicineBatch.MedicineId && !x.IsDeleted);
+            if (medicine == null)
+            {
+                return OperationResult<Medicine>.Failed(ConstantMessageCodes.MedicineNotFound);
+
+            }
+
+            medicineBatch.IsDeleted = true;
+            var medicineHistory = new MedicineHistory
+            {
+                MedicineQuantity = medicineBatch.Quantity,
+                UserId = userId,
+                ExpirationDate = medicineBatch.ExpirationDate,
+                ActionType = ConstantMedicineActionType.DELETE_BATCH,
+                MedicineId = medicineBatch.MedicineId,
+                CreatedAt = DateTime.Now,
+                MedicineName = "",
+            };
+            await _context.MedicineHistories.AddAsync(medicineHistory, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
+            await UpdateMedicineExpirationDateAndQuantity(medicine.Id);
+            return OperationResult<Medicine>.Succeeded(medicine);
+        }
+        public async Task UpdateMedicineExpirationDateAndQuantity(int medicineId)
+        {
+            var medicine = await _context.Medicines.FirstOrDefaultAsync(x=> x.Id == medicineId);
+            if (medicine == null || medicine.IsDeleted)
+                return;
+            var quantity = await _context.MedicineBatches.Where(x => x.MedicineId == medicineId && !x.IsDeleted).SumAsync(x => x.Quantity);
+            var oldestExpirationDate = await _context.MedicineBatches.Where(x => x.MedicineId == medicineId && !x.IsDeleted).OrderBy(x => x.ExpirationDate).Select(x => x.ExpirationDate).FirstOrDefaultAsync();
+            medicine.Quantity = quantity;
+            medicine.OldestExpirationDate = oldestExpirationDate;
+            await _context.SaveChangesAsync();
         }
     }
 }
