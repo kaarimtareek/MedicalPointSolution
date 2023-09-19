@@ -12,5 +12,7 @@ namespace MedicalPoint.ViewModels.Medicines
         [Required]
         public int Quantity { get; set; }
         public int? MinimumQuantityThreshold { get; set; }
+        public DateTime ExpirationDate { get; set; }
+        public decimal Price { get; set; }
     }
 }

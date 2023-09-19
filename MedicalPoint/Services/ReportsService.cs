@@ -11,6 +11,7 @@ namespace MedicalPoint.Services
 {
     public interface IReportsService
     {
+        Task<DailyExportedVisitMedicinesReport> GenerateDailyExportedVisitMedicines(DateTime date);
         Task<DailyMedicineReport> GenerateDailyMedicineReport(DateTime date);
         Task<PatientReport> GeneratePatientReport(int patientId);
         Task<VisitsReport> GenerateVisitsReport(DateTime startDate, DateTime endDate, bool includeAllPatients = false, CancellationToken cancellationToken = default);
@@ -341,6 +342,76 @@ namespace MedicalPoint.Services
             };
             return report;
         }
+        public async Task<DailyExportedVisitMedicinesReport> GenerateDailyExportedVisitMedicines(DateTime date)
+        {
+            var startDate = date.Date;
+            var endDate = date.Date.AddDays(1);
+            var medicineHistories = await _context.MedicineHistories.AsNoTracking().Where(x=> x.CreatedAt >= startDate && x.CreatedAt <= endDate && x.ActionType == ConstantMedicineActionType.EXPORT).ToListAsync();
+
+            var visitsIds= medicineHistories.Select(x => x.VisitId).ToList();
+            var visits = await _context.Visits.AsNoTracking().Where(x => visitsIds.Contains(x.Id)).ToListAsync();
+
+            var patientsIds = visits.Select(x => x.PatientId).Distinct().ToList();
+            var patients = await _context.Patients.AsNoTracking().Where(x=> patientsIds.Contains(x.Id)).ToListAsync();
+
+            var medicinesIds = medicineHistories.Select(x=> x.MedicineId).Distinct().ToList();
+            var medicines = await _context.Medicines.AsNoTracking().Where(x => medicinesIds.Contains(x.Id)).ToListAsync();
+
+            //var usersIds = medicineHistories.Select(x => x.UserId).ToList();
+            //var users = await _context.Users.AsNoTracking().Where(x => usersIds.Contains(x.Id)).ToListAsync();
+            var medicinesForPatients = new List<ExportedVisitMedicineForPatient>();
+
+            foreach (var patient in patients)
+            {
+                var visitsIdsForThatPatients = visits.Where(x => x.PatientId == patient.Id).Select(x => x.Id).ToList();
+                var medicineHistoriesForThatPatient = medicineHistories.Where(x=> x.VisitId.HasValue && visitsIdsForThatPatients.Contains(x.VisitId.Value)).ToList();
+                var groupedMedicines = medicineHistoriesForThatPatient.GroupBy(x => x.MedicineId);
+
+                var medicinePatient = new ExportedVisitMedicineForPatient
+                {
+                    PatientId = patient.Id,
+                    PatientName = patient.Name,
+                    MedicineExportedCount = groupedMedicines.ToDictionary(x => x.Key, x=> x.Sum(xx=> xx.MedicineQuantity??0))
+                };
+                medicinesForPatients.Add(medicinePatient);
+            }
+            var groupedAllMedicines = medicineHistories.OrderBy(x=> x.MedicineName).GroupBy(x => x.MedicineId);
+            var totalTakenMedicinesQuantities = groupedAllMedicines.ToDictionary(x => x.Key, x => x.Sum(xx => xx.MedicineQuantity??0));
+            var report = new DailyExportedVisitMedicinesReport
+            {
+                CreatedAt = DateTime.Now,
+                ExportedVisitMedicines = medicines.OrderBy(x => x.Name).ToDictionary(x => x.Id, x => x.Name),
+                MedicinesCount = medicines.Count,
+                PatientsCount = patients.Count,
+                PatientsWithVisitMedicines = medicinesForPatients.OrderBy(x => x.PatientName).ToList(),
+                TotalTakenMedicineQuantities = totalTakenMedicinesQuantities,
+                ReportDate = date
+            };
+            return report;
+        }
+    }
+    public class DailyExportedVisitMedicinesReport
+    {
+        public int MedicinesCount { get; set; }
+        public int PatientsCount { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime ReportDate { get; set; }
+        public Dictionary<int, string> ExportedVisitMedicines { get; set; }
+        public Dictionary<int, int> TotalTakenMedicineQuantities { get; set; }
+        public List<ExportedVisitMedicineForPatient> PatientsWithVisitMedicines { get; set; }
+        
+    }
+    public class ExportedVisitMedicineForPatient
+    {
+        public int PatientId { get; set; }
+        public string PatientName { get; set; }
+        //key=> medicineId , value => number of quantity taken
+        public Dictionary<int, int> MedicineExportedCount { get; set; }
+    }
+    public class ExportedVisitMedicineForVisitMedicinesReport
+    {
+        public int MedicineId { get; set; }
+        public string MedicineName { get; set; }
     }
     public class DailyMedicineReport
     {

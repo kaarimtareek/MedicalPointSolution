@@ -154,7 +154,7 @@ namespace MedicalPoint.Services
                 return OperationResult.Failed(ConstantMessageCodes.NoVisitMedicinesOrAlreadyGiven);
             }
             var medicinesIds = visitMedicines.Select(x=> x.MedicineId).ToList();
-            var medicines = await _context.Medicines.Where(x => medicinesIds.Contains(x.Id)).ToListAsync(cancellationToken);
+            var medicines = await _context.Medicines.Include(x=> x.Batches.Where(x=> !x.IsFinished && !x.IsDeleted).OrderBy(x=> x.ExpirationDate)).Where(x => medicinesIds.Contains(x.Id)).ToListAsync(cancellationToken);
 
             foreach (var visitMedicine in visitMedicines)
             {
@@ -167,6 +167,29 @@ namespace MedicalPoint.Services
                 {
                     return OperationResult.Failed(ConstantMessageCodes.VisitMedicineQuantityMoreThanMedicineQuantity);
                 }
+                var remainingAmount = visitMedicine.Quantity;
+                
+                foreach (var batch in medicine.Batches.Where(x=> !x.IsExpired))
+                {
+                   
+                    if(batch.Quantity >= remainingAmount)
+                    {
+                        batch.Quantity -= remainingAmount;
+                        remainingAmount = 0;
+                        break;
+                    }
+                    else
+                    {
+                        remainingAmount -= batch.Quantity;
+                        batch.Quantity = 0;
+                    }
+                }
+                
+                if(remainingAmount > 0)
+                {
+                    return OperationResult.Failed(ConstantMessageCodes.QuantityIsNotEnoughOrExpired);
+                }
+
                 medicine.Quantity -= visitMedicine.Quantity;
                 var medicineHistory = new MedicineHistory
                 {

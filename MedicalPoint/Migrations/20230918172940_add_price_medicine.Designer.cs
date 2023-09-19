@@ -4,6 +4,7 @@ using MedicalPoint.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MedicalPoint.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230918172940_add_price_medicine")]
+    partial class add_price_medicine
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -345,13 +348,10 @@ namespace MedicalPoint.Migrations
                     b.Property<DateTime>("ExpirationDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
                     b.Property<bool>("IsFinished")
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("bit")
-                        .HasComputedColumnSql("CAST(CASE Quantity  WHEN 0 THEN 1 ELSE 0 END AS bit)", true);
+                        .HasComputedColumnSql("CAST(CASE Quantity  WHEN 0 THEN 0 ELSE 1 END AS bit)", true);
 
                     b.Property<int>("MedicineId")
                         .HasColumnType("int");

@@ -28,7 +28,7 @@
         public static string VisitTypeNotFound = "نوع الكشف غير موجود";
         public static string CannotEditVisit = "لا يمكن التعديل في الكشف";
 
-        public static string MedicineNotFound = "لا يمكن التعديل في الكشف";
+        public static string MedicineNotFound = "الدواء غير موجود";
         public static string ImageNotFound = "الصورة غير موجودة";
         public static string CannotUploadImageMoreThan2mb = "لا يمكن رفع صورة اكثر من 2 ميجا بايت";
         
@@ -36,6 +36,7 @@
         public static string VisitMedicineAlreadyExist = "علاج الكشف موجود بالفعل";
         public static string NoVisitMedicinesOrAlreadyGiven = "لا يوجد علاج في الكشف او تم صرفهم بالفعل";
         public static string VisitMedicineQuantityMoreThanMedicineQuantity = "كمية العلاج في الكشف اكبر من كمية المخزون";
+        public static string QuantityIsNotEnoughOrExpired = "الكمية غير كافية او منتهية الصلاحية";
         public static string UserNameOrPasswordIsIncorrect = "اسم المستخدم او كلمة المرور غير صحيحة";
         public static string UserIsInActive = "المستخدم غير مفعل";
         public static string UserNotFound = "المستخدم غير موجود";

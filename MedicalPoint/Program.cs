@@ -46,6 +46,7 @@ builder.Services.AddScoped<IDepartmentsService, DepartmentsService>();
 builder.Services.AddScoped<ICacheService, CacheService>();
 builder.Services.AddScoped<IUploadService, UploadService>();
 builder.Services.AddScoped<IReportsService, ReportsService>();
+builder.Services.AddScoped<ICorrectionService, CorrectionService>();
 
 builder.Services.AddSingleton<CacheData>();
 

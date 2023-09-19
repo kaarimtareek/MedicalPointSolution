@@ -40,7 +40,7 @@
                 <div class="col-lg-6 text-center pt-5 ">
                     <p id="nametwo">تفاصيل الدواء <i class="fa-solid fa-prescription-bottle-medical"></i></p>
 
-                     <table class="table  table-striped">
+                     <table class="table  table-striped" id="my-table">
                         <tbody>
                             <tr>
                                 <th>اسم الدواء</th>
@@ -49,6 +49,14 @@
                             <tr>
                                 <th>تاريخ الاضافة</th>
                                 <td>@Html.DisplayFor(model=>model.CreatedAt)</td>
+                            </tr>
+                            <tr>
+                                <th>السعر </th>
+                                <td>@Html.DisplayFor(model=>model.Price)</td>
+                            </tr>
+                            <tr>
+                                <th>أقدم تاريخ انتهاء صلاحية </th>
+                                <td>@Model.OldestExpirationDate.ToShortDateString()</td>
                             </tr>
                             <tr>
                                 <th>الكمية الموجودة</th>
@@ -63,7 +71,7 @@
                     </table>
 
 
- </div>
+                </div>
 
             </div>
             <div class="row justify-content-center mt-4">
@@ -83,6 +91,89 @@
                     }
                 </div>
             </div>
+            <div class="row justify-content-center mt-4">
+                <div class="col-lg-6 text-center">
+                    <p id="nametwo"> تفاصيل دفعات الدواء</p>
+                    <table class="table  table-striped" id="my-table">
+                        <thead>
+                            <tr>
+                                <th>مسلسل</th>
+                                <th>تاريخ انتهاء الصلاحية</th>
+                                <th>الكمية</th>
+                                <th>توقيت الاضافة</th>
+                                <th>خيارات</th>
+                               
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var batch in Model.Batches)
+                            {
+                                <tr>
+                                    <form asp-action="EditBatch" asp-route-id="@batch.Id" method="post" id="formEditBatch-@batch.Id" style="display:none"></form>
+                                    <td>
+
+                                    </td>
+                                    <td>
+                                        @{
+                                            var expirationDate = @batch.ExpirationDate.ToString("yyyy-MM-dd");
+                                            <div class="mt-1 mb-1">
+                                            
+                                                <span id="span-expirationdate-@batch.Id">
+                                           @batch.ExpirationDate.ToShortDateString()
+
+                                           </span>
+                                                <input type="date" class="w-100" style="background-color:transparent !important; display:none" value="@expirationDate" name="ExpirationDate" id="input-expirationdate-@batch.Id"  form="formEditBatch-@batch.Id" />
+
+                                        </div>
+                                        }
+                                    </td>
+                                    <td>
+                                        <span id="span-quantity-@batch.Id">
+                                            @batch.Quantity
+
+                                        </span>
+                                        <input type="number" class="w-100" style="background-color:transparent !important; display:none" value="@batch.Quantity" name="quantity" id="input-quantity-@batch.Id"  form="formEditBatch-@batch.Id" />
+
+                                    </td>
+                                    <td>@batch.CreatedAt</td>
+                                    <td>
+                                        <div class="mt-2 mb-2">
+                                            <button type="submit" form="formEditBatch-@batch.Id" id="save-button-@batch.Id" class="my-button-blue"  style="display:none" > حفظ</button>
+                                            <button class="my-button" id="cancel-button-@batch.Id" style="display:none" onclick="enableDisable({ids:['input-quantity-@batch.Id', 'input-expirationdate-@batch.Id','span-quantity-@batch.Id', 'span-expirationdate-@batch.Id', 'cancel-button-@batch.Id', 'edit-button-@batch.Id', 'save-button-@batch.Id', 'delete-button-@batch.Id']})"> إلغاء</button>
+                                            <button class="my-button-blue" id="edit-button-@batch.Id" onclick="enableDisable({ids:['input-quantity-@batch.Id', 'input-expirationdate-@batch.Id','span-quantity-@batch.Id', 'span-expirationdate-@batch.Id', 'cancel-button-@batch.Id', 'edit-button-@batch.Id', 'save-button-@batch.Id', 'delete-button-@batch.Id' ]})"> تعديل</button>
+                                        <a id="delete-button-@batch.Id" class="my-button" asp-action="RemoveBatch" asp-route-id="@batch.Id"> حذف</a>
+
+                                        </div>
+                                    </td>
+
+                                </tr>
+
+                            }
+                            <tr>
+                                
+                                <form id="formAddBatch" asp-action="AddQuantity" method="post" asp-controller="Medicines" style="display:none"></form>
+                                <td></td>
+                                <td>
+                                    <input style="display:none" name="MedicineId" form="formAddBatch" value="@Model.Id" />
+                                    <input class="w-100" type="date" style="background-color:transparent !important" required name="ExpirationDate" form="formAddBatch" />
+                                </td>
+                                <td>
+                                    <input type="number" min="1" style="background-color:transparent !important" required class="w-100" name="Quantity" form="formAddBatch" placeholder="الكمية" />
+                                </td>
+                                <td></td>
+                                <td >
+                                    <div class="mt-2 mb-2">
+                                        <button type="submit" class="my-button-green " form="formAddBatch"> اضافة دفعة</button>
+
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
 
             @if (this.Context.IsUserHasRoles(new string[]{ConstantUserType.SUPER_ADMIN, ConstantUserType.Doctor, ConstantUserType.Pharmacist}))
             {
@@ -94,7 +185,7 @@
                        احدث التغييرات لسجل الدواء
                     </p>    
                  
-                    <table class="table  table-striped">
+                    <table class="table  table-striped" id="my-table">
                         <thead>
                             <tr>
                                 <th>مسلسل</th>
@@ -103,6 +194,8 @@
                                 <th>نوع الاجراء</th>
                                 <th>اسم الدواء</th>
                                 <th>الكمية</th>
+                                <th>السعر</th>
+                                <th>تاريخ انتهاء الصلاحية</th>
                                 <th>الحد الادني من الاكتفاء</th>
                                 <th>روشتة الكشف</th>
 
@@ -118,6 +211,8 @@
                                     <td>@history.ActionType</td>
                                     <td>@history.MedicineName</td>
                                     <td>@history.MedicineQuantity</td>
+                                    <td>@history.Price</td>
+                                    <td>@history.ExpirationDate</td>
                                     <td>@history.MinimumQuantityThreshold</td>
                                    
                                     @if(history.VisitId.HasValue)
@@ -228,6 +323,7 @@
 <script src="~/UserDesign/js/all.min.js"></script>
 <script src="~/UserDesign/js/bootstrap.bundle.min.js"></script>
 <script src="~/userdesign/js/popouterror.js"></script>
+<script src="~/userdesign/js/enabledisableelements.js"></script>
 @if (ViewBag.ErrorMessage is string s)
 {
     if (!string.IsNullOrEmpty(s))

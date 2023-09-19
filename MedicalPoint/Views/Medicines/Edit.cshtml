@@ -40,17 +40,23 @@
                         <img src="~/UserDesign/img/medicine.gif" alt="">
                         <p id="name">تعديل دواء</p>
                     </div>
-                    <div class="row justify-content-center">
-                        <div class="col-lg-4 text-center ">
-                            <input asp-for=Name class="my-input customewidth" type="text"  placeholder="إسم الصنف" >
-                            <input asp-for=Id class="my-input customewidth" type="text" hidden>
+                        <input asp-for=Id class="my-input customewidth" style="display:none" type="text" hidden>
+                    <div class="row justify-content-space">
+                        <div class="col-lg-12 text-center ">
+                            <p id="my-label">اسم الصنف*</p>
+                            <input asp-for=Name class="my-input " type="text"  placeholder="إسم الصنف" >
 
+                        </div> 
+                    </div>
+
+                    <div class="row justify-content-space">
+                        <div class="col-lg-6 text-center ">
+                            <p id="my-label">الحد الادنى للاكتفاء*</p>
+                            <input asp-for=MinimumQuantityThreshold class="my-input " type="number" placeholder="الحد الادنى للاكتفاء">
                         </div>
-                        <div class="col-lg-4 text-center ">
-                            <input asp-for=Quantity class="my-input customewidth" type="number"  placeholder="الكمية">
-                        </div>
-                        <div class="col-lg-4 text-center ">
-                            <input asp-for=MinimumQuantityThreshold class="my-input customewidth" type="number"  placeholder="الحد الادنى للاكتفاء" >
+                        <div class="col-lg-6 text-center ">
+                            <p id="my-label">السعر*</p>
+                            <input asp-for=Price class="my-input " type="number" placeholder="السعر">
                         </div>
                     </div>
 

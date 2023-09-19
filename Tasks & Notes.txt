@@ -47,3 +47,11 @@ Admin123
 =========
 
 - move the db from C: drive (HDD) to the E: drive (SSD)
+
+=========
+18-9-2023
+=========
+
+- add view for visit rests.
+- add report for daily exported medicines.
+- add button to remove medicine batch.

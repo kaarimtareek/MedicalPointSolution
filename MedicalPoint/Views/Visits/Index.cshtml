@@ -6,7 +6,7 @@
     Layout = null;
     if(ViewBag.Date != null)
     {
-        ViewBag.Date = DateTime.Parse(ViewBag.Date).ToString("mm/dd/yyyy");
+        ViewBag.Date = DateTime.Parse(ViewBag.Date).ToString("yyyy-MM-dd");
     }
 }
 <!DOCTYPE html>
@@ -72,7 +72,7 @@
                                 <input style="width:90%" class="my-table-input print"value="@ViewBag.SearchValue" id="input-search"  name="searchValue" placeholder="ابحث هنا.." form="formFilterVisits" >
                             </div>
                             <div  class="col-lg-2 text-center">
-                                <input style="width:90%" class="my-table-input" id="input-date" valueAsDate="@ViewBag.Date"  name="date"  type="date"  form="formFilterVisits" >
+                                <input style="width:90%" class="my-table-input" id="input-date" value="@ViewBag.Date"  name="date"  type="date"  form="formFilterVisits" >
                             </div>
                             <div class="col-lg-2 text-center ">
                                 <select class="my-table-select "  id="select-clinic" asp-items="@ViewBag.Clinics"  name="clinicId" form="formFilterVisits">

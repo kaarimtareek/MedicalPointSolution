@@ -11,6 +11,8 @@ namespace MedicalPoint.Data
         public string? MedicineName { get; set; }
         public int? MedicineQuantity { get; set;}
         public int? MinimumQuantityThreshold { get; set; }
+        public DateTime? ExpirationDate { get; set; }
+        public decimal? Price { get; set; }
         [MaxLength(100)]
         public string ActionType { get; set; }
         //add visit id ?

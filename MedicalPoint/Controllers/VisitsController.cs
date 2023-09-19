@@ -45,7 +45,7 @@ namespace MedicalPoint.Controllers
             var visits = await _visitsService.GetAll(pageNumber, pageSize, doctorId, null, date, date.HasValue? date.Value.AddDays(1): null, type, clinicId, searchValue);
             var clinics = _cacheService.GetClinics();
             ViewBag.SearchValue = searchValue;
-            ViewBag.Date = date?.ToShortDateString();
+            ViewBag.Date = date?.ToString("yyyy-MM-dd");
             ViewBag.Clinics = clinics.ConvertAll(x => new SelectListItem
             {
                 Text = x.Name,

@@ -39,6 +39,8 @@ namespace MedicalPoint.Controllers
                 Quantity = x.Quantity,
                 Status = x.Status,
                 MinimumQuantityThreshold = x.MinimumQuantityThreshold,
+                OldestExpirationDate = x.OldestExpirationDate,
+                Price = x.Price,
             });
             SendErrorMessageToViewBagAndResetTempData();
             return View(viewModel);
@@ -91,7 +93,7 @@ namespace MedicalPoint.Controllers
                 return RedirectToAction("AccessDenied", "Account");
             }
 
-            var result = await _medicinesService.Add(userId.Value, viewModel.Name, viewModel.Quantity, viewModel.MinimumQuantityThreshold);
+            var result = await _medicinesService.Add(userId.Value, viewModel.Name, viewModel.Quantity, viewModel.ExpirationDate,  viewModel.MinimumQuantityThreshold, viewModel.Price );
             if (!result.Success)
             {
                 TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY] = result.Message;
@@ -101,7 +103,7 @@ namespace MedicalPoint.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddQuantity([FromForm] int MedicineId, [FromForm] int Quantity)
+        public async Task<IActionResult> AddQuantity([FromForm] int MedicineId, [FromForm] int Quantity, [FromForm] DateTime expirationDate)
         {
             var userId = HttpContext.GetUserId();
             if (userId == null)
@@ -109,12 +111,12 @@ namespace MedicalPoint.Controllers
                 return RedirectToAction("AccessDenied", "Account");
             }
 
-            var result = await _medicinesService.AddQauntity(userId.Value, MedicineId, Quantity);
+            var result = await _medicinesService.AddBatch(userId.Value, MedicineId, Quantity, expirationDate);
             if (!result.Success)
             {
                 TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY] = result.Message;
             }
-            return RedirectToAction(nameof(Index), "Medicines");
+            return RedirectToAction(nameof(Details), new {id = MedicineId});
         }
 
         public async Task<IActionResult> Details(int id)
@@ -138,6 +140,9 @@ namespace MedicalPoint.Controllers
                 CreatedAt = medicine.CreatedAt,
                 LastUpdatedAt = medicine.LastUpdatedAt,
                 Quantity = medicine.Quantity,
+                Price = medicine.Price,
+                OldestExpirationDate = medicine.OldestExpirationDate,
+                
                 MinimumQuantityThreshold = medicine.MinimumQuantityThreshold,
                 History = medicine.History.Select(x => new MedicineHistoryViewModel
                 {
@@ -149,8 +154,21 @@ namespace MedicalPoint.Controllers
                     MedicineQuantity = x.MedicineQuantity,
                     MinimumQuantityThreshold = x.MinimumQuantityThreshold,
                     UserId = x.UserId,
+                    Price = x.Price,
                     UserName = x.User?.FullName ?? string.Empty,
                     VisitId = x.VisitId,
+                }).ToList(),
+                Batches = medicine.Batches.Select(x=> new MedicineBatchViewModel
+                {
+                    CreatedAt = x.CreatedAt,
+                    ExpirationDate = x.ExpirationDate,
+                    IsFinished = x.IsFinished,
+                    MedicineId= x.MedicineId,
+                    Id = x.Id,
+                    Notes = x.Notes,
+                    Quantity = x.Quantity,
+                    UserId = x.UserId,
+
                 }).ToList()
             };
             SendErrorMessageToViewBagAndResetTempData();
@@ -179,6 +197,8 @@ namespace MedicalPoint.Controllers
                 LastUpdatedAt = medicine.LastUpdatedAt,
                 Quantity = medicine.Quantity,
                 MinimumQuantityThreshold = medicine.MinimumQuantityThreshold,
+                OldestExpirationDate = medicine.OldestExpirationDate,
+                Price = medicine.Price,
                 History = medicine.History.Select(x => new MedicineHistoryViewModel
                 {
                     ActionType = x.ActionType,
@@ -191,10 +211,22 @@ namespace MedicalPoint.Controllers
                     UserId = x.UserId,
                     UserName = x.User?.FullName ?? string.Empty,
                     VisitId = x.VisitId,
+                }).ToList(),
+                Batches = medicine.Batches.Select(x => new MedicineBatchViewModel
+                {
+                    CreatedAt = x.CreatedAt,
+                    ExpirationDate = x.ExpirationDate,
+                    IsFinished = x.IsFinished,
+                    MedicineId = x.MedicineId,
+                    Id = x.Id,
+                    Notes = x.Notes,
+                    Quantity = x.Quantity,
+                    UserId = x.UserId,
+
                 }).ToList()
             };
             SendErrorMessageToViewBagAndResetTempData();
-            return View(viewModel);
+            return View(nameof(Details), viewModel);
         }
 
         // delete Element Medicines
@@ -238,6 +270,7 @@ namespace MedicalPoint.Controllers
                 CreatedAt = medicines.CreatedAt,
                 LastUpdatedAt = medicines.LastUpdatedAt,
                 Quantity = medicines.Quantity,
+                Price = medicines.Price,
                 MinimumQuantityThreshold = medicines.MinimumQuantityThreshold,
             };
             SendErrorMessageToViewBagAndResetTempData();
@@ -252,7 +285,7 @@ namespace MedicalPoint.Controllers
             {
                 return RedirectToAction("AccessDenied", "Account");
             }
-            var result = await _medicinesService.Edit(userId.Value, viewModel.Id, viewModel.Name, viewModel.Quantity, viewModel.MinimumQuantityThreshold);
+            var result = await _medicinesService.Edit(userId.Value, viewModel.Id, viewModel.Name,  viewModel.MinimumQuantityThreshold, viewModel.Price);
 
             if (!result.Success)
             {
@@ -410,6 +443,40 @@ namespace MedicalPoint.Controllers
                 RedirectToAction(nameof(GiveMedicines), new { id });
             }
             return RedirectToAction(nameof(VisitsMedicines));
+        }
+        
+        public async Task<IActionResult> RemoveBatch(int id)
+        {
+            var userId = HttpContext.GetUserId();
+            if (userId == null)
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+            var result = await _medicinesService.DeleteBatch(userId.Value, id);
+
+            if (!result.Success)
+            {
+                TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY] = result.Message;
+                return RedirectToAction(nameof(Index));
+            }
+            return RedirectToAction(nameof(Details), new {result.Data.Id});
+        }
+        [HttpPost]
+        public async Task<IActionResult> EditBatch(int id, [FromForm] DateTime expirationDate, [FromForm] int quantity)
+        {
+            var userId = HttpContext.GetUserId();
+            if (userId == null)
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+            var result = await _medicinesService.EditBatch(userId.Value, id, expirationDate, quantity);
+
+            if (!result.Success)
+            {
+                TempData[ConstantMessageCodes.ERROR_MESSAGE_KEY] = result.Message;
+                return RedirectToAction(nameof(Index));
+            }
+            return RedirectToAction(nameof(Details), new {result.Data.Id});
         }
 
         private void SendErrorMessageToViewBagAndResetTempData()
